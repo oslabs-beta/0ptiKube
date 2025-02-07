@@ -1,0 +1,16 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install dependencies first (better caching)
+COPY package*.json ./
+RUN npm install
+
+# Set development environment
+ENV NODE_ENV=development
+
+# Expose Next.js port
+EXPOSE 3000
+
+# Use development command with turbopack
+CMD ["npm", "run", "dev"]
