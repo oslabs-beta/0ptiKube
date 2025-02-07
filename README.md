@@ -145,18 +145,10 @@ before production app is ready to showcase
   - Script handles cleanup on Ctrl+C
   - Manual cleanup: `docker stop 0ptikube-dev`
 
-## Project Structure
-```
-0ptiKube/
-├── src/              # Next.js source files
-├── k8s/              # Kubernetes configurations
-├── 0ptikube.sh      # Main setup script
-├── dockerfile.dev    # Development container config
-└── README.md        # Documentation
-```
 
-### THE FOLLOWING ARE USEFUL COMMANDS FOR THE TEAM TO USE WHILE DEVELOPING IN THE APP ###
-### WILL DELETE BEFORE IT GOES IN PRODUCTION
+
+### The following are useful commands for the team to use in development
+### Will delete before it goes in production
 
 ### Useful Docker Commands
 ```bash
