@@ -5,6 +5,9 @@ A Next.js application with Kubernetes integration for local deployment and monit
 ## Prerequisites
 - Git
 - Docker Desktop
+- Container Runtime (Script will install):
+  - macOS: hyperkit (lightweight virtualization if no docker desktop is installed)
+  - Linux: docker driver (default)
 
 ## QuickStart
 1. Clone the repository:
@@ -171,7 +174,6 @@ docker rm 0ptikube-dev
 # - Source code is mounted from your local directory
 # - Kubernetes configs are stored locally
 # - Container is just running the development environment
-
 # Restart development environment
 ./0ptikube.sh
 ```

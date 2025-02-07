@@ -151,9 +151,17 @@ install_macos() {
     fi
     
     print_step "Installing Required Tools"
-    echo "📦 Installing minikube, kubectl, and helm..."
+    echo "📦 Installing container runtime and required tools - hyperkit container runtime, minikube, kubectl, helm, prometheus, etc...."
+    # Install Docker Machine and container runtime
+    brew install docker-machine hyperkit
+    # Install other required tools
     brew install minikube kubectl helm
     print_success "Tools installed successfully"
+    
+    # Set minikube to use hyperkit driver
+    print_step "Configuring Minikube Driver"
+    minikube config set driver hyperkit
+    print_success "Minikube configured to use hyperkit"
 }
 
 # Development environment setup
