@@ -161,8 +161,20 @@ docker ps -a
 # List all images
 docker images
 
-# Stop the development container
+### Container Data Management
+```bash
+# Stop and remove container (safe to do)
 docker stop 0ptikube-dev
+docker rm 0ptikube-dev
+
+# Your data is preserved because:
+# - Source code is mounted from your local directory
+# - Kubernetes configs are stored locally
+# - Container is just running the development environment
+
+# Restart development environment
+./0ptikube.sh
+```
 
 # Remove the development container
 docker rm 0ptikube-dev
