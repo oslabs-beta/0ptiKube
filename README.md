@@ -151,7 +151,7 @@ before production app is ready to showcase
 
 
 ### The following are useful commands for the team to use in development
-### Will delete before it goes in production
+- **Will delete before it goes in production**
 
 ### Useful Docker Commands
 ```bash
@@ -176,7 +176,6 @@ docker rm 0ptikube-dev
 # - Container is just running the development environment
 # Restart development environment
 ./0ptikube.sh
-```
 
 # Remove the development container
 docker rm 0ptikube-dev
@@ -196,6 +195,14 @@ docker stats 0ptikube-dev
 # Clean up unused resources
 docker system prune  # Remove unused containers, networks, images
 docker system prune -a  # Remove all unused images too
+
+
+
+```
+
+
+
+
 
 
 ## Useful Commands when playing with minikube
