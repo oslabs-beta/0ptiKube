@@ -155,6 +155,42 @@ before production app is ready to showcase
 └── README.md        # Documentation
 ```
 
+### THE FOLLOWING ARE USEFUL COMMANDS FOR THE TEAM TO USE WHILE DEVELOPING IN THE APP ###
+### WILL DELETE BEFORE IT GOES IN PRODUCTION
+
+### Useful Docker Commands
+```bash
+# List running containers
+docker ps
+
+# List all containers (including stopped)
+docker ps -a
+
+# List all images
+docker images
+
+# Stop the development container
+docker stop 0ptikube-dev
+
+# Remove the development container
+docker rm 0ptikube-dev
+
+# Remove the development image
+docker rmi 0ptikube-dev
+
+# View container logs
+docker logs 0ptikube-dev
+
+# Enter running container shell
+docker exec -it 0ptikube-dev /bin/bash
+
+# Check container resource usage
+docker stats 0ptikube-dev
+
+# Clean up unused resources
+docker system prune  # Remove unused containers, networks, images
+docker system prune -a  # Remove all unused images too
+
 
 ## Useful Commands when playing with minikube
 
