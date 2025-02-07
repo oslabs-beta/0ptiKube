@@ -29,20 +29,6 @@ source ./scripts/protect-cluster-pods.sh
 ./0ptikube.sh
 ```
 
-**Note**: The protection script (`protect-cluster-pods.sh`) works in both zsh and bash shells. For permanent protection in your preferred shell, add the source command to your shell's configuration file:
-
-For zsh users:
-```bash
-echo 'source ~/path/to/0ptiKube/scripts/protect-cluster-pods.sh' >> ~/.zshrc
-```
-
-For bash users:
-```bash
-echo 'source ~/path/to/0ptiKube/scripts/protect-cluster-pods.sh' >> ~/.bashrc
-```
-```
-
-
 
 ## What the 0ptikube Script Does:
 
