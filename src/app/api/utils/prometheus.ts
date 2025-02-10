@@ -1,26 +1,43 @@
-export async function queryPrometheus(query: string) {
-  const prometheusUrl = process.env.PROMETHEUS_BASE_URL;
+import { prom } from './prometheusClient';
+import { handleError } from './errorHandler';
 
-  const response = await fetch(
-    `${prometheusUrl}?query=${encodeURIComponent(query)}`,
-  );
-
-  if (!response.ok) {
-    throw new Error(`Prometheus query failed: ${response.statusText}`);
+/**
+ * Executes an **instant** Prometheus query and returns the most recent data point.
+ * @params query - The PromQL query string
+ */
+export async function executeInstantQuery(query: string) {
+  try {
+    console.log('Executing instant query:', query);
+    return await prom.instantQuery(query);
+  } catch (error) {
+    return handleError(error, 'Failed to execute instant Prometheus query');
   }
+}
 
-  const data = await response.json();
+/**
+ * Executes a **range** Prometheus query and returns data over a time range.
+ * @param query - The PromQL query string
+ * @param start - Start time (timestamp)
+ * @param end - End time (timestamp)
+ * @param step - Interval step for data points (e.g., "30s", "1m")
+ */
+export async function executeRangeQuery(
+  query: string,
+  start: Date,
+  end: Date,
+  step: string
+) {
+  try {
 
-  if (data.status === "error") {
-    throw new Error(
-      `Prometheus query returned an error: ${data.errorType} - ${data.error}`,
+    // Convert timestamps to Date objects
+
+    console.log(
+      'Executing range query:',
+      query,
+      `Start: ${start}, End: ${end}, Step: ${step}`
     );
+    return await prom.rangeQuery(query, start, end, step);
+  } catch (error) {
+    return handleError(error, 'Failed to execute range Prometheus query');
   }
-
-  // Report empty data response as an error
-  if (data.status === "success" && data.data.result?.length === 0) {
-    throw new Error(`Prometheus query returned no data for query "${query}".`);
-  }
-
-  return data;
 }
