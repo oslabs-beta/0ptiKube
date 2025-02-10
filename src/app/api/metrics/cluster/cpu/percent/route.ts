@@ -9,12 +9,10 @@ export async function GET() {
     // CPU Usage Gauge in percentage
     const query = `sum(rate(container_cpu_usage_seconds_total[30s])) by (cluster) / ${cpus} * 100`;
 
-    console.log('Executing query:', query);
-
     const data = await executeInstantQuery(query);
 
     return NextResponse.json(data);
   } catch (error) {
-    return handleError(error, 'Failed to query CPU usage');
+    return handleError(error, 'Failed to fetch CPU percentage usage');
   }
 }

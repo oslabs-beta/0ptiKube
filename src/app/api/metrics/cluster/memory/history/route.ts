@@ -26,6 +26,6 @@ export async function GET(request: Request) {
     // rangeResult.result: each element has .metric and an array of .values
     return NextResponse.json(rangeResult);
   } catch (error) {
-    return handleError(error, 'Failed to query historical container health');
+    return handleError(error, 'Failed to query historical memory usage');
   }
 }

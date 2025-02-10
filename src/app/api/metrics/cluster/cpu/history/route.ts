@@ -24,6 +24,6 @@ export async function GET(request: Request) {
 
     return NextResponse.json(rangeResult);
   } catch (error) {
-    return handleError(error, 'Failed to query historical container health');
+    return handleError(error, 'Failed to query historical CPU usage');
   }
 }

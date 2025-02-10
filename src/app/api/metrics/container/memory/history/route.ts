@@ -17,12 +17,12 @@ export async function GET(request: Request) {
     const step = queryParams.get('step') || '30s'; // Default: 30-second intervals
 
     // Query: Pod memory for specific container in mebibytes
-    const query = `sum(rate(container_cpu_usage_seconds_total[30s])) by (pod) * 1000`;
+    const query = `sum(rate(container_cpu_usage_seconds_total[30s])) by (pod) * 1024 * 1024`;
 
     const data = await executeRangeQuery(query, start, end, step);
 
     return NextResponse.json(data);
   } catch (error) {
-    return handleError(error, 'Failed to fetch historical CPU usage');
+    return handleError(error, 'Failed to fetch historical memory usage');
   }
 }
