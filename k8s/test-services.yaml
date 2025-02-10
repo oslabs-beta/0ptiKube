@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: launch-day-target
+spec:
+  selector:
+    app: launch-day
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: normal-ops-target
+spec:
+  selector:
+    app: normal-ops
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: error-conditions-target
+spec:
+  selector:
+    app: error-conditions
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-load-target
+spec:
+  selector:
+    app: db-load
+  ports:
+    - port: 80
+      targetPort: 80

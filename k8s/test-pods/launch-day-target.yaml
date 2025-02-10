@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: launch-day-target
+  labels:
+    app: launch-day
+    scenario: high-load
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: launch-day
+  template:
+    metadata:
+      labels:
+        app: launch-day
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "80"
+    spec:
+      containers:
+      - name: launch-app
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "256Mi"    # Standard initial state
+            cpu: "250m"        # Standard initial state
+          limits:
+            memory: "512Mi"    # Will be insufficient during flash sale
+            cpu: "500m"        # Will be insufficient during flash sale

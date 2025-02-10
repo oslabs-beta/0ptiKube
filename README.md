@@ -2,7 +2,26 @@
 
 A Next.js application with Kubernetes integration for local deployment and monitoring.
 
+## Table of Contents
+- [Prerequisites](#prerequisites)
+- [QuickStart](#quickstart)
+- [Features](#features)
+  - [Script Operations](#script-operations)
+  - [Safety Protections](#safety-protections)
+- [Development](#development)
+- [Troubleshooting](#troubleshooting)
+- [Maintenance](#maintenance)
+- [Command Reference](#command-reference)
+  - [Docker Commands](#docker-commands)
+  - [Minikube Commands](#minikube-commands)
+  - [Pod Management](#pod-management)
+  - [Cluster Information](#cluster-information)
+  - [Prometheus & Monitoring](#prometheus--monitoring)
+- [Test Scenarios](#test-scenarios)
+
 ## Prerequisites
+
+Before getting started, ensure you have:
 - Git
 - Docker Desktop
 - Container Runtime (Script will install):
@@ -10,32 +29,32 @@ A Next.js application with Kubernetes integration for local deployment and monit
   - Linux: docker driver (default)
 
 ## QuickStart
+
 1. Clone the repository:
-```bash
-git clone https://github.com/your-username/0ptiKube.git
-cd 0ptiKube
-```
+   ```bash
+   git clone https://github.com/your-username/0ptiKube.git
+   cd 0ptiKube
+   ```
 
 2. Make the scripts executable:
-```bash
-chmod +x ./0ptikube.sh
-chmod +x ./scripts/protect-cluster-pods.sh
-```
+   ```bash
+   chmod +x ./0ptikube.sh
+   chmod +x ./scripts/protect-cluster-pods.sh
+   ```
 
 3. Enable pod and cluster protection (required for each new terminal session):
-```bash
-source ./scripts/protect-cluster-pods.sh
-```
+   ```bash
+   source ./scripts/protect-cluster-pods.sh
+   ```
 
 4. Run the main setup script:
-```bash
-./0ptikube.sh
-```
+   ```bash
+   ./0ptikube.sh
+   ```
 
+## Features
 
-## What the 0ptikube Script Does:
-
-The 0ptiKube script performs the following operations:
+### Script Operations
 
 1. **System Detection**
    - Identifies your operating system (macOS/Linux)
@@ -60,29 +79,30 @@ The 0ptiKube script performs the following operations:
    - Manages container lifecycle
    - Handles graceful cleanup on exit
 
-5. **Safety Protections** (will delete once we implement the FE pod selection for deleting and the BE logic for delete)
-   - Implements double confirmation for pod deletions
-   - Adds warning messages for cluster operations
-   - Protects against accidental cluster deletion
-   - Provides detailed impact information before actions
-   - Works with both zsh and bash shells
-   - Session-specific protection (resets on terminal close)
+### Safety Protections
+> Note: Will be removed once we implement the FE pod selection for deleting and the BE logic for delete
 
+- Implements double confirmation for pod deletions
+- Adds warning messages for cluster operations
+- Protects against accidental cluster deletion
+- Provides detailed impact information before actions
+- Works with both zsh and bash shells
+- Session-specific protection (resets on terminal close)
 
 ## Development
 
+### Basic Usage
 - Access your app at `http://localhost:3000`
 - Edit pages by modifying files in `src/app` directory
 - Changes automatically reload in the browser
 - Press `Ctrl+C` to stop the development environment
 
-## During Development process do not add these files to .gitignore. We will remove
-before production app is ready to showcase
-1. README-v2.md - Contains important setup and usage instructions
-2. .package-hash - Used by the development script to track dependencies
-3. dockerfile.dev - Required for the development container setup
-4. Scripts in the scripts/ directory - Contains the protection features
-
+### Important Development Files
+Do not add these files to .gitignore during development:
+1. `README-v2.md` - Contains important setup and usage instructions
+2. `.package-hash` - Used by the development script to track dependencies
+3. `dockerfile.dev` - Required for the development container setup
+4. Scripts in the `scripts/` directory - Contains the protection features
 
 ## Troubleshooting
 
@@ -140,20 +160,17 @@ before production app is ready to showcase
 
 ## Maintenance
 
-- **Updating Dependencies**
-  - Pull latest changes
-  - Script will automatically rebuild if package.json changes
+### Updating Dependencies
+- Pull latest changes
+- Script will automatically rebuild if package.json changes
 
-- **Cleaning Up**
-  - Script handles cleanup on Ctrl+C
-  - Manual cleanup: `docker stop 0ptikube-dev`
+### Cleaning Up
+- Script handles cleanup on Ctrl+C
+- Manual cleanup: `docker stop 0ptikube-dev`
 
+## Command Reference
 
-
-### The following are useful commands for the team to use in development
-- **Will delete before it goes in production**
-
-### Useful Docker Commands
+### Docker Commands
 ```bash
 # List running containers
 docker ps
@@ -164,18 +181,9 @@ docker ps -a
 # List all images
 docker images
 
-### Container Data Management
-```bash
 # Stop and remove container (safe to do)
 docker stop 0ptikube-dev
 docker rm 0ptikube-dev
-
-# Your data is preserved because:
-# - Source code is mounted from your local directory
-# - Kubernetes configs are stored locally
-# - Container is just running the development environment
-# Restart development environment
-./0ptikube.sh
 
 # Remove the development container
 docker rm 0ptikube-dev
@@ -195,19 +203,9 @@ docker stats 0ptikube-dev
 # Clean up unused resources
 docker system prune  # Remove unused containers, networks, images
 docker system prune -a  # Remove all unused images too
-
-
-
 ```
 
-
-
-
-
-
-## Useful Commands when playing with minikube
-
-### Minikube Cluster Management
+### Minikube Commands
 ```bash
 # Check cluster status
 minikube status
@@ -264,7 +262,7 @@ kubectl get all -A
 kubectl get namespaces
 ```
 
-### Prometheus & Monitoring useful commands
+### Prometheus & Monitoring
 ```bash
 # Check Prometheus deployment
 helm list
@@ -276,17 +274,118 @@ kubectl get pods -l app=prometheus
 kubectl get pods -l app=grafana
 ```
 
+## Test Scenarios
 
-
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Submit a pull request
-
-## License
-
-MIT License
+### Before Running Tests
+Make test scripts executable:
+```bash
+chmod +x ./scripts/test-scenarios/*.sh
 ```
 
+### Available Test Scenarios
+
+#### 1. Launch Day Test (5 minutes total)
+```bash
+./scripts/test-scenarios/launch-day-test.sh
+```
+**Traffic Pattern:**
+- First 2 minutes: Normal load (100 requests/minute)
+- Last 3 minutes: Flash sale spike (1000 requests/minute)
+- Total duration: 300 seconds
+
+#### 2. Normal Operations Test
+```bash
+./scripts/test-scenarios/normal-ops-test.sh
+```
+**Traffic Pattern:**
+- Single request test
+- Verifies basic connectivity
+- Duration: Instant (single request)
+
+#### 3. Error Conditions Test (3 minutes total)
+```bash
+./scripts/test-scenarios/error-conditions-test.sh
+```
+**Traffic Pattern:**
+- Consistent load: 50 requests/minute
+- Tests resource constraints
+- Total duration: 180 seconds
+
+#### 4. Database Load Test (4 minutes total)
+```bash
+./scripts/test-scenarios/db-load-test.sh
+```
+**Traffic Pattern:**
+- Minutes 0-2: Normal load (50 transactions/minute)
+- Minutes 2-3: Heavy load period
+- Minutes 3-4: Return to normal load
+- Total duration: 240 seconds
+
+### Monitoring Test Execution
+Open three terminal windows:
+
+1. Watch pod status:
+   ```bash
+   kubectl get pods -w
+   ```
+
+2. View pod logs (replace SCENARIO with: launch-day, normal-ops, error-conditions, or db-load):
+   ```bash
+   kubectl logs -f -l app=SCENARIO
+   ```
+
+3. Run the test scripts in this terminal
+
+
+Yes, I'll update the <mcfile name="README.md" path="/Users/oliverfajardo/repos/codesmith_projects/0ptiKube/README.md"></mcfile> to clearly specify all the ports. Here's the modified section:
+
+```markdown:/Users/oliverfajardo/repos/codesmith_projects/0ptiKube/README.md
+### Guide for using 0ptikube setup until test script execution 
+1. First, let's make the scripts executable:
+```bash
+chmod +x ./0ptikube.sh
+chmod +x ./scripts/protect-cluster-pods.sh
+```
+
+2. Enable pod protection (required for safety):
+```bash
+source ./scripts/protect-cluster-pods.sh
+```
+
+3. Start the environment:
+```bash
+./0ptikube.sh
+```
+Wait for the script to complete setup (includes minikube, prometheus, and development container)
+- Next.js application will be available at: http://localhost:3000
+
+4. Verify everything is running:
+```bash
+# Check minikube status
+minikube status
+
+# Check all pods are running
+kubectl get pods -A
+
+# Verify test pods are ready
+kubectl get pods -l 'app in (db-load,error-conditions,launch-day,normal-ops)'
+```
+
+5. Set up monitoring access:
+
+For Grafana Dashboard:
+```bash
+kubectl port-forward svc/my-kube-prometheus-stack-grafana 3001:80
+```
+Visit http://localhost:3001
+- Username: admin
+- Password: prom-operator
+
+For Prometheus Dashboard:
+```bash
+kubectl port-forward svc/prometheus-operated 9090:9090
+```
+Visit http://localhost:9090
+
+6. Set up monitoring windows (open 3 terminal windows):
+```

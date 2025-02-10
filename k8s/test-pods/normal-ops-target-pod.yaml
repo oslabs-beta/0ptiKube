@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: normal-ops-target
+  labels:
+    app: normal-ops
+    scenario: steady-state
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: normal-ops
+  template:
+    metadata:
+      labels:
+        app: normal-ops
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "80"
+    spec:
+      containers:
+      - name: normal-app
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "256Mi"    # Balanced for daily operations
+            cpu: "250m"        # Adequate for normal load
+          limits:
+            memory: "512Mi"    # Sufficient headroom
+            cpu: "500m"        # Handles peak times

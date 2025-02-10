@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "📊 Starting Normal Operations Test"
+kubectl exec -it $(kubectl get pod -l app=traffic-generator -o jsonpath='{.items[0].metadata.name}') -- \
+  wget -q -O- --tries=1 http://normal-ops-target
