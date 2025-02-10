@@ -1,11 +1,17 @@
+// app/page.tsx
+'use client';
+
 import React, { Suspense } from 'react';
-import LoginPage from './login/page';
-import Loading from './login/loading';
+import LoginPage from './login/page'; // Import the LoginPage from components folder
+import Loading from './login/loading'; // Assuming you have a Loading component
+import { SessionProvider } from 'next-auth/react';
 
 export default function LoginWrapper() {
   return (
-    <Suspense fallback={<Loading />}>
-      <LoginPage />
-    </Suspense>
+    <SessionProvider>
+      <Suspense fallback={<Loading />}>
+        <LoginPage />
+      </Suspense>
+    </SessionProvider>
   );
 }

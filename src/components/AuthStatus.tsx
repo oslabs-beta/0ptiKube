@@ -1,4 +1,30 @@
-import React, { useEffect, useState } from 'react';
+'use client';
+import React from 'react';
+import { useSession } from 'next-auth/react';
+
+const AuthStatus: React.FC = () => {
+  const { data: session, status } = useSession();
+
+  if (status === 'loading') return <p>Loading...</p>; // You can show a loading indicator
+
+  if (status === 'authenticated') {
+    return (
+      <p className='text-green-500 mb-4 flex flex-col items-center justify-center'>
+        Welcome, {session.user?.name}!
+      </p>
+    );
+  } else {
+    return (
+      <p className='text-red-500 mb-4 flex flex-col items-center justify-center'>
+        Please login using GitHub.
+      </p>
+    );
+  }
+};
+
+export default AuthStatus;
+
+/*import React, { useEffect, useState } from 'react';
 
 interface User {
   name: string;
@@ -40,3 +66,4 @@ const AuthStatus: React.FC = () => {
 };
 
 export default AuthStatus;
+*/

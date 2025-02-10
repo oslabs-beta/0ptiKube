@@ -8,7 +8,7 @@ export default function Navbar() {
         <div className='space-x-4'>
           <Link href='./optimize'>Optimize</Link>
           <Link href='./visualize'>Visualize</Link>
-          <Link href='./login'>Login</Link>
+          <Link href='./login'>Login/Logout</Link>
         </div>
       </div>
     </nav>

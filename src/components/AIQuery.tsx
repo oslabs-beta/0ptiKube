@@ -1,3 +1,4 @@
+'use client';
 import { useState } from 'react';
 
 const querySuggestions = [
@@ -29,12 +30,10 @@ export default function AIQuery() {
 
   return (
     <div className='flex flex-col items-center justify-start h-screen pt-20 bg-gray-100 p-4'>
-      {/* Heading */}
       <h1 className='text-2xl font-semibold mb-8 text-center'>
         AI Optimization Query
       </h1>
 
-      {/* Query Input */}
       <div className='relative w-full max-w-md'>
         <input
           type='text'
@@ -46,7 +45,6 @@ export default function AIQuery() {
           onMouseLeave={() => setShowSuggestions(false)}
         />
 
-        {/* Dropdown Suggestions */}
         {showSuggestions && (
           <ul
             className='absolute left-0 right-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg'
@@ -66,7 +64,6 @@ export default function AIQuery() {
         )}
       </div>
 
-      {/* Submit Button */}
       <button
         onClick={handleQuery}
         className='mt-6 mb-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition'
@@ -74,7 +71,6 @@ export default function AIQuery() {
         Submit
       </button>
 
-      {/* Response Box (Below the Input) */}
       {response && (
         <div className='mt-3 p-4 border rounded-lg bg-gray-50 w-full max-w-md'>
           <h2 className='text-lg font-medium'>AI Response:</h2>

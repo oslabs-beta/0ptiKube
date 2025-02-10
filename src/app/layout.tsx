@@ -28,7 +28,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar /> {/* Navbar is shared across all pages */}
+        <Navbar />
         <main className='mt-20 container mx-auto px-4 pt-10'>{children}</main>
       </body>
     </html>
