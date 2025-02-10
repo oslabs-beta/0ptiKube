@@ -11,6 +11,21 @@ NC='\033[0m'
 CONTAINER_NAME="0ptikube-dev"
 PACKAGE_HASH_FILE=".package-hash"
 
+#The script will automatically source the protection, 
+# so you don't need to run source ./scripts/protect-cluster-pods.sh
+# Every time you run ./0ptikube.sh , protection is automatically enabled
+# No need to manually source the protection script
+# Protection works only in the terminal where you run the script
+
+if [ -f "./scripts/protect-cluster-pods.sh" ]; then
+    source ./scripts/protect-cluster-pods.sh
+    print_success "Pod and cluster protection enabled"
+else
+    print_error "Protection script not found"
+    exit 1
+fi
+
+
 # Define print functions
 print_step() {
     echo -e "\n${BLUE}=== 🔄 $1 ===${NC}"
@@ -27,6 +42,8 @@ print_warning() {
 print_error() {
     echo -e "${RED}❌ $1${NC}"
 }
+
+
 
 # Add after the print functions
 protect_cluster() {
@@ -151,17 +168,15 @@ install_macos() {
     fi
     
     print_step "Installing Required Tools"
-    echo "📦 Installing container runtime and required tools - hyperkit container runtime, minikube, kubectl, helm, prometheus, etc...."
-    # Install Docker Machine and container runtime
-    brew install docker-machine hyperkit
-    # Install other required tools
+    echo "📦 Installing container runtime and required tools..."
+    # Install required tools
     brew install minikube kubectl helm
     print_success "Tools installed successfully"
     
-    # Set minikube to use hyperkit driver
+    # Set minikube to use docker driver
     print_step "Configuring Minikube Driver"
-    minikube config set driver hyperkit
-    print_success "Minikube configured to use hyperkit"
+    minikube config set driver docker
+    print_success "Minikube configured to use docker"
 }
 
 # Development environment setup
@@ -201,6 +216,8 @@ check_dependencies() {
     print_step "Checking Dependencies"
     
     local missing_deps=0
+    
+    # Check system dependencies
     if ! command -v docker &> /dev/null; then
         print_warning "Docker not found"
         missing_deps=1
@@ -213,6 +230,39 @@ check_dependencies() {
         missing_deps=1
     else
         print_success "Minikube installed"
+    fi
+
+    # Add Node.js package dependency check
+    print_step "Checking Node.js Dependencies"
+    if [ -f "package.json" ]; then
+        # Define required packages
+        required_packages=("next-auth" "@auth/core" "react" "next")
+        missing_packages=()
+
+        for package in "${required_packages[@]}"; do
+            if ! grep -q "\"$package\"" package.json; then
+                missing_packages+=("$package")
+                missing_deps=1
+            fi
+        done
+
+        if [ ${#missing_packages[@]} -ne 0 ]; then
+            print_warning "Missing required packages: ${missing_packages[*]}"
+            read -p "Would you like to install missing packages? (y/N) " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                npm install "${missing_packages[@]}"
+                print_success "Packages installed successfully"
+            else
+                print_error "Required packages missing. Installation skipped."
+                exit 1
+            fi
+        else
+            print_success "All Node.js dependencies are installed"
+        fi
+    else
+        print_error "package.json not found"
+        exit 1
     fi
 
     if [ $missing_deps -eq 1 ]; then
@@ -240,7 +290,6 @@ fi
 
 # Setup Prometheus
 # added wrapper, replaced kubectl with kubectl_wrapper.
-# hmm ddo we still need wrapper for checking pod health...
 print_step "Checking Prometheus Setup"
 if ! helm list | grep -q "my-kube-prometheus-stack"; then
     print_warning "Prometheus not found"

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: error-conditions-target
+  labels:
+    app: error-conditions
+    scenario: failure-testing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: error-conditions
+  template:
+    metadata:
+      labels:
+        app: error-conditions
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "80"
+    spec:
+      containers:
+      - name: error-app
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "64Mi"     # Deliberately constrained
+            cpu: "100m"        # Minimal CPU
+          limits:
+            memory: "128Mi"    # Will cause OOM issues
+            cpu: "200m"        # Will cause throttling
