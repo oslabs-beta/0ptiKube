@@ -24,7 +24,8 @@ const LoginButton: React.FC = () => {
   return session ? (
     <button
       onClick={handleLogout}
-      className='flex items-center justify-center w-full px-6 py-3 bg-red-500 text-white hover:bg-red-700 rounded-lg'
+      className='flex items-center justify-center w-full px-6 py-3 bg-red-600 text-white 
+             hover:bg-red-800 rounded-lg transition duration-500 ease-in-out'
     >
       {loading ? <FaSpinner className='animate-spin text-2xl mr-2' /> : null}
       <span className='font-medium'>
@@ -36,8 +37,8 @@ const LoginButton: React.FC = () => {
       onClick={handleLogin}
       className={`flex items-center justify-center w-full px-6 py-3 rounded-lg ${
         loading
-          ? 'bg-gray-400 text-white cursor-not-allowed'
-          : 'bg-white text-black hover:bg-[#000080] hover:text-white'
+          ? 'bg-navy_blue-100 text-white cursor-not-allowed border-2 border-navy_blue-100 shadow-md'
+          : 'bg-white text-navy_blue-100 border-2 border-navy_blue-100 shadow-md transition-all duration-500 ease-in-out hover:bg-navy_blue-100 hover:text-white'
       }`}
       disabled={loading}
     >
