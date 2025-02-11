@@ -43,9 +43,3 @@ export default function Navbar() {
     </nav>
   );
 }
-
-{
-  /* <button
-className={`px-6 py-2 text-md font-semibold bg-columbia_blue-900 ${orbitron.className} text-navy_blue-100 rounded-xl border-2 shadow-md transition-all duration-500 ease-in-out hover:bg-navy_blue-100 hover:border-2 hover:text-columbia_blue-900`}
-> */
-}
