@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
+import { GiDuration } from 'react-icons/gi';
 
 type DataPoint = { time: number; value: number };
 
@@ -151,24 +152,31 @@ const TimeGraph: React.FC = () => {
       .style('border-radius', '5px')
       .style('opacity', 0);
 
-    svg
+    const circles = svg
       .selectAll('circle')
       .data(dummyData)
       .enter()
       .append('circle')
       .attr('cx', (d) => xScale(d.time))
       .attr('cy', (d) => yScale(d.value))
-      .attr('r', 6)
+      .attr('r', 4)
       .attr('fill', '#00ccff')
-      .on('mouseover', (event, d) => {
-        tooltip.transition().duration(200).style('opacity', 1);
+      .attr('cursor', 'pointer');
+
+    circles
+      .on('mouseover', function (event, d) {
+        d3.select(this).transition().duration(300).attr('r', 6); // Expand on hover
+
+        tooltip.transition().duration(300).style('opacity', 1);
         tooltip
           .html(`Time: ${d.time}, Value: ${d.value}`)
           .style('left', `${event.pageX + 10}px`)
           .style('top', `${event.pageY - 20}px`);
       })
-      .on('mouseout', () => {
-        tooltip.transition().duration(200).style('opacity', 0);
+      .on('mouseout', function () {
+        d3.select(this).transition().duration(300).attr('r', 4); // Shrink back on mouse leave
+
+        tooltip.transition().duration(300).style('opacity', 0);
       });
 
     // Placeholder for future chart logic
