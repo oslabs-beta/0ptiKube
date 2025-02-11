@@ -25,8 +25,8 @@ export const authOptions = {
   ],
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: '/',  // Change this to root since that's where your login page is
-    error: '/?error=Authentication%20Failed',  // Update error path to match
+    signIn: '/login',
+    error: '/?error=Authentication%20Failed',
   },
   callbacks: {
     async session({ session, token }: { session: Session; token: JWT }) {
@@ -38,28 +38,42 @@ export const authOptions = {
     async signIn({ user, account }: { user: User; account: Account | null }) {
       if (account?.provider === 'github') {
         try {
-          const existingUser = await db.select().from(users).where(eq(users.github_id, user.id));
+          console.log('GitHub user is:', user);
+          console.log('GitHub account is:', account);
+          
+          // Remove the connection test and directly try the operation
+          const existingUser = await db.select()
+            .from(users)
+            .where(eq(users.github_id, user.id));
           
           if (existingUser.length === 0) {
+            // Create new user
             await db.insert(users).values({
               github_id: user.id,
               name: user.name || 'Unknown',
               last_login: new Date()
             });
+            console.log('Created new user');
           } else {
+            // Update existing user
             await db.update(users)
               .set({ last_login: new Date() })
               .where(eq(users.github_id, user.id));
+            console.log('Updated existing user');
           }
+          return true;
         } catch (error) {
-          console.error('Database error:', error);
+          console.error('Database operation error:', error);
           return false;
         }
       }
       return true;
     },
-    async redirect({ url, baseUrl }) {
-      return url.startsWith(baseUrl) ? url : baseUrl + '/visualize'
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+      console.log('redirecting to', url)
+      console.log('base url is', baseUrl)
+      // Always redirect to /visualize after successful login
+      return baseUrl + '/visualize'
     }
   },
 };
@@ -67,4 +81,3 @@ export const authOptions = {
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
 
-// Remove the duplicate export default NextAuth(authOptions)

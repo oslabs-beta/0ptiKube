@@ -3,13 +3,13 @@ import { pgTable, serial, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 // Existing metrics table
 export const metrics = pgTable('metrics', {
   id: serial('id').primaryKey(),
-  podName: text('pod_name').notNull(),
-  cpuUsage: text('cpu_usage').notNull(),
-  memoryUsage: text('memory_usage').notNull(),
-  timestamp: timestamp('created_at').defaultNow()
+  pod_name: text('pod_name').notNull(),
+  cpu_usage: text('cpu_usage').notNull(),
+  memory_usage: text('memory_usage').notNull(),
+  created_at: timestamp('created_at').defaultNow()
 });
 
-// Updated users table for GitHub OAuth
+// Updated users table to match Supabase schema
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
   github_id: text('github_id').notNull().unique(),
