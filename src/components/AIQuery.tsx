@@ -26,6 +26,7 @@ export default function AIQuery() {
   const handleQuery = () => {
     // Mock AI response (replace with actual API call)
     setResponse(`Optimized results for: "${query}"`);
+    setShowSuggestions(false);
   };
 
   return (
@@ -42,7 +43,6 @@ export default function AIQuery() {
           placeholder='Ask AI to optimize your metrics...'
           className='w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
           onMouseEnter={() => setShowSuggestions(true)}
-          onMouseLeave={() => setShowSuggestions(false)}
         />
 
         {showSuggestions && (
