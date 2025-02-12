@@ -40,4 +40,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-AIChatHistory0ptikube.md
+# Prevents accidental data leaks
+/data/

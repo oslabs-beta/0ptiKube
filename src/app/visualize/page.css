@@ -1,0 +1,27 @@
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 32px;
+  padding: 32px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    'pods gauge gauge'
+    'pods time-graph time-graph'
+    'pods time-graph time-graph';
+}
+
+.time-graph {
+  grid-area: time-graph;
+  margin: 0;
+}
+
+.gauge {
+  grid-area: gauge;
+  margin: 0;
+}
+
+.pods {
+  grid-area: pods;
+  margin: 0;
+}

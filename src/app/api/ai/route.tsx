@@ -1,4 +1,62 @@
+// app/api/ai/route.ts
 import { NextResponse } from 'next/server';
+import OpenAI from 'openai';
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+export async function POST(request: Request) {
+  try {
+    const { query } = await request.json();
+
+    // Validate input
+    if (!query || typeof query !== 'string') {
+      return NextResponse.json(
+        { error: 'Invalid query format' },
+        { status: 400 }
+      );
+    }
+
+    const completion = await openai.chat.completions.create({
+      model: process.env.FINE_TUNED_MODEL || 'gpt-3.5-turbo-0125',
+      messages: [
+        {
+          role: 'system',
+          content: `You are a Kubernetes optimization expert. Format responses with:
+          - Numbered lists in Markdown
+          - Code blocks for YAML examples
+          - **Bold** for important terms
+          - Clear section headings using ##`,
+        },
+        { role: 'user', content: query },
+      ],
+      temperature: 0.5,
+      max_tokens: 1000,
+      response_format: { type: 'text' }, // Force text format
+    });
+
+    // Clean up response
+    const response = completion.choices[0].message.content
+      ?.replace(/\\n/g, '\n') // Fix newlines
+      .replace(/^ +/gm, '') // Remove leading spaces
+      .replace(/(```yaml)/g, '\n$1'); // Add spacing before code blocks
+
+    return NextResponse.json({ response });
+  } catch (error: any) {
+    console.error('AI API Error:', error);
+
+    return NextResponse.json(
+      {
+        error: error.message || 'Failed to process request',
+        details: error.type || 'Internal Server Error',
+      },
+      { status: 500 }
+    );
+  }
+}
+
+/*import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
@@ -45,3 +103,4 @@ export async function POST(request: Request) {
     );
   }
 }
+  */
