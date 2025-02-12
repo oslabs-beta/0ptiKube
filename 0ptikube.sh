@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Colors for output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -8,8 +7,41 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
+# Define print functions first
+print_step() {
+    echo -e "\n${BLUE}=== 🔄 $1 ===${NC}"
+}
+
+print_success() {
+    echo -e "${GREEN}✅ $1${NC}"
+}
+
+print_warning() {
+    echo -e "${YELLOW}⚠️  $1${NC}"
+}
+
+print_error() {
+    echo -e "${RED}❌ $1${NC}"
+}
+
+# Then check for protection script
+if [ -f "./scripts/protect-cluster-pods.sh" ]; then
+    source ./scripts/protect-cluster-pods.sh
+    print_success "Pod and cluster protection enabled"
+else
+    print_error "Protection script not found"
+    exit 1
+fi
+
+NEXTJS_PORT=3000
+GRAFANA_PORT=3001
+PROMETHEUS_PORT=9090
+
 CONTAINER_NAME="0ptikube-dev"
 PACKAGE_HASH_FILE=".package-hash"
+
+# Enable Docker BuildKit for better build performance
+export DOCKER_BUILDKIT=1
 
 #The script will automatically source the protection, 
 # so you don't need to run source ./scripts/protect-cluster-pods.sh
@@ -42,6 +74,72 @@ print_warning() {
 print_error() {
     echo -e "${RED}❌ $1${NC}"
 }
+
+# Add after cleanup function
+check_port() {
+    print_step "Checking Port ${NEXTJS_PORT}"
+    if lsof -i :${NEXTJS_PORT} > /dev/null; then
+        # Check if it's our container using the port
+        if docker ps | grep -q "${CONTAINER_NAME}.*:${NEXTJS_PORT}"; then
+            print_warning "Next.js app is already running in our container"
+            print_success "Using existing container"
+            exit 0
+        else
+            print_warning "Port ${NEXTJS_PORT} is in use by another process:"
+            lsof -i :${NEXTJS_PORT}
+            read -p "Would you like to kill the other process to free port ${NEXTJS_PORT}? (y/N) " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                lsof -ti:${NEXTJS_PORT} | xargs kill -9
+                sleep 2
+                print_success "Port ${NEXTJS_PORT} freed"
+            else
+                print_error "Port ${NEXTJS_PORT} is still in use. Cannot start development server"
+                exit 1
+            fi
+        fi
+    fi
+}
+
+# Add before docker run command
+# Add this function after the check_port function
+check_docker_daemon() {
+    print_step "Checking Docker Daemon"
+    if ! docker info >/dev/null 2>&1; then
+        print_error "Docker daemon is not running"
+        print_warning "Starting Docker Desktop..."
+        
+        if [ "$PLATFORM" = "macOS" ]; then
+            open -a Docker
+            # Wait for Docker to start
+            print_warning "Waiting for Docker to start..."
+            until docker info >/dev/null 2>&1; do
+                sleep 1
+            done
+            print_success "Docker is now running"
+        else
+            print_error "Please start Docker manually"
+            exit 1
+        fi
+    else
+        print_success "Docker daemon is running"
+    fi
+}
+
+# Add the check before docker run
+# Fix the typo in the docker daemon check
+# Add this function after cleanup()
+handle_existing_container() {
+    print_step "Checking Existing Container"
+    if docker ps -a | grep -q $CONTAINER_NAME; then
+        print_warning "Found existing container, cleaning up..."
+        docker stop $CONTAINER_NAME 2>/dev/null
+        docker rm $CONTAINER_NAME 2>/dev/null
+        print_success "Cleaned up existing container"
+    fi
+}
+
+
 
 
 
@@ -183,22 +281,43 @@ install_macos() {
 setup_dev() {
     print_step "Setting up Development Environment"
     
-    # Check if rebuild is needed
-    current_hash=$(md5sum package.json | awk '{ print $1 }')
-    needs_rebuild=0
-    
-    if [ ! -f "$PACKAGE_HASH_FILE" ] || [ "$(cat $PACKAGE_HASH_FILE)" != "$current_hash" ]; then
-        needs_rebuild=1
-    fi
+    # Check if container exists
+    if docker ps -a | grep -q $CONTAINER_NAME; then
+        print_success "Development container exists"
+        
+        # Only check for rebuild if container exists
+        current_hash=$(md5sum package.json | awk '{ print $1 }')
+        needs_rebuild=0
+        
+        if [ ! -f "$PACKAGE_HASH_FILE" ] || [ "$(cat $PACKAGE_HASH_FILE)" != "$current_hash" ]; then
+            needs_rebuild=1
+        fi
 
-    if [ $needs_rebuild -eq 1 ]; then
-        print_warning "Dependencies changed, rebuilding container..."
+        if [ $needs_rebuild -eq 1 ]; then
+            print_warning "Dependencies changed, rebuilding container..."
+            docker stop $CONTAINER_NAME 2>/dev/null
+            docker rm $CONTAINER_NAME 2>/dev/null
+            echo "🏗️  Building development container..."
+            docker build -f Dockerfile.dev -t $CONTAINER_NAME . \
+                --build-arg NODE_ENV=development \
+                --cache-from $CONTAINER_NAME \
+                --build-arg BUILDKIT_INLINE_CACHE=1
+            echo $current_hash > $PACKAGE_HASH_FILE
+            print_success "Container rebuilt successfully"
+        else
+            # Start existing container if it's not running
+            if ! docker ps | grep -q $CONTAINER_NAME; then
+                print_warning "Container exists but not running. Starting..."
+                docker start $CONTAINER_NAME
+            fi
+            print_success "Container is up to date"
+        fi
+    else
+        print_warning "Container not found, building..."
         echo "🏗️  Building development container..."
         docker build -f Dockerfile.dev -t $CONTAINER_NAME .
-        echo $current_hash > $PACKAGE_HASH_FILE
-        print_success "Container rebuilt successfully"
-    else
-        print_success "Container is up to date"
+        echo $(md5sum package.json | awk '{ print $1 }') > $PACKAGE_HASH_FILE
+        print_success "Container built successfully"
     fi
 }
 
@@ -235,30 +354,20 @@ check_dependencies() {
     # Add Node.js package dependency check
     print_step "Checking Node.js Dependencies"
     if [ -f "package.json" ]; then
-        # Define required packages
-        required_packages=("next-auth" "@auth/core" "react" "next")
-        missing_packages=()
-
-        for package in "${required_packages[@]}"; do
-            if ! grep -q "\"$package\"" package.json; then
-                missing_packages+=("$package")
-                missing_deps=1
-            fi
-        done
-
-        if [ ${#missing_packages[@]} -ne 0 ]; then
-            print_warning "Missing required packages: ${missing_packages[*]}"
-            read -p "Would you like to install missing packages? (y/N) " -n 1 -r
-            echo
-            if [[ $REPLY =~ ^[Yy]$ ]]; then
-                npm install "${missing_packages[@]}"
-                print_success "Packages installed successfully"
-            else
-                print_error "Required packages missing. Installation skipped."
-                exit 1
-            fi
+        # Install all dependencies if node_modules doesn't exist
+        if [ ! -d "node_modules" ]; then
+            print_warning "Node modules not found, installing dependencies..."
+            npm install
+            print_success "Dependencies installed successfully"
         else
-            print_success "All Node.js dependencies are installed"
+            # Check if package.json has changed since last install
+            if [ package.json -nt node_modules ]; then
+                print_warning "Package.json has been modified, updating dependencies..."
+                npm install
+                print_success "Dependencies updated successfully"
+            else
+                print_success "All Node.js dependencies are up to date"
+            fi
         fi
     else
         print_error "package.json not found"
@@ -290,39 +399,80 @@ fi
 
 # Setup Prometheus
 # added wrapper, replaced kubectl with kubectl_wrapper.
+# Modify the Prometheus setup section to only install, not start
 print_step "Checking Prometheus Setup"
 if ! helm list | grep -q "my-kube-prometheus-stack"; then
     print_warning "Prometheus not found"
     echo "📊 Setting up Prometheus monitoring..."
     helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
     helm install my-kube-prometheus-stack prometheus-community/kube-prometheus-stack --version 68.4.5
-    # Wait for pods to be ready
-    echo "Waiting for Prometheus pods to start..."
-    kubectl_wrapper wait --for=condition=ready pod -l app=prometheus -n default --timeout=120s
-    print_success "Prometheus installed successfully"
+    print_success "Prometheus and Grafana installed successfully"
+    echo "To start monitoring services:"
+    echo "  Grafana:    ./0ptikube.sh grafana"
+    echo "  Prometheus: ./0ptikube.sh prometheus"
 else
     print_success "Prometheus already configured"
 fi
 
-# Add this to check pod health
-# added wrapper, replaced kubectl with kubectl_wrapper.
-check_pod_health() {
-    print_step "Checking Pod Health"
-    kubectl_wrapper get pods -A
-    if [ $? -ne 0 ]; then
-        print_warning "Some pods might not be healthy"
-    else
-        print_success "All pods are healthy"
-    fi
+
+
+# Add usage function
+show_usage() {
+    echo "Usage: ./0ptikube.sh [service]"
+    echo "Services:"
+    echo "  app        - Start Next.js application (port ${NEXTJS_PORT})"
+    echo "  grafana    - Start Grafana dashboard (port ${GRAFANA_PORT})"
+    echo "  prometheus - Start Prometheus metrics (port ${PROMETHEUS_PORT})"
+    echo "  all        - Start all services (default)"
 }
 
+# Add near the bottom of the script, before the docker run commands
+# Parse command line arguments
+SERVICE=${1:-"all"}
 
-setup_dev
 
-# Trap cleanup
-trap cleanup SIGINT SIGTERM
+case "$SERVICE" in
+    "app")
+        print_step "Starting Next.js Application"
+        check_port
+        check_docker_daemon
+        handle_existing_container
+        docker run --name $CONTAINER_NAME \
+            -p ${NEXTJS_PORT}:3000 \
+            -v "$(pwd)":/app \
+            -v /app/node_modules \
+            --env-file .env \
+            $CONTAINER_NAME
+        ;;
+    "grafana")
+        print_step "Starting Grafana Dashboard"
+        echo "📊 Access Grafana at http://localhost:${GRAFANA_PORT}"
+        kubectl port-forward svc/my-kube-prometheus-stack-grafana ${GRAFANA_PORT}:80
+        ;;
+    "prometheus")
+        print_step "Starting Prometheus"
+        echo "📊 Access Prometheus at http://localhost:${PROMETHEUS_PORT}"
+        kubectl port-forward svc/my-kube-prometheus-stack-prometheus ${PROMETHEUS_PORT}:9090
+        ;;
+    "all")
+        # Original behavior - start everything
+        check_port
+        check_docker_daemon
+        handle_existing_container
+        # Start monitoring in background
+        kubectl port-forward svc/my-kube-prometheus-stack-grafana ${GRAFANA_PORT}:80 >/dev/null 2>&1 &
+        kubectl port-forward svc/my-kube-prometheus-stack-prometheus ${PROMETHEUS_PORT}:9090 >/dev/null 2>&1 &
+        # Start Next.js app
+        docker run --name $CONTAINER_NAME \
+            -p ${NEXTJS_PORT}:3000 \
+            -v "$(pwd)":/app \
+            -v /app/node_modules \
+            --env-file .env \
+            $CONTAINER_NAME
+        ;;
+    *)
+        show_usage
+        exit 1
+        ;;
+esac
 
-print_step "Starting Development Environment"
-echo "🚀 Launching 0ptiKube development container..."
-echo -e "${CYAN}Access your app at http://localhost:3000${NC}"
-docker run --name $CONTAINER_NAME -p 3000:3000 -v "$(pwd)":/app -v /app/node_modules $CONTAINER_NAME

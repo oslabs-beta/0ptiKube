@@ -1,8 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-# Version control
-.git
+
+# Version control (keep README for team documentation)
+.git/
 .gitignore
-README.md
 
 # Dependencies
 /node_modules
@@ -14,15 +14,17 @@ README.md
 !.yarn/releases
 !.yarn/versions
 
-# Build outputs
-/.next/
-/out/
-/build/
+# Build outputs and cache
+/.next/        # Next.js build output & cache
+/out/          # Static export output
+/build/        # General build outputs
+.cache/        # Cache directories
+*.tsbuildinfo  # TypeScript incremental build info
+.vercel        # Vercel build output
 
 # Development
 *.tmp
 *.bak
-.cache/
 tmp/
 temp/
 
@@ -34,6 +36,7 @@ temp/
 *.swo
 .DS_Store
 Thumbs.db
+*.pem
 
 # Debug logs
 npm-debug.log*
@@ -42,7 +45,6 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # Environment (but keep templates)
-#ignores all files that start with .env 
 .env*
 !.env.example
 
@@ -54,49 +56,5 @@ yarn-error.log*
 !*.yaml
 !*.yml
 
-
-
-
-
-
-
-
-
-
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
-.env*
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
+# TypeScript
 next-env.d.ts

@@ -19,7 +19,26 @@ A Next.js application with Kubernetes integration for local deployment and monit
   - [Prometheus & Monitoring](#prometheus--monitoring)
 - [Test Scenarios](#test-scenarios)
 
+## Table of Contents
+- [Prerequisites](#prerequisites)
+- [QuickStart](#quickstart)
+- [Features](#features)
+  - [Script Operations](#script-operations)
+  - [Safety Protections](#safety-protections)
+- [Development](#development)
+- [Troubleshooting](#troubleshooting)
+- [Maintenance](#maintenance)
+- [Command Reference](#command-reference)
+  - [Docker Commands](#docker-commands)
+  - [Minikube Commands](#minikube-commands)
+  - [Pod Management](#pod-management)
+  - [Cluster Information](#cluster-information)
+  - [Prometheus & Monitoring](#prometheus--monitoring)
+- [Test Scenarios](#test-scenarios)
+
 ## Prerequisites
+
+Before getting started, ensure you have:
 
 Before getting started, ensure you have:
 - Git
@@ -30,7 +49,12 @@ Before getting started, ensure you have:
 
 ## QuickStart
 
+
 1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/0ptiKube.git
+   cd 0ptiKube
+   ```
    ```bash
    git clone https://github.com/your-username/0ptiKube.git
    cd 0ptiKube
@@ -41,8 +65,15 @@ Before getting started, ensure you have:
    chmod +x ./0ptikube.sh
    chmod +x ./scripts/protect-cluster-pods.sh
    ```
+   ```bash
+   chmod +x ./0ptikube.sh
+   chmod +x ./scripts/protect-cluster-pods.sh
+   ```
 
 3. Enable pod and cluster protection (required for each new terminal session):
+   ```bash
+   source ./scripts/protect-cluster-pods.sh
+   ```
    ```bash
    source ./scripts/protect-cluster-pods.sh
    ```
@@ -51,9 +82,14 @@ Before getting started, ensure you have:
    ```bash
    ./0ptikube.sh
    ```
+   ```bash
+   ./0ptikube.sh
+   ```
 
 ## Features
+## Features
 
+### Script Operations
 ### Script Operations
 
 1. **System Detection**
@@ -88,15 +124,31 @@ Before getting started, ensure you have:
 - Provides detailed impact information before actions
 - Works with both zsh and bash shells
 - Session-specific protection (resets on terminal close)
+### Safety Protections
+> Note: Will be removed once we implement the FE pod selection for deleting and the BE logic for delete
+
+- Implements double confirmation for pod deletions
+- Adds warning messages for cluster operations
+- Protects against accidental cluster deletion
+- Provides detailed impact information before actions
+- Works with both zsh and bash shells
+- Session-specific protection (resets on terminal close)
 
 ## Development
 
+### Basic Usage
 ### Basic Usage
 - Access your app at `http://localhost:3000`
 - Edit pages by modifying files in `src/app` directory
 - Changes automatically reload in the browser
 - Press `Ctrl+C` to stop the development environment
 
+### Important Development Files
+Do not add these files to .gitignore during development:
+1. `README-v2.md` - Contains important setup and usage instructions
+2. `.package-hash` - Used by the development script to track dependencies
+3. `dockerfile.dev` - Required for the development container setup
+4. Scripts in the `scripts/` directory - Contains the protection features
 ### Important Development Files
 Do not add these files to .gitignore during development:
 1. `README-v2.md` - Contains important setup and usage instructions
@@ -163,13 +215,21 @@ Do not add these files to .gitignore during development:
 ### Updating Dependencies
 - Pull latest changes
 - Script will automatically rebuild if package.json changes
+### Updating Dependencies
+- Pull latest changes
+- Script will automatically rebuild if package.json changes
 
+### Cleaning Up
+- Script handles cleanup on Ctrl+C
+- Manual cleanup: `docker stop 0ptikube-dev`
 ### Cleaning Up
 - Script handles cleanup on Ctrl+C
 - Manual cleanup: `docker stop 0ptikube-dev`
 
 ## Command Reference
+## Command Reference
 
+### Docker Commands
 ### Docker Commands
 ```bash
 # List running containers
@@ -203,6 +263,9 @@ docker stats 0ptikube-dev
 # Clean up unused resources
 docker system prune  # Remove unused containers, networks, images
 docker system prune -a  # Remove all unused images too
+```
+
+### Minikube Commands
 ```
 
 ### Minikube Commands
@@ -262,6 +325,7 @@ kubectl get all -A
 kubectl get namespaces
 ```
 
+### Prometheus & Monitoring
 ### Prometheus & Monitoring
 ```bash
 # Check Prometheus deployment
@@ -388,4 +452,57 @@ kubectl port-forward svc/prometheus-operated 9090:9090
 Visit http://localhost:9090
 
 6. Set up monitoring windows (open 3 terminal windows):
+
+Terminal 1 - Watch pod status:
+```bash
+kubectl get pods -w
 ```
+
+Terminal 2 - Watch pod logs:
+```bash
+kubectl logs -f -l app=launch-day  # Replace 'launch-day' with scenario name
+```
+
+Terminal 3 - Monitor resource usage:
+```bash
+kubectl top pods --containers
+```
+
+7. Make test scripts executable:
+```bash
+chmod +x ./scripts/test-scenarios/*.sh
+```
+
+8. Run test scenarios:
+Choose one of the following test scripts:
+```bash
+# Launch Day Test (5 minutes)
+./scripts/test-scenarios/launch-day-test.sh
+
+# Normal Operations Test
+./scripts/test-scenarios/normal-ops-test.sh
+
+# Error Conditions Test (3 minutes)
+./scripts/test-scenarios/error-conditions-test.sh
+
+# Database Load Test (4 minutes)
+./scripts/test-scenarios/db-load-test.sh
+```
+
+9. Monitor results:
+- Watch Terminal 1 for pod status changes
+- Check Terminal 2 for real-time logs
+- Monitor Terminal 3 for resource usage
+- View detailed metrics in Grafana (http://localhost:3001)
+- Check raw metrics in Prometheus (http://localhost:9090)
+
+10. Clean up after testing:
+```bash
+# Stop the current test (if running)
+Ctrl+C
+
+# Clean up port forwards (if needed)
+pkill -f "kubectl port-forward"
+```
+```
+

@@ -9,7 +9,8 @@ const LoginButton: React.FC = () => {
 
   const handleLogin = (): void => {
     setLoading(true);
-    signIn('github', { callbackUrl: '/visualize' });
+    signIn('github', { 
+    });
   };
 
   const handleLogout = (): void => {

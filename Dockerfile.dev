@@ -2,12 +2,19 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Install dependencies first (better caching)
+# Copy package files first
 COPY package*.json ./
-RUN npm install
 
-# Set development environment
+# Set development environment first
 ENV NODE_ENV=development
+
+# Install dependencies with layer caching
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci && \
+    npm install
+
+# Copy only necessary files
+COPY . .
 
 # Expose Next.js port
 EXPOSE 3000
