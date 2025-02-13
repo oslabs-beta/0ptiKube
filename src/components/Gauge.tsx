@@ -33,6 +33,8 @@ export default function Gauge({
       .attr('width', width)
       .attr('height', height);
 
+    svg.selectAll('*').remove(); // Clear previous render
+
     const fraction = Math.max(0, Math.min((value - min) / (max - min), 1));
 
     const colorScale = d3
