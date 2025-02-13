@@ -25,8 +25,8 @@ spec:
         - containerPort: 80
         resources:
           requests:
-            memory: "256Mi"    # Balanced for daily operations
-            cpu: "250m"        # Adequate for normal load
+            memory: "256Mi"    
+            cpu: "250m" 
           limits:
-            memory: "512Mi"    # Sufficient headroom
-            cpu: "500m"        # Handles peak times
+            memory: "300"    
+            cpu: "300m"        

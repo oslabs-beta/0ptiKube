@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: traffic-generator-monitor
+  labels:
+    release: my-kube-prometheus-stack
+    app: traffic-generator-pod
+    prometheus: my-kube-prometheus-stack-prometheus
+spec:
+  selector:
+    matchLabels:
+      app: traffic-generator-pod
+  namespaceSelector:
+    matchNames:
+      - default
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s

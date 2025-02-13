@@ -24,29 +24,55 @@ spec:
         args: 
           - "-c"
           - |
-            apk add --no-cache stress-ng  # Install stress tool
+            # Install required packages
+            echo "Installing packages..."
+            apk update && apk add --no-cache stress-ng curl wget
+
+            # Install Node Exporter
+            echo "Installing Node Exporter..."
+            wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
+            tar xvfz node_exporter-1.6.1.linux-amd64.tar.gz
+            cd node_exporter-1.6.1.linux-amd64
+            
+            # Start Node Exporter with logging
+            echo "Starting Node Exporter..."
+            ./node_exporter --web.listen-address=:8080 > /proc/1/fd/1 2>&1 &
+            
+            # Verify Node Exporter is running
+            echo "Waiting for Node Exporter to start..."
+            sleep 5
+            if curl -s http://localhost:8080/metrics > /dev/null; then
+              echo "Node Exporter is running!"
+            else
+              echo "Node Exporter failed to start"
+              exit 1
+            fi
+
+            # Your existing traffic generation script with corrected service names
+            echo "Starting traffic generation..."
             while true; do
               # Launch day traffic with CPU/Memory load
-              wget -q -O- http://launch-day-target-pod
+              wget -q -O- http://launch-day-target-pod.default.svc.cluster.local
               stress-ng --cpu 1 --timeout 30s
               sleep 1
               # Normal operations traffic
-              wget -q -O- http://normal-ops-target-pod
+              wget -q -O- http://normal-ops-target.default.svc.cluster.local
               sleep 2
               # Error conditions traffic
-              wget -q -O- http://error-conditions-target-pod
+              wget -q -O- http://error-conditions-target.default.svc.cluster.local
               sleep 1
               # Database load traffic
-              wget -q -O- http://db-load-target-pod
+              wget -q -O- http://db-load-target.default.svc.cluster.local
               stress-ng --cpu 2 --vm 1 --vm-bytes 128M --timeout 15s
               sleep 3
             done
         ports:
         - containerPort: 8080
+          name: metrics
         resources:
           requests:
-            memory: "256Mi"    # Minimum memory needed
-            cpu: "1000m"       # Minimum 1 core needed
+            memory: "100Mi"   
+            cpu: "500m"      
           limits:
-            memory: "512Mi"    # Maximum memory allowed
-            cpu: "2000m"       # Maximum 2 cores allowed
+            memory: "300Mi"   
+            cpu: "600m"       

@@ -27,5 +27,5 @@ spec:
             memory: "128Mi"    # Prime calc doesn't need much memory
             cpu: "500m"        # Request half a core for calculations
           limits:
-            memory: "256Mi"    # Conservative memory limit
-            cpu: "1000m"       # Allow up to 1 full core for intensive calculations
+            memory: "200Mi"    # Conservative memory limit
+            cpu: "500m"       # Allow up to 1 full core for intensive calculations
