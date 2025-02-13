@@ -262,7 +262,7 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
 
         tooltip.transition().duration(300).style('opacity', 0);
       });
-  }, [transformedData]);
+  }, [transformedData, metricType]);
 
   return (
     <div style={{ textAlign: 'center', color: 'white' }}>
@@ -280,23 +280,18 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
         {rawData ? JSON.stringify(rawData, null, 2) : 'Loading...'}
       </pre>
 
-      {/* Container Type Selector */}
-      <select
-        value={containerType}
-        onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-          setContainerType(e.target.value)
-        }
-      >
-        <option value='cluster/cpu'>Cluster CPU</option>
-        <option value='cluster/memory'>Cluter Memory</option>
-        <option value='container/cpu'>Container CPU</option>
-        <option value='container/memory'>Container Memory</option>
-      </select>
-
-      <div
-        style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}
-      >
-        <svg ref={svgRef} width={1000} height={400} />
+      {/* Section with metric selector */}
+      <div className='flex justify-center items-center mb-4 p-4 bg-[#0a192f]'>
+        <select
+          value={containerType}
+          onChange={(e) => setContainerType(e.target.value)}
+          className='justify-self-center bg-[#112240] text-white px-4 py-2 rounded border border-[#172a45] cursor-pointer hover:bg-[#172a45] transition-colors'
+        >
+          <option value='cluster/cpu'>Cluster CPU</option>
+          <option value='cluster/memory'>Cluster Memory</option>
+          <option value='container/cpu'>Container CPU</option>
+          <option value='container/memory'>Container Memory</option>
+        </select>
       </div>
     </div>
   );

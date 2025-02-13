@@ -117,6 +117,18 @@ export default {
           800: '#ffffff',
           900: '#ffffff',
         },
+        bright_blue: {
+          DEFAULT: '#00a8ff', // Base bright blue
+          100: '#002b47', // Darkest
+          200: '#00568e', // Dark
+          300: '#0081d5', // Medium
+          400: '#00a8ff', // Bright
+          500: '#00c2ff', // Brighter
+          600: '#00dcff', // Very bright
+          700: '#00f6ff', // Neon
+          800: '#00ffff', // Full neon
+          900: '#e6ffff', // Lightest
+        },
       },
     },
   },
