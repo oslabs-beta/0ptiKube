@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prime-calc-pod
+  labels:
+    app: prime-calc
+    scenario: cpu-intensive
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prime-calc
+  template:
+    metadata:
+      labels:
+        app: prime-calc
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "80"
+    spec:
+      containers:
+      - name: prime-calc
+        image: busybox
+        command: ['sh', '-c', 'while true; do sleep 30; done']
+        resources:
+          requests:
+            memory: "128Mi"    # Prime calc doesn't need much memory
+            cpu: "500m"        # Request half a core for calculations
+          limits:
+            memory: "256Mi"    # Conservative memory limit
+            cpu: "1000m"       # Allow up to 1 full core for intensive calculations

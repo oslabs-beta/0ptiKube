@@ -5,20 +5,29 @@ import TimeGraph from '@/components/TimeGraph';
 import './page.css';
 
 export default function VisualizePage() {
-  const [data, setData] = useState(null);
+  const [memoryData, setMemoryData] = useState(null);
+  const [cpuData, setCpuData] = useState(null);
 
   useEffect(() => {
+    // Fetch memory metrics
     fetch('http://localhost:3000/api/metrics/cluster/memory/percent')
       .then((res) => res.json())
-      .then((jsonData) => setData(jsonData))
-      .catch((err) => console.error(err));
+      .then((jsonData) => setMemoryData(jsonData))
+      .catch((err) => console.error('Memory fetch error:', err));
+
+    // Fetch CPU metrics
+    fetch('http://localhost:3000/api/metrics/cluster/cpu/percent')
+      .then((res) => res.json())
+      .then((jsonData) => setCpuData(jsonData))
+      .catch((err) => console.error('CPU fetch error:', err));
   }, []);
 
-  if (!data) {
+  if (!memoryData || !cpuData) {
     return <div>Loading...</div>;
   }
 
-  const memoryPercent = data.result?.[0]?.value?.value;
+  const memoryPercent = memoryData.result?.[0]?.value?.value || 0;
+  const cpuPercent = cpuData.result?.[0]?.value?.value || 0;
 
   return (
     <>
@@ -28,7 +37,7 @@ export default function VisualizePage() {
         </div>
         <div className='gauge bg-[#112240] flex justify-around items-center p-6 my-4 rounded-lg shadow-lg'>
           <Gauge value={memoryPercent} name='Memory' />
-          <Gauge value={memoryPercent} name='CPU' />
+          <Gauge value={cpuPercent} name='CPU' />
         </div>
         <div className='pods bg-[#112240] p-6 rounded-lg shadow-lg'>
           <div className='grid grid-cols-1 gap-4 place-items-center'>

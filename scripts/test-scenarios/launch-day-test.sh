@@ -11,6 +11,6 @@ while [ $(( $(date +%s) - start_time )) -lt $duration ]; do
     # Last 3 minutes: flash sale spike (1000 req/min)
     sleep 0.06  # ~1000 requests per minute
   fi
-  kubectl exec -it $(kubectl get pod -l app=traffic-generator -o jsonpath='{.items[0].metadata.name}') -- \
-    wget -q -O- --tries=1 http://launch-day-target
+  kubectl exec -it $(kubectl get pod -l app=traffic-generator-pod -o jsonpath='{.items[0].metadata.name}') -- \
+    wget -q -O- --tries=1 http://launch-day-target-pod
 done

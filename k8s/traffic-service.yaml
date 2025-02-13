@@ -1,11 +1,69 @@
+# Main Traffic Generator Service
+# This service exposes the traffic generator pod that sends requests to all test pods
 apiVersion: v1
 kind: Service
 metadata:
-  name: traffic-generator-service
+  name: traffic-generator-pod-service
 spec:
   selector:
-    app: traffic-generator
+    app: traffic-generator-pod    # Updated selector
   ports:
-    - port: 8080
-      targetPort: 8080
-  type: ClusterIP
+    - port: 8080             # Service port
+      targetPort: 8080       # Container port
+  type: ClusterIP           # Internal cluster access only
+---
+# Launch Day Target Service
+# Handles high-traffic scenarios and load testing
+# Used by traffic generator to simulate launch day spikes
+apiVersion: v1
+kind: Service
+metadata:
+  name: launch-day-target-pod
+spec:
+  selector:
+    app: launch-day-pod         # Updated selector
+  ports:
+    - port: 80
+      targetPort: 80
+---
+# Normal Operations Target Service
+# Simulates regular day-to-day traffic patterns
+# Used for baseline metrics and normal operation monitoring
+apiVersion: v1
+kind: Service
+metadata:
+  name: normal-ops-target
+spec:
+  selector:
+    app: normal-ops        # Matches normal-ops test pod label
+  ports:
+    - port: 80
+      targetPort: 80
+---
+# Error Conditions Target Service
+# Used to simulate and monitor error scenarios
+# Helps test system resilience and error handling
+apiVersion: v1
+kind: Service
+metadata:
+  name: error-conditions-target
+spec:
+  selector:
+    app: error-conditions  # Matches error-conditions test pod label
+  ports:
+    - port: 80
+      targetPort: 80
+---
+# Database Load Target Service
+# Simulates database-intensive operations
+# Used to monitor database performance and resource usage
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-load-target
+spec:
+  selector:
+    app: db-load          # Matches db-load test pod label
+  ports:
+    - port: 80
+      targetPort: 80

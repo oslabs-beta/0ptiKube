@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traffic-generator-pod
+  labels:
+    app: traffic-generator-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traffic-generator-pod
+  template:
+    metadata:
+      labels:
+        app: traffic-generator-pod
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+    spec:
+      containers:
+      - name: traffic-generator
+        image: nginx:alpine
+        command: ["/bin/sh"]
+        args: 
+          - "-c"
+          - |
+            apk add --no-cache stress-ng  # Install stress tool
+            while true; do
+              # Launch day traffic with CPU/Memory load
+              wget -q -O- http://launch-day-target-pod
+              stress-ng --cpu 1 --timeout 30s
+              sleep 1
+              # Normal operations traffic
+              wget -q -O- http://normal-ops-target-pod
+              sleep 2
+              # Error conditions traffic
+              wget -q -O- http://error-conditions-target-pod
+              sleep 1
+              # Database load traffic
+              wget -q -O- http://db-load-target-pod
+              stress-ng --cpu 2 --vm 1 --vm-bytes 128M --timeout 15s
+              sleep 3
+            done
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "256Mi"    # Minimum memory needed
+            cpu: "1000m"       # Minimum 1 core needed
+          limits:
+            memory: "512Mi"    # Maximum memory allowed
+            cpu: "2000m"       # Maximum 2 cores allowed
