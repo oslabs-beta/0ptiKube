@@ -13,6 +13,10 @@ interface GaugeProps {
   outerRadius?: number;
 }
 
+// Declare constants for Gauge component animation
+const ANIMATION_DURATION = 2000; // 2-second animation
+const ANIMATION_EASING = d3.easeCubicOut; // Smooth easing function
+
 export default function Gauge({
   name,
   value,
@@ -58,12 +62,25 @@ export default function Gauge({
     const foregroundArc = d3
       .arc()
       .startAngle(startAngle)
-      .endAngle(fillAngle)
+      // .endAngle(fillAngle)
+      .endAngle(0) // Start at 0 for animation effect
       .innerRadius(innerRadius)
       .outerRadius(outerRadius);
 
     const centerX = width / 2;
     const centerY = height / 2;
+
+    // Create constants for tick marks around Gauge
+    const tickCount = 20;
+    const tickLength = 6; // Length of tick marks
+    const tickWidth = 1; // Width of tick marks
+
+    // Generate the tick data
+    const ticks = Array.from({ length: tickCount }, (_, i) => {
+      const angle =
+        startAngle + (endAngle - startAngle) * (i / (tickCount - 1));
+      return angle;
+    });
 
     svg
       .append('path')
@@ -75,7 +92,38 @@ export default function Gauge({
       .append('path')
       .attr('transform', `translate(${centerX}, ${centerY})`)
       .attr('d', foregroundArc)
-      .attr('fill', fillColor);
+      .attr('fill', fillColor)
+      .transition() // Add transition effect
+      .duration(ANIMATION_DURATION) // Added timing length of animation
+      .ease(ANIMATION_EASING) // Added animation function
+      .attrTween('d', function () {
+        const interpolate = d3.interpolate(0, fillAngle);
+        return function (t) {
+          return foregroundArc.endAngle(interpolate(t))();
+        };
+      });
+
+    // Add tick marks to the SVG
+    svg
+      .selectAll('.tick')
+      .data(ticks)
+      .enter()
+      .append('line')
+      .attr('class', 'tick')
+      .attr('transform', `translate(${centerX}, ${centerY})`)
+      .attr('x1', (d) => Math.cos(d - Math.PI / 2) * (outerRadius + 2))
+      .attr('y1', (d) => Math.sin(d - Math.PI / 2) * (outerRadius + 2))
+      .attr(
+        'x2',
+        (d) => Math.cos(d - Math.PI / 2) * (outerRadius + tickLength + 2)
+      )
+      .attr(
+        'y2',
+        (d) => Math.sin(d - Math.PI / 2) * (outerRadius + tickLength + 2)
+      )
+      .attr('stroke', '#00ccff')
+      .attr('stroke-width', tickWidth)
+      .attr('opacity', 0.4);
 
     svg
       .append('text')
@@ -88,8 +136,10 @@ export default function Gauge({
   }, [value, min, max, width, height, innerRadius, outerRadius]);
 
   return (
-    <div className='flex flex-col size-64 bg-[#172a45] rounded-2xl m-2 items-center justify-center'>
-      <span className='text-center text-[#bbcdff] font-bold'>{name}</span>
+    <div className='flex flex-col size-64 bg-[#172a45] rounded-2xl m-2 items-center justify-center border-2 border-columbia_blue-900'>
+      <span className='text-2xl font-semibold bg-gradient-to-r from-columbia_blue-300 to-columbia_blue-900 bg-clip-text text-transparent'>
+        {name}
+      </span>
       <svg ref={svgRef} />
     </div>
   );

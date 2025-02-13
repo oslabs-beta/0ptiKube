@@ -9,7 +9,6 @@ import React, {
 } from 'react';
 import * as d3 from 'd3';
 import { handleError } from '@/app/api/utils/errorHandler';
-import { FaLess } from 'react-icons/fa';
 
 type MetricType = 'cpu' | 'memory';
 type MetricScope = 'cluster' | 'container';
@@ -339,7 +338,7 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
 
         tooltip.transition().duration(300).style('opacity', 0);
       });
-  }, [transformedData]);
+  }, [transformedData, metricType]);
 
   return (
     <div style={{ textAlign: 'center', color: 'white' }}>
@@ -358,7 +357,7 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
         <svg ref={svgRef} width={width} height={450} />
       </div>
 
-      {/* Top section with metric selector */}
+      {/* Section with metric selector */}
       <div className='flex justify-center items-center mb-4 p-4 bg-[#0a192f]'>
         <select
           value={containerType}

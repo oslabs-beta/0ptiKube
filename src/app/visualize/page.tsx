@@ -129,14 +129,14 @@ export default function VisualizePage() {
           <Gauge value={cpuValue} name='CPU' />
         </div>
         <div className='pods bg-[#112240] p-6 rounded-lg shadow-lg'>
-          <h1 className='text-xl text-center mb-2 text-[#8892b0]'>Pods</h1>
+          <h1 className='text-2xl text-center font-semibold mb-2 bg-gradient-to-r from-columbia_blue-300 to-columbia_blue-900 bg-clip-text text-transparent'>Pods</h1>
           <div className='grid grid-cols-1 gap-4 place-items-center'>
             {podNames.map((pod) => (
               <button
                 key={pod}
                 className={`
                 h-24 w-72 rounded-xl bg-[#172a45] shadow-md transition-all
-                hover:shadow-lg hover:scale-105 flex items-center justify-center text-[#8892b0]
+                hover:shadow-lg hover:scale-105 flex items-center font-semibold text-md px-3 justify-center text-[#8892b0]
                 ${pod === selectedPod ? 'border border-cyan-400' : ''}
               `}
                 onClick={() => setSelectedPod(pod)}
