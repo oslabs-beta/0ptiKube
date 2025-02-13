@@ -9,7 +9,6 @@ import React, {
 } from 'react';
 import * as d3 from 'd3';
 import { handleError } from '@/app/api/utils/errorHandler';
-import { FaLess } from 'react-icons/fa';
 
 type MetricType = 'cpu' | 'memory';
 type MetricScope = 'cluster' | 'container';
@@ -24,17 +23,6 @@ interface TimeGraphProps {
 // Helper function to get the y-axis units
 const getMetricUnits = (metricType: MetricType): string => {
   return metricType === 'cpu' ? 'millicores' : 'MiB';
-};
-
-// Helper function to convert time units for tooltip integration
-const formatTime = (timeMs: number) => {
-  const date = new Date(timeMs);
-  return date.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  });
 };
 
 type DataPoint = { time: number; value: number };
@@ -53,8 +41,6 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
   containerName,
   onDataUpdate,
 }) => {
-  const [width, setWidth] = useState(900); // Default screen width
-  const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [rawData, setRawData] = useState<PrometheusResponse | null>(null);
   const [containerType, setContainerType] = useState('/cluster/cpu');
@@ -110,36 +96,13 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
     }));
   }, [rawData]);
 
-  // Graph resize handler
-  useEffect(() => {
-    const handleResize = () => {
-      if (containerRef.current) {
-        // Get container width and set a minimum
-        const containerWidth = Math.max(
-          containerRef.current.getBoundingClientRect().width,
-          300 // Minimum width
-        );
-        setWidth(containerWidth);
-      }
-    };
-
-    // Initial size
-    handleResize();
-
-    // Resize listener
-    window.addEventListener('resize', handleResize);
-
-    // Cleanup
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   //Render Graph with D3
   useEffect(() => {
     if (!svgRef.current || transformedData.length === 0) return;
 
     // Set up graph dimensions
-    const width = 900;
-    const height = 450;
+    const width = 1000;
+    const height = 400;
     const margin = { top: 50, right: 50, bottom: 60, left: 70 };
 
     // Set up x-axis and y-axis scales
@@ -166,7 +129,7 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
       .call(
         d3
           .axisBottom(xScale)
-          .ticks(d3.timeMinute.every(10)) // Show tick every 10 minutes
+          .ticks(d3.timeMinute.every(5)) // Show tick every 5 minutes
           .tickFormat((d) => {
             return d3.timeFormat('%I:%M %p')(d as Date);
           })
@@ -257,7 +220,7 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
       .attr('stroke-dasharray', totalLength)
       .attr('stroke-dashoffset', totalLength)
       .transition()
-      .duration(2500)
+      .duration(2000)
       .ease(d3.easeLinear)
       .attr('stroke-dashoffset', 0);
 
@@ -284,53 +247,13 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
       .style('border-radius', '5px')
       .style('opacity', 0);
 
-    // Calculate linear regression
-    const xSeries = transformedData.map((d, i) => i);
-    const ySeries = transformedData.map((d) => d.value);
-
-    const n = xSeries.length;
-    const xMean = xSeries.reduce((a, b) => a + b, 0) / n;
-    const yMean = ySeries.reduce((a, b) => a + b, 0) / n;
-
-    const slope =
-      xSeries
-        .map((x, i) => (x - xMean) * (ySeries[i] - yMean))
-        .reduce((a, b) => a + b, 0) /
-      xSeries.map((x) => Math.pow(x - xMean, 2)).reduce((a, b) => a + b, 0);
-
-    const intercept = yMean - slope * xMean;
-
-    // Create trend line data
-    const trendData = xSeries.map((x) => ({
-      time: transformedData[x].time,
-      value: slope * x + intercept,
-    }));
-
-    // Add trend line to the graph
-    const trendLine = d3
-      .line<DataPoint>()
-      .x((d) => xScale(d.time))
-      .y((d) => yScale(d.value));
-
-    svg
-      .append('path')
-      .datum(trendData)
-      .attr('class', 'trend-line')
-      .attr('d', trendLine)
-      .attr('fill', 'none')
-      .attr('stroke', '#ffcc00')
-      .attr('stroke-width', 2)
-      .attr('stroke-dasharray', '10,10') // Create dashed line
-      .attr('opacity', 0.6); // Make it slightly transparent
-
     circles
       .on('mouseover', function (event, d) {
         d3.select(this).transition().duration(300).attr('r', 6); // Expand on hover
 
         tooltip.transition().duration(300).style('opacity', 1);
         tooltip
-          // .html(`Time: ${d.time}, Value: ${d.value}`)
-          .html(`Time: ${formatTime(d.time)}, Value: ${d.value.toFixed(2)}`)
+          .html(`Time: ${d.time}, Value: ${d.value}`)
           .style('left', `${event.pageX + 10}px`)
           .style('top', `${event.pageY - 20}px`);
       })
@@ -343,36 +266,53 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
 
   return (
     <div style={{ textAlign: 'center', color: 'white' }}>
-      <div className='flex justify-center items-center mb-6 p-4 border-b-2 border-columbia_blue-900'>
-        <h2 className='text-2xl font-semibold bg-gradient-to-r from-columbia_blue-300 to-columbia_blue-900 bg-clip-text text-transparent'>
-          Resource Use Over Time
-        </h2>
-      </div>
+      <h2>Visualization Dashboard</h2>
 
-      {/* Container for the graph */}
+      {/* Debugging Output */}
+      <pre
+        style={{
+          backgroundColor: '#222',
+          padding: '10px',
+          maxHeight: '200px',
+          overflow: 'auto',
+        }}
+      >
+        {rawData ? JSON.stringify(rawData, null, 2) : 'Loading...'}
+      </pre>
+
+      {/* Container Type Selector */}
+      <select
+        value={containerType}
+        onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+          setContainerType(e.target.value)
+        }
+      >
+        <option value='cluster/cpu'>Cluster CPU</option>
+        <option value='cluster/memory'>Cluter Memory</option>
+        <option value='container/cpu'>Container CPU</option>
+        <option value='container/memory'>Container Memory</option>
+      </select>
+
       <div
-        ref={containerRef}
-        className='w-full px-4'
         style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}
       >
-        <svg ref={svgRef} width={width} height={450} />
-      </div>
-
-      {/* Top section with metric selector */}
-      <div className='flex justify-center items-center mb-4 p-4 bg-[#0a192f]'>
-        <select
-          value={containerType}
-          onChange={(e) => setContainerType(e.target.value)}
-          className='justify-self-center bg-[#112240] text-white px-4 py-2 rounded border border-[#172a45] cursor-pointer hover:bg-[#172a45] transition-colors'
-        >
-          <option value='cluster/cpu'>Cluster CPU</option>
-          <option value='cluster/memory'>Cluster Memory</option>
-          <option value='container/cpu'>Container CPU</option>
-          <option value='container/memory'>Container Memory</option>
-        </select>
+        <svg ref={svgRef} width={1000} height={400} />
       </div>
     </div>
   );
 };
 
 export default TimeGraph;
+
+// return (
+//   <div
+//     style={{
+//       display: 'flex',
+//       justifyContent: 'center',
+//       alignItems: 'center',
+//       paddingTop: '20px',
+//     }}
+//   >
+//     <svg ref={svgRef} width={1000} height={400} />
+//   </div>
+// );
