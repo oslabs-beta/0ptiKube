@@ -4,7 +4,7 @@ import { useRef, useEffect } from 'react';
 
 /**
  * Props interface for the Gauge component
- * Defines customizable properties for size, value range, and dimensions
+ * Defines customizable properties for size, value, range, and dimensions
  */
 interface GaugeProps {
   name: string; // Display name for the gauge
@@ -68,9 +68,9 @@ function Gauge({
 
     const fillColor = colorScale(fraction);
 
-    // Define the angles for the gauge (full circle = 2π radians)
+    // Define the angles for the gauge. (full circle = 2π radians)
     const startAngle = 0;
-    const endAngle = 2 * Math.PI;
+    const endAngle = 2 * Math.PI; // full circle in radians represented by Tau (τ)
     const fillAngle = endAngle * fraction; // How much of the circle to fill
 
     // Create the D3 arc generator for the background (empty) part of the gauge
