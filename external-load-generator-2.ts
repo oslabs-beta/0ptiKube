@@ -184,9 +184,9 @@ if (isMainThread) {
       'http://localhost:3000/api/metrics/cluster/memory/percent',
       'http://localhost:3000/api/metrics/cluster/memory/history',
     ],
-    durationMinutes: 30,
+    durationMinutes: 10,
     concurrentUsers: 100,
-    requestsPerSecond: 100,
+    requestsPerSecond: 200,
     rampUpSeconds: 15,
     memoryIntensive: true,
   };

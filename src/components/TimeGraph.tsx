@@ -1,5 +1,18 @@
+/**
+ * @fileoverview TimeGraph component for visualizing Kubernetes metrics from Prometheus
+ * @requires Next.js 13+ (for app directory structure)
+ * @requires d3 5+ (for data visualization)
+ *
+ * Renders time-series data for Kubernetes metrics in an interactive graph format. Handles
+ * real-time updates and user interactions on the client side.
+ */
 'use client';
 
+/**
+ * Core React imports for component functionality.
+ * - React: Core library
+ * - Hooks: State management and component lifecycle
+ */
 import React, {
   useEffect,
   useState,
@@ -7,27 +20,57 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
+
+/**
+ * External dependencies
+ * @module d3 - Data visualization library
+ * @module handleError - Custom error handling utilities
+ */
 import * as d3 from 'd3';
 import { handleError } from '@/app/api/utils/errorHandler';
 
+/**
+ * Metric type definitions for Kubernetes resource monitoring
+ * @typedef { 'cpu' | 'memory' } MetricType - Type of resource being monitored
+ * @typedef { 'cluster' | 'container' } - Scope of the metric measurement
+ */
 type MetricType = 'cpu' | 'memory';
 type MetricScope = 'cluster' | 'container';
 
+/**
+ * @interface TimeGraph Props
+ * @description Props for the TimeGraph component
+ * @property {MetricScope} metricScope - Scope of metric measurement (cluster/container)
+ * @property {string} viewMode - Display mode for the graph - not currently being used
+ * @property {string} [containerName] - Optional container name for container-level metrics
+ * @property {{data: PrometheusResponse} => void} [onDataUpdate] - Optional callback that fires when new data is fetched,
+ * allowing parent components to sync with the latest Prometheus metrics
+ */
 interface TimeGraphProps {
   metricScope: MetricScope;
   viewMode: ViewMode;
   containerName?: string; // Required when viewMode is 'container'
-  onDataUpdate?: (data: PrometheusResponse) => void; // Optional callback for parent updates
+  onDataUpdate?: (data: PrometheusResponse) => void;
 }
 
-// Helper function to get the y-axis units
+/**
+ * @function getMetricUnits
+ * @description Helper function to get the y-axis units based on metric type
+ * @param {MetricType} metricType - Type of metric (cpu/memory)
+ * @returns {string} Units for the metric (millicores for cpu and MiB for memory)
+ */
 const getMetricUnits = (metricType: MetricType): string => {
   return metricType === 'cpu' ? 'millicores' : 'MiB';
 };
 
-// Helper function to convert time units for tooltip integration
-const formatTime = (timeMs: number) => {
-  const date = new Date(timeMs);
+/**
+ * @function formatTime
+ * @description Helper function to convert time units for tooltip integration
+ * @param {number} leads - Number to format
+ * @returns {Intl.DateTimeFormatOptions} Formatting options for time display
+ */
+const formatTime = (leads: number) => {
+  const date = new Date(leads);
   return date.toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
@@ -36,29 +79,65 @@ const formatTime = (timeMs: number) => {
   });
 };
 
-type DataPoint = { time: number; value: number };
+/**
+ * @interface DataPoint
+ * @description Represents a single data point in the time series
+ * @property {number} time - Unix timestamp
+ * @property {number} value - Metric value at the given timestamp
+ */
+interface DataPoint {
+  time: number;
+  value: number;
+}
 
-type PrometheusResponse = {
+/**
+ * @interface PrometheusResponse
+ * @description Structure of the response from the Prometheus API
+ * @property {string} resultType - Type of result returned by Prometheur
+ * @property {Array<PrometheusResult>} result - Array of metric results
+ */
+interface PrometheusResponse {
   resultType: string;
   result: Array<{
     metric: Record<string, string>;
     values: Array<{ time: string; value: number }>;
   }>;
-};
+}
 
+/**
+ * @component TimeGraph
+ * @description Renders a D3-based time series graph for Kubernetes metrics
+ * Uses Prometheus data to visualize CPU or Memory usage over time
+ *
+ * @param {TimeGraphProps} props
+ * @returns {React.FC<TimeGraphProps>} Rendered graph component
+ */
 const TimeGraph: React.FC<TimeGraphProps> = ({
-  metricScope,
+  // metricScope, // Not currently being used
   viewMode,
   containerName,
-  onDataUpdate,
+  // onDataUpdate, // Not currently being used
 }) => {
-  const [width, setWidth] = useState(900); // Default screen width
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
+
+  /**
+   * State Hooks
+   * @state {[number, number]} [width, setWidth] - Current screen width, default 900
+   * @state {MetricType} [metricType, setMetric] - Current metric type being displayed
+   * @state {PrometheusResponse | null} [rawData, setRawData] - Raw data from Prometheus before transformation
+   * @state {string} [containerType, setContainerType] - Type of container being monitored (defaults to /cluter/cpu metrics)
+   */
+  const [width, setWidth] = useState(900); // Default screen width
   const [rawData, setRawData] = useState<PrometheusResponse | null>(null);
   const [containerType, setContainerType] = useState('/cluster/cpu');
   const [metricType, setMetricType] = useState<MetricType>('cpu');
 
+  /**
+   * @callback constructEndpoint
+   * @description Builds the API endpoint URL based on container type and metric type
+   * @returns {string} Constructed endpoint URL
+   */
   const constructEndpoint = useCallback(() => {
     const baseEndpoint = '/api/metrics';
     if (viewMode === 'cluster') {
@@ -69,25 +148,32 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
     }
   }, [containerType, viewMode, containerName, metricType]);
 
+  /**
+   * @effect Metric Type extraction
+   * @description Extracts metric type (cpu/memory) from containerType string
+   * Updates metricType state when containerType changes
+   */
   useEffect(() => {
-    // Extract metric type from containerType
     const newMetricType = containerType.includes('memory') ? 'memory' : 'cpu';
     setMetricType(newMetricType);
   }, [containerType]);
 
-  // Fetch Prometheus data
+  /**
+   * @effect Prometheus Data Fetcher
+   * @description Fetches metrics data from Preometheus API endpoints
+   * Re-fetches when containerType, constructEndpoint, containerName, or metricType change
+   */
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const endpoint = `api/metrics/${containerType}/history`;
+        const endpoint = constructEndpoint();
         const response = await fetch(endpoint);
+
         if (!response.ok)
           throw new Error(`HTTP Error! Status: ${response.status}`);
 
-        const data: PrometheusResponse = await response.json();
-        console.log('Fetched Data:', data); // Debugging log to confirm data receipt
-
-        setRawData(data);
+        const responseData: PrometheusResponse = await response.json();
+        setRawData(responseData);
       } catch (error) {
         return handleError(
           error,
@@ -97,19 +183,35 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
     };
 
     fetchData();
-  }, [containerType]); // Re-fetch when containerType changes
+  }, [containerType, constructEndpoint, containerName, metricType]);
 
-  // Transform API data for use within D3
+  /**
+   * @memo transformedData
+   * @description Memoized transformation of raw Prometheus data into D3-compatatible format
+   * @returns {DataPoint[]} Array of time-value data points for visualization
+   *
+   * Returns empty array if:
+   * - rawData is null
+   * - rawData has no results
+   * - rawData result array is empty
+   */
   const transformedData: DataPoint[] = useMemo(() => {
+    // Early return if no data is available
     if (!rawData || !rawData.result.length) return [];
 
+    // Transform API data for D3 consumption
     return rawData.result[0].values.map((entry) => ({
       time: new Date(entry.time).getTime(), // Convert ISO string to timestamp
       value: Number(entry.value),
     }));
-  }, [rawData]);
+  }, [rawData]); // Only reloads when rawData changes
 
-  // Graph resize handler
+  /**
+   * @effect Window Resize Handler
+   * @description Manages responsive behavior of the graph
+   * Sets up resize listener and performs initial size calculation
+   * @depends containerRef - Reference to the container element for width calculations
+   */
   useEffect(() => {
     const handleResize = () => {
       if (containerRef.current) {
@@ -122,18 +224,28 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
       }
     };
 
-    // Initial size
+    // Initial size calculation
     handleResize();
 
-    // Resize listener
+    // Resize event listener
     window.addEventListener('resize', handleResize);
 
-    // Cleanup
+    // Cleanup: Remove event listener on component unmount
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [containerRef]);
 
-  //Render Graph with D3
+  /**
+   * @effect D3 Graph Rendering
+   * @description Handles D3 graph visualization setup and updates
+   * @depends {
+   * transformedData - Processed data points for visualizaion
+   * metricType - Current metric being displayed (cpu/memory)
+   * containerType - Current container type displayed (cluster/container)
+   * containerName - Current container name displayed
+   * }
+   */
   useEffect(() => {
+    // Guard clause: Returns early is no data or svgRef
     if (!svgRef.current || transformedData.length === 0) return;
 
     // Set up graph dimensions
@@ -141,7 +253,7 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
     const height = 450;
     const margin = { top: 50, right: 50, bottom: 60, left: 70 };
 
-    // Set up x-axis and y-axis scales
+    // Set up x-axis scale
     const xScale = d3
       .scaleTime()
       .domain([
@@ -150,6 +262,7 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
       ])
       .range([margin.left, width - margin.right]);
 
+    // Set up y-axis scale
     const yScale = d3
       .scaleLinear()
       .domain([0, (d3.max(transformedData, (d) => d.value) || 0) * 1.1])
@@ -158,7 +271,7 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
     const svg = d3.select(svgRef.current);
     svg.selectAll('*').remove(); // Clear previous render
 
-    // Append x-axis
+    // Append x-axis to SVG
     svg
       .append('g')
       .attr('transform', `translate(0,${height - margin.bottom})`)
@@ -174,7 +287,7 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
       .attr('fill', 'white')
       .attr('font-size', '14px');
 
-    // Append y-axis
+    // Append y-axis to SVG
     svg
       .append('g')
       .attr('transform', `translate(${margin.left},0)`)
@@ -214,7 +327,7 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
       .selectAll('line')
       .attr('stroke', '#ffffff30'); // Light transparency for more subtle effect
 
-    // Axis labels
+    // Axis label - x-axis
     svg
       .append('text')
       .attr('x', width / 2)
@@ -224,6 +337,7 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
       .attr('font-size', '18px')
       .text('Time');
 
+    // Axis label - y-axis
     svg
       .append('text')
       .attr('x', -(height / 2))
@@ -338,8 +452,14 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
 
         tooltip.transition().duration(300).style('opacity', 0);
       });
-  }, [transformedData, metricType]);
+  }, [transformedData, metricType, containerType, containerName]);
 
+  /**
+   * @returns React component structure
+   * Container div with dynamic styling
+   * SVG element for D3 graph rendering
+   * Metric selector options in dropdown menu
+   */
   return (
     <div style={{ textAlign: 'center', color: 'white' }}>
       <div className='flex justify-center items-center mb-6 p-4 border-b-2 border-columbia_blue-900'>
