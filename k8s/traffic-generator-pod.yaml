@@ -1,3 +1,5 @@
+# Keeping Deployment and Pod templates in the same file can be more convenient and manageable.
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -5,14 +7,14 @@ metadata:
   labels:
     app: traffic-generator-pod
 spec:
-  replicas: 1
+  replicas: 1 # Deployment is responsible for managing this number of Pods
   selector:
     matchLabels:
       app: traffic-generator-pod
   template:
     metadata:
       labels:
-        app: traffic-generator-pod
+        app: traffic-generator-pod  # Pod template
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8080"

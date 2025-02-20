@@ -11,6 +11,7 @@
 !.yarn/versions
 
 
+
 # testing
 /coverage
 
@@ -24,6 +25,7 @@
 # misc
 .DS_Store
 *.pem
+.cursor/
 
 # debug
 npm-debug.log*
@@ -42,3 +44,4 @@ yarn-error.log*
 next-env.d.ts
 # Prevents accidental data leaks
 /data/
+
