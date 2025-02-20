@@ -73,7 +73,7 @@ export const authOptions = {
       console.log('redirecting to', url)
       console.log('base url is', baseUrl)
 
-      // If the URL is pointing to logou, redirect to the /login endpoint
+      // If the URL is pointing to logout, redirect to the /login endpoint
       if (url === '/login') {
         return baseUrl + '/login';
       }

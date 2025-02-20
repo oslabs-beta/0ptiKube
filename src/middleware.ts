@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 /**
- * Middleware function to protext specified routes from unauthorized access.
+ * Middleware function to protect specified routes from unauthorized access.
  * Ensures that only authenticated users can access `/visualize` and `/optimize` endpoints.
  * 
  * @param {Request} req - Incoming request object. 
