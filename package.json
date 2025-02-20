@@ -40,6 +40,8 @@
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "postcss": "^8",
+    "prettier": "^3.5.1",
+    "prettier-plugin-tailwindcss": "^0.6.11",
     "shadcn-ui": "^0.9.4",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.7.3"

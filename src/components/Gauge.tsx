@@ -178,8 +178,8 @@ function Gauge({
   }, [value, min, max, width, height, innerRadius, outerRadius]);
 
   return (
-    <div className='flex flex-col size-64 bg-[#172a45] rounded-2xl m-2 items-center justify-center border-2 border-columbia_blue-900'>
-      <span className='text-2xl font-semibold bg-gradient-to-r from-columbia_blue-300 to-columbia_blue-900 bg-clip-text text-transparent'>
+    <div className='m-2 flex size-64 flex-col items-center justify-center rounded-2xl border-2 border-columbia_blue-900 bg-[#172a45]'>
+      <span className='bg-gradient-to-r from-columbia_blue-300 to-columbia_blue-900 bg-clip-text text-2xl font-semibold text-transparent'>
         {name}
       </span>
       <svg ref={svgRef} />

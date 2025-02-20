@@ -200,12 +200,12 @@ export default function VisualizePage() {
   // ------------------------------------------------------------------
   return (
     <>
-      <div className='container min-w-screen min-h-screen bg-[#0a192f]'>
-        <div className='gauge bg-[#112240] grid grid-cols-1 place-items-center p-4 rounded-lg shadow-lg'>
+      <div className='min-w-screen container min-h-screen bg-[#0a192f]'>
+        <div className='gauge grid grid-cols-1 place-items-center rounded-lg bg-[#112240] p-4 shadow-lg'>
           {/* Source Type Selector */}
-          <div className='flex justify-center items-center p-4 bg-[#0a192f] w-full h-full'>
+          <div className='flex h-full w-full items-center justify-center bg-[#0a192f] p-4'>
             <select
-              className='h-10 w-40 bg-[#172a45] border border-cyan-400 text-[#8892b0] rounded-md px-2'
+              className='h-10 w-40 rounded-md border border-cyan-400 bg-[#172a45] px-2 text-[#8892b0]'
               value={sourceType}
               onChange={(e) => {
                 setSourceType(e.target.value as 'cluster' | 'container');
@@ -218,32 +218,28 @@ export default function VisualizePage() {
           </div>
 
           {/* Gauges */}
-          <div className='flex rounded-lg space-x-40'>
+          <div className='flex space-x-40 rounded-lg'>
             <Gauge value={memoryValue} name='Memory' />
             <Gauge value={cpuValue} name='CPU' />
           </div>
         </div>
 
-        <div className='time-graph bg-[#112240] p-4 rounded-lg shadow-lg'>
+        <div className='time-graph rounded-lg bg-[#112240] p-4 shadow-lg'>
           <TimeGraph data={historicalCpuData} />
           <TimeGraph data={historicalMemoryData} />
         </div>
 
         {/* Show pods only if sourceType === 'container' */}
         {sourceType === 'container' && (
-          <div className='pods bg-[#112240] p-6 rounded-lg shadow-lg'>
-            <h1 className='text-2xl text-center font-semibold mb-2 bg-gradient-to-r from-columbia_blue-300 to-columbia_blue-900 bg-clip-text text-transparent'>
+          <div className='pods rounded-lg bg-[#112240] p-6 shadow-lg'>
+            <h1 className='mb-2 bg-gradient-to-r from-columbia_blue-300 to-columbia_blue-900 bg-clip-text text-center text-2xl font-semibold text-transparent'>
               Pods
             </h1>
-            <div className='grid grid-cols-1 gap-4 place-items-center'>
+            <div className='grid grid-cols-1 place-items-center gap-4'>
               {podNames.map((pod) => (
                 <button
                   key={pod}
-                  className={`
-                    h-24 w-72 rounded-xl bg-[#172a45] shadow-md transition-all
-                    hover:shadow-lg hover:scale-105 flex items-center font-semibold text-md px-3 justify-center text-[#8892b0]
-                    ${pod === selectedPod ? 'border border-cyan-400' : ''}
-                  `}
+                  className={`text-md flex h-24 w-72 items-center justify-center rounded-xl bg-[#172a45] px-3 font-semibold text-[#8892b0] shadow-md transition-all hover:scale-105 hover:shadow-lg ${pod === selectedPod ? 'border border-cyan-400' : ''} `}
                   onClick={() => setSelectedPod(pod)}
                 >
                   {pod}
