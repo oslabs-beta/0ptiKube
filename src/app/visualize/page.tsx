@@ -200,7 +200,9 @@ export default function VisualizePage() {
   // ------------------------------------------------------------------
   return (
     <>
-      <div className='min-w-screen container min-h-screen bg-[#0a192f]'>
+      <div
+        className={`min-w-screen ${sourceType === 'container' ? 'container' : 'container-no-pods'} min-h-screen bg-[#0a192f]`}
+      >
         <div className='gauge grid grid-cols-1 place-items-center rounded-lg bg-[#112240] p-4 shadow-lg'>
           {/* Source Type Selector */}
           <div className='flex h-full w-full items-center justify-center bg-[#0a192f] p-4'>
@@ -225,8 +227,16 @@ export default function VisualizePage() {
         </div>
 
         <div className='time-graph rounded-lg bg-[#112240] p-4 shadow-lg'>
-          <TimeGraph data={historicalCpuData} />
-          <TimeGraph data={historicalMemoryData} />
+          <TimeGraph
+            data={historicalCpuData}
+            metric='CPU'
+            units='Millicores (m)'
+          />
+          <TimeGraph
+            data={historicalMemoryData}
+            metric='Memory'
+            units='Mebibytes (MiB)'
+          />
         </div>
 
         {/* Show pods only if sourceType === 'container' */}
