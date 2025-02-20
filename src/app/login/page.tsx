@@ -12,7 +12,7 @@ const orbitron = Orbitron({ subsets: ['latin'], weight: '700' }); // Load Orbitr
 
 const LoginPage: React.FC = () => {
   const searchParams = useSearchParams();
-  const error: string | null = searchParams.get('error');
+  const error = searchParams.get('error') === "unauthorized" ? "You must be logged in to access that page." : null;
 
   return (
     <SessionProvider>

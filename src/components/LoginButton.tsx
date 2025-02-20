@@ -15,7 +15,7 @@ const LoginButton: React.FC = () => {
 
   const handleLogout = (): void => {
     setLoading(true);
-    signOut({ callbackUrl: '/' }); // Redirect to home after logout
+    signOut({ callbackUrl: '/login' }); // Redirect to home after logout
   };
 
   if (status === 'loading') {

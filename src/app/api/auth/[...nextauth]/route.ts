@@ -72,8 +72,13 @@ export const authOptions = {
     async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
       console.log('redirecting to', url)
       console.log('base url is', baseUrl)
-      // Always redirect to /visualize after successful login
-      return baseUrl + '/visualize'
+
+      // If the URL is pointing to logou, redirect to the /login endpoint
+      if (url === '/login') {
+        return baseUrl + '/login';
+      }
+      // Otherwise, redirect to the /visualize endpoint
+      return baseUrl + '/visualize';
     }
   },
 };
