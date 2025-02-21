@@ -1,9 +1,7 @@
-'use client';
-import React from 'react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 
-const AuthStatus: React.FC = () => {
+const AuthStatus = () => {
   const { data: session, status } = useSession();
 
   if (status === 'loading') return <p>Loading...</p>; // You can show a loading indicator

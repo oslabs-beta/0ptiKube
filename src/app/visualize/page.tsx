@@ -1,38 +1,18 @@
 'use client';
+
 import { useState, useEffect } from 'react';
 import Gauge from '@/components/Gauge';
 import TimeGraph from '@/components/TimeGraph';
-import { useData } from '@/hooks/useData';
+import Pods from '@/components/Pods';
+import SourceTypeSelector from '@/components/SourceTypeSelector';
+import type { PrometheusMatrixResponse } from '@/types/metrics';
+import {
+  useMemoryUsage,
+  useCPUUsage,
+  useMemoryHistory,
+  useCPUHistory,
+} from '@/hooks/useMetrics';
 import './page.css';
-
-// Shape for CPU or Memory usage results
-interface PromVectorData {
-  resultType: string;
-  result: {
-    metric: {
-      labels: {
-        pod?: string;
-      };
-    };
-    value: {
-      time: string;
-      value: number;
-    };
-  }[];
-}
-
-// Shape of the historical data you expect
-interface PrometheusMatrixResponse {
-  resultType: string;
-  result: Array<{
-    metric: {
-      labels: {
-        pod?: string;
-      };
-    };
-    values: Array<{ time: string; value: number }>;
-  }>;
-}
 
 export default function VisualizePage() {
   // ------------------------------------------------------------------
@@ -42,42 +22,36 @@ export default function VisualizePage() {
     'container',
   );
 
-  // Build dynamic endpoints based on source type:
-  const memoryEndpoint = `${sourceType}/memory/percent`;
-  const cpuEndpoint = `${sourceType}/cpu/percent`;
-  const memoryHistoryEndpoint = `${sourceType}/memory/history`;
-  const cpuHistoryEndpoint = `${sourceType}/cpu/history`;
-
   // ------------------------------------------------------------------
   // Fetch Data from the Right Endpoints
   // ------------------------------------------------------------------
-  // Memory usage
-  const {
-    data: memoryData,
-    error: memoryError,
-    loading: memoryLoading,
-  } = useData<PromVectorData>(memoryEndpoint);
-
   // CPU usage
   const {
     data: cpuData,
     error: cpuError,
     loading: cpuLoading,
-  } = useData<PromVectorData>(cpuEndpoint);
+  } = useCPUUsage(sourceType);
 
   // CPU history
   const {
     data: cpuHistoryData,
-    loading: cpuHistoryLoading,
     error: cpuHistoryError,
-  } = useData<PrometheusMatrixResponse>(cpuHistoryEndpoint);
+    loading: cpuHistoryLoading,
+  } = useCPUHistory(sourceType);
+
+  // Memory usage
+  const {
+    data: memoryData,
+    error: memoryError,
+    loading: memoryLoading,
+  } = useMemoryUsage(sourceType);
 
   // Memory history
   const {
     data: memoryHistoryData,
-    loading: memoryHistoryLoading,
     error: memoryHistoryError,
-  } = useData<PrometheusMatrixResponse>(memoryHistoryEndpoint);
+    loading: memoryHistoryLoading,
+  } = useMemoryHistory(sourceType);
 
   // ------------------------------------------------------------------
   // Pods selection (only relevant if sourceType === 'container')
@@ -205,19 +179,11 @@ export default function VisualizePage() {
       >
         <div className='gauge grid grid-cols-1 place-items-center rounded-lg bg-[#112240] p-4 shadow-lg'>
           {/* Source Type Selector */}
-          <div className='flex h-full w-full items-center justify-center bg-[#0a192f] p-4'>
-            <select
-              className='h-10 w-40 rounded-md border border-cyan-400 bg-[#172a45] px-2 text-[#8892b0]'
-              value={sourceType}
-              onChange={(e) => {
-                setSourceType(e.target.value as 'cluster' | 'container');
-                if (e.target.value === 'cluster') setSelectedPod('');
-              }}
-            >
-              <option value='cluster'>Cluster</option>
-              <option value='container'>Container</option>
-            </select>
-          </div>
+          <SourceTypeSelector
+            sourceType={sourceType}
+            setSourceType={setSourceType}
+            setSelectedPod={setSelectedPod}
+          />
 
           {/* Gauges */}
           <div className='flex space-x-40 rounded-lg'>
@@ -227,6 +193,7 @@ export default function VisualizePage() {
         </div>
 
         <div className='time-graph rounded-lg bg-[#112240] p-4 shadow-lg'>
+          {/* Time Graphs */}
           <TimeGraph
             data={historicalCpuData}
             metric='CPU'
@@ -242,20 +209,11 @@ export default function VisualizePage() {
         {/* Show pods only if sourceType === 'container' */}
         {sourceType === 'container' && (
           <div className='pods rounded-lg bg-[#112240] p-6 shadow-lg'>
-            <h1 className='mb-2 bg-gradient-to-r from-columbia_blue-300 to-columbia_blue-900 bg-clip-text text-center text-2xl font-semibold text-transparent'>
-              Pods
-            </h1>
-            <div className='grid grid-cols-1 place-items-center gap-4'>
-              {podNames.map((pod) => (
-                <button
-                  key={pod}
-                  className={`text-md flex h-24 w-72 items-center justify-center rounded-xl bg-[#172a45] px-3 font-semibold text-[#8892b0] shadow-md transition-all hover:scale-105 hover:shadow-lg ${pod === selectedPod ? 'border border-cyan-400' : ''} `}
-                  onClick={() => setSelectedPod(pod)}
-                >
-                  {pod}
-                </button>
-              ))}
-            </div>
+            <Pods
+              podNames={podNames}
+              selectedPod={selectedPod}
+              setSelectedPod={setSelectedPod}
+            />
           </div>
         )}
       </div>

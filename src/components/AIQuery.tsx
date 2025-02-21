@@ -1,14 +1,12 @@
-'use client';
-
 import {
-  useState,
+  ChangeEvent,
+  KeyboardEvent,
   useCallback,
   useEffect,
-  KeyboardEvent,
-  ChangeEvent,
+  useState,
 } from 'react';
-import { useDebounce } from 'use-debounce';
 import ReactMarkdown from 'react-markdown';
+import { useDebounce } from 'use-debounce';
 
 const querySuggestions = [
   'Optimize CPU usage',
@@ -18,7 +16,7 @@ const querySuggestions = [
   'Find high-latency services',
 ];
 
-function AIQuery() {
+const AIQuery = () => {
   const [query, setQuery] = useState('');
   const [response, setResponse] = useState('');
   const [error, setError] = useState('');
@@ -94,10 +92,10 @@ function AIQuery() {
 
   return (
     <div className='min-h-screen bg-navy_blue-100 p-4 text-white'>
-      <div className='max-w-4xl mx-auto'>
-        <nav className='py-4 mb-8'>
+      <div className='mx-auto max-w-4xl'>
+        <nav className='mb-8 py-4'>
           <h1
-            className='text-2xl font-semibold text-center'
+            className='text-center text-2xl font-semibold'
             style={{ color: '#00ccff' }}
           >
             Kubernetes Optimization Assistant
@@ -110,7 +108,7 @@ function AIQuery() {
             value={query}
             onChange={handleInputChange}
             placeholder='Ask AI to optimize your cluster...'
-            className='w-full p-3 border rounded-lg focus:outline-none text-black'
+            className='w-full rounded-lg border p-3 text-black focus:outline-none'
             style={{ borderColor: '#00ccff' }}
             onFocus={() => setShowSuggestions(true)}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
@@ -119,14 +117,14 @@ function AIQuery() {
 
           {showSuggestions && filteredSuggestions.length > 0 && (
             <ul
-              className='absolute left-0 right-0 mt-2 bg-white border rounded-lg z-10'
+              className='absolute left-0 right-0 z-10 mt-2 rounded-lg border bg-white'
               style={{ borderColor: '#00ccff' }}
             >
               {filteredSuggestions.map((suggestion, index) => (
                 <li
                   key={index}
                   onClick={() => handleSelect(suggestion)}
-                  className='p-2 cursor-pointer text-black hover:bg-blue-100 transition rounded-md'
+                  className='cursor-pointer rounded-md p-2 text-black transition hover:bg-blue-100'
                 >
                   {suggestion}
                 </li>
@@ -138,7 +136,7 @@ function AIQuery() {
         <button
           onClick={() => handleQuery(query)}
           disabled={isLoading}
-          className='mt-6 mb-4 px-6 py-2 text-black font-semibold rounded-lg'
+          className='mb-4 mt-6 rounded-lg px-6 py-2 font-semibold text-black'
           style={{ backgroundColor: '#00ccff' }}
         >
           {isLoading ? (
@@ -153,7 +151,7 @@ function AIQuery() {
 
         {error && (
           <div
-            className='mt-4 p-4 border rounded-lg'
+            className='mt-4 rounded-lg border p-4'
             style={{ borderColor: '#ff0000', backgroundColor: '#ffebeb' }}
           >
             <p className='text-red-600'>{error}</p>
@@ -162,7 +160,7 @@ function AIQuery() {
 
         {response && (
           <div
-            className='mt-4 p-6 border rounded-lg bg-opacity-10 text-white'
+            className='mt-4 rounded-lg border bg-opacity-10 p-6 text-white'
             style={{ borderColor: '#00ccff', backgroundColor: '#001f3f' }}
           >
             <ReactMarkdown
@@ -171,7 +169,7 @@ function AIQuery() {
                 code: ({ ...props }) => (
                   <code
                     {...props}
-                    className='px-2 py-1 rounded border'
+                    className='rounded border px-2 py-1'
                     style={{
                       backgroundColor: '#002244',
                       borderColor: '#00ccff',
@@ -182,14 +180,14 @@ function AIQuery() {
                 pre: ({ ...props }) => (
                   <pre
                     {...props}
-                    className='p-4 rounded overflow-x-auto'
+                    className='overflow-x-auto rounded p-4'
                     style={{ backgroundColor: '#001f3f' }}
                   />
                 ),
                 a: ({ ...props }) => (
                   <a
                     {...props}
-                    className='hover:underline break-words'
+                    className='break-words hover:underline'
                     style={{ color: '#00ccff' }}
                   />
                 ),
@@ -202,6 +200,6 @@ function AIQuery() {
       </div>
     </div>
   );
-}
+};
 
 export default AIQuery;
