@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useMemo, useState } from 'react';
-import * as d3 from 'd3';
 import type { PrometheusMatrixResponse } from '@/types/metrics';
+import * as d3 from 'd3';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 /**
  * A simple interface to represent the time-series data
