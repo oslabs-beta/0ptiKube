@@ -4,6 +4,8 @@ import Gauge from '@/components/Gauge';
 import TimeGraph from '@/components/TimeGraph';
 import { useData } from '@/hooks/useData';
 import './page.css';
+import Pods from '@/components/Pods';
+import SourceTypeSelector from '@/components/SourceTypeSelector';
 
 // Shape for CPU or Memory usage results
 interface PromVectorData {
@@ -205,19 +207,11 @@ export default function VisualizePage() {
       >
         <div className='gauge grid grid-cols-1 place-items-center rounded-lg bg-[#112240] p-4 shadow-lg'>
           {/* Source Type Selector */}
-          <div className='flex h-full w-full items-center justify-center bg-[#0a192f] p-4'>
-            <select
-              className='h-10 w-40 rounded-md border border-cyan-400 bg-[#172a45] px-2 text-[#8892b0]'
-              value={sourceType}
-              onChange={(e) => {
-                setSourceType(e.target.value as 'cluster' | 'container');
-                if (e.target.value === 'cluster') setSelectedPod('');
-              }}
-            >
-              <option value='cluster'>Cluster</option>
-              <option value='container'>Container</option>
-            </select>
-          </div>
+          <SourceTypeSelector
+            sourceType={sourceType}
+            setSourceType={setSourceType}
+            setSelectedPod={setSelectedPod}
+          />
 
           {/* Gauges */}
           <div className='flex space-x-40 rounded-lg'>
@@ -227,6 +221,7 @@ export default function VisualizePage() {
         </div>
 
         <div className='time-graph rounded-lg bg-[#112240] p-4 shadow-lg'>
+          {/* Time Graphs */}
           <TimeGraph
             data={historicalCpuData}
             metric='CPU'
@@ -242,20 +237,11 @@ export default function VisualizePage() {
         {/* Show pods only if sourceType === 'container' */}
         {sourceType === 'container' && (
           <div className='pods rounded-lg bg-[#112240] p-6 shadow-lg'>
-            <h1 className='mb-2 bg-gradient-to-r from-columbia_blue-300 to-columbia_blue-900 bg-clip-text text-center text-2xl font-semibold text-transparent'>
-              Pods
-            </h1>
-            <div className='grid grid-cols-1 place-items-center gap-4'>
-              {podNames.map((pod) => (
-                <button
-                  key={pod}
-                  className={`text-md flex h-24 w-72 items-center justify-center rounded-xl bg-[#172a45] px-3 font-semibold text-[#8892b0] shadow-md transition-all hover:scale-105 hover:shadow-lg ${pod === selectedPod ? 'border border-cyan-400' : ''} `}
-                  onClick={() => setSelectedPod(pod)}
-                >
-                  {pod}
-                </button>
-              ))}
-            </div>
+            <Pods
+              podNames={podNames}
+              selectedPod={selectedPod}
+              setSelectedPod={setSelectedPod}
+            />
           </div>
         )}
       </div>
