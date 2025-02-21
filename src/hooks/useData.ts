@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 interface UseFetchDataReturn<T> {
   data: T | null;
@@ -31,22 +31,24 @@ export function useData<T = unknown>(endpoint: string): UseFetchDataReturn<T> {
         setLoading(true);
         setError(null);
 
-        const response = await axios.get<T>(
-          `http://localhost:3000/api/metrics/${endpoint}`,
-          { signal },
-        );
+        // Build the final URL from .env variable
+        const baseUrl =
+          process.env.NEXT_PUBLIC_METRICS_API_BASE_URL ||
+          'http://localhost:3000/api/metrics';
+
+        const response = await axios.get<T>(`${baseUrl}/${endpoint}`, {
+          signal,
+        });
 
         setData(response.data);
-      } catch (err: unknown) {
-        // If the request was cancelled
+      } catch (err) {
+        // If request was canceled
         if (axios.isCancel(err)) {
-          console.log('Request canceled', (err as Error).message);
-        } else if (err instanceof Error) {
-          // Handle normal errors
-          setError(err.message);
+          console.log('Request canceled:', (err as Error).message);
         } else {
-          // Fallback in case it's not an instance of Error
-          setError(String(err));
+          // Extract the error message
+          const message = err instanceof AxiosError ? err.message : String(err);
+          setError(message);
         }
       } finally {
         setLoading(false);
@@ -56,7 +58,7 @@ export function useData<T = unknown>(endpoint: string): UseFetchDataReturn<T> {
     fetchData();
 
     return () => {
-      // Abort the Axios request if the component unmounts
+      // Abort the Axios request if the component unmounts or dependency changes
       controller.abort();
     };
   }, [endpoint]);

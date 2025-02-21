@@ -1,6 +1,5 @@
 import * as d3 from 'd3';
-import React from 'react';
-import { useRef, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 /**
  * Props interface for the Gauge component
@@ -32,7 +31,7 @@ interface ArcData {
 const ANIMATION_DURATION = 2000; // Duration in milliseconds
 const ANIMATION_EASING = d3.easeCubicOut; // Smooth easing function for natural movement
 
-function Gauge({
+const Gauge = ({
   name,
   value,
   min = 0,
@@ -41,7 +40,7 @@ function Gauge({
   height = 200,
   innerRadius = 50,
   outerRadius = 80,
-}: GaugeProps) {
+}: GaugeProps) => {
   // Reference to the SVG element for D3 manipulation
   const svgRef = useRef<SVGSVGElement | null>(null);
 
@@ -185,6 +184,6 @@ function Gauge({
       <svg ref={svgRef} />
     </div>
   );
-}
+};
 
 export default Gauge;
