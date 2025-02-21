@@ -1,24 +1,6 @@
-'use client';
-
 import React, { useEffect, useRef, useMemo, useState } from 'react';
 import * as d3 from 'd3';
-
-/**
- * The structure of a typical Prometheus matrix response,
- * including an array of result objects that each hold metric
- * labels and a list of time/value pairs.
- */
-interface PrometheusMatrixResponse {
-  resultType: string;
-  result: Array<{
-    metric: {
-      labels: {
-        pod?: string;
-      };
-    };
-    values: Array<{ time: string; value: number }>;
-  }>;
-}
+import type { PrometheusMatrixResponse } from '@/types/metrics';
 
 /**
  * A simple interface to represent the time-series data
