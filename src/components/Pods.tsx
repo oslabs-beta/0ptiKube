@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface PodProps {
   setSelectedPod: (pod: string) => void;
   podNames: string[];
