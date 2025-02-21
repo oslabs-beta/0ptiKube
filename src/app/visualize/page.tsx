@@ -1,40 +1,18 @@
 'use client';
+
 import { useState, useEffect } from 'react';
 import Gauge from '@/components/Gauge';
 import TimeGraph from '@/components/TimeGraph';
-import { useData } from '@/hooks/useData';
-import './page.css';
 import Pods from '@/components/Pods';
 import SourceTypeSelector from '@/components/SourceTypeSelector';
-
-// Shape for CPU or Memory usage results
-interface PromVectorData {
-  resultType: string;
-  result: {
-    metric: {
-      labels: {
-        pod?: string;
-      };
-    };
-    value: {
-      time: string;
-      value: number;
-    };
-  }[];
-}
-
-// Shape of the historical data you expect
-interface PrometheusMatrixResponse {
-  resultType: string;
-  result: Array<{
-    metric: {
-      labels: {
-        pod?: string;
-      };
-    };
-    values: Array<{ time: string; value: number }>;
-  }>;
-}
+import type { PrometheusMatrixResponse } from '@/types/metrics';
+import {
+  useMemoryUsage,
+  useCPUUsage,
+  useMemoryHistory,
+  useCPUHistory,
+} from '@/hooks/useMetrics';
+import './page.css';
 
 export default function VisualizePage() {
   // ------------------------------------------------------------------
@@ -44,42 +22,36 @@ export default function VisualizePage() {
     'container',
   );
 
-  // Build dynamic endpoints based on source type:
-  const memoryEndpoint = `${sourceType}/memory/percent`;
-  const cpuEndpoint = `${sourceType}/cpu/percent`;
-  const memoryHistoryEndpoint = `${sourceType}/memory/history`;
-  const cpuHistoryEndpoint = `${sourceType}/cpu/history`;
-
   // ------------------------------------------------------------------
   // Fetch Data from the Right Endpoints
   // ------------------------------------------------------------------
-  // Memory usage
-  const {
-    data: memoryData,
-    error: memoryError,
-    loading: memoryLoading,
-  } = useData<PromVectorData>(memoryEndpoint);
-
   // CPU usage
   const {
     data: cpuData,
     error: cpuError,
     loading: cpuLoading,
-  } = useData<PromVectorData>(cpuEndpoint);
+  } = useCPUUsage(sourceType);
 
   // CPU history
   const {
     data: cpuHistoryData,
-    loading: cpuHistoryLoading,
     error: cpuHistoryError,
-  } = useData<PrometheusMatrixResponse>(cpuHistoryEndpoint);
+    loading: cpuHistoryLoading,
+  } = useCPUHistory(sourceType);
+
+  // Memory usage
+  const {
+    data: memoryData,
+    error: memoryError,
+    loading: memoryLoading,
+  } = useMemoryUsage(sourceType);
 
   // Memory history
   const {
     data: memoryHistoryData,
-    loading: memoryHistoryLoading,
     error: memoryHistoryError,
-  } = useData<PrometheusMatrixResponse>(memoryHistoryEndpoint);
+    loading: memoryHistoryLoading,
+  } = useMemoryHistory(sourceType);
 
   // ------------------------------------------------------------------
   // Pods selection (only relevant if sourceType === 'container')
