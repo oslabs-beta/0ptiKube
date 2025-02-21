@@ -1,224 +1,111 @@
-/**
- * @fileoverview TimeGraph component for visualizing Kubernetes metrics from Prometheus
- * @requires Next.js 13+ (for app directory structure)
- * @requires d3 5+ (for data visualization)
- *
- * Renders time-series data for Kubernetes metrics in an interactive graph format. Handles
- * real-time updates and user interactions on the client side.
- */
 'use client';
 
-/**
- * Core React imports for component functionality.
- * - React: Core library
- * - Hooks: State management and component lifecycle
- */
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  useMemo,
-  useCallback,
-} from 'react';
-
-/**
- * External dependencies
- * @module d3 - Data visualization library
- * @module handleError - Custom error handling utilities
- */
+import React, { useEffect, useRef, useMemo, useState } from 'react';
 import * as d3 from 'd3';
-import { handleError } from '@/app/api/utils/errorHandler';
 
 /**
- * Metric type definitions for Kubernetes resource monitoring
- * @typedef { 'cpu' | 'memory' } MetricType - Type of resource being monitored
- * @typedef { 'cluster' | 'container' } - Scope of the metric measurement
+ * The structure of a typical Prometheus matrix response,
+ * including an array of result objects that each hold metric
+ * labels and a list of time/value pairs.
  */
-type MetricType = 'cpu' | 'memory';
-type MetricScope = 'cluster' | 'container';
-
-/**
- * @interface TimeGraph Props
- * @description Props for the TimeGraph component
- * @property {MetricScope} metricScope - Scope of metric measurement (cluster/container)
- * @property {string} viewMode - Display mode for the graph - not currently being used
- * @property {string} [containerName] - Optional container name for container-level metrics
- * @property {{data: PrometheusResponse} => void} [onDataUpdate] - Optional callback that fires when new data is fetched,
- * allowing parent components to sync with the latest Prometheus metrics
- */
-interface TimeGraphProps {
-  metricScope: MetricScope;
-  viewMode: ViewMode;
-  containerName?: string; // Required when viewMode is 'container'
-  onDataUpdate?: (data: PrometheusResponse) => void;
-}
-
-/**
- * @function getMetricUnits
- * @description Helper function to get the y-axis units based on metric type
- * @param {MetricType} metricType - Type of metric (cpu/memory)
- * @returns {string} Units for the metric (millicores for cpu and MiB for memory)
- */
-const getMetricUnits = (metricType: MetricType): string => {
-  return metricType === 'cpu' ? 'millicores' : 'MiB';
-};
-
-/**
- * @function formatTime
- * @description Helper function to convert time units for tooltip integration
- * @param {number} leads - Number to format
- * @returns {Intl.DateTimeFormatOptions} Formatting options for time display
- */
-const formatTime = (leads: number) => {
-  const date = new Date(leads);
-  return date.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  });
-};
-
-/**
- * @interface DataPoint
- * @description Represents a single data point in the time series
- * @property {number} time - Unix timestamp
- * @property {number} value - Metric value at the given timestamp
- */
-interface DataPoint {
-  time: number;
-  value: number;
-}
-
-/**
- * @interface PrometheusResponse
- * @description Structure of the response from the Prometheus API
- * @property {string} resultType - Type of result returned by Prometheur
- * @property {Array<PrometheusResult>} result - Array of metric results
- */
-interface PrometheusResponse {
+interface PrometheusMatrixResponse {
   resultType: string;
   result: Array<{
-    metric: Record<string, string>;
+    metric: {
+      labels: {
+        pod?: string;
+      };
+    };
     values: Array<{ time: string; value: number }>;
   }>;
 }
 
 /**
- * @component TimeGraph
- * @description Renders a D3-based time series graph for Kubernetes metrics
- * Uses Prometheus data to visualize CPU or Memory usage over time
- *
- * @param {TimeGraphProps} props
- * @returns {React.FC<TimeGraphProps>} Rendered graph component
+ * A simple interface to represent the time-series data
+ * used by D3. Each data point has a timestamp (in ms)
+ * and a numerical value.
  */
-const TimeGraph: React.FC<TimeGraphProps> = ({
-  // metricScope, // Not currently being used
-  viewMode,
-  containerName,
-  // onDataUpdate, // Not currently being used
-}) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+interface DataPoint {
+  time: number; // Unix timestamp in milliseconds
+  value: number; // Numeric value of the metric at that timestamp
+}
+
+/**
+ * Props for the TimeGraph component:
+ * @property {PrometheusMatrixResponse | null} data - The timeseries data to plot.
+ * @property {string} [units="Value"] - Display units for the metric (e.g. "Millicores (m)", "Mebibytes (MiB)").
+ * @property {string} [metric="Resource"] - A short descriptor of the metric (e.g. "CPU", "Memory").
+ */
+interface TimeGraphProps {
+  data: PrometheusMatrixResponse | null;
+  units?: string;
+  metric?: string;
+}
+
+/**
+ * TimeGraph is a reusable React component that renders a line chart
+ * for a given set of time-series data using D3.js. It includes axes,
+ * gridlines, interactive tooltips, and an optional trend line.
+ */
+const TimeGraph = ({
+  data,
+  metric = 'Resource',
+  units = 'Value',
+}: TimeGraphProps) => {
+  // Refs for the SVG and container elements
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // State to manage the chart width. Defaults to 900px for initial render.
+  const [width, setWidth] = useState(900);
+  // Fixed height of the chart
+  const height = 450;
 
   /**
-   * State Hooks
-   * @state {[number, number]} [width, setWidth] - Current screen width, default 900
-   * @state {MetricType} [metricType, setMetric] - Current metric type being displayed
-   * @state {PrometheusResponse | null} [rawData, setRawData] - Raw data from Prometheus before transformation
-   * @state {string} [containerType, setContainerType] - Type of container being monitored (defaults to /cluter/cpu metrics)
-   */
-  const [width, setWidth] = useState(900); // Default screen width
-  const [rawData, setRawData] = useState<PrometheusResponse | null>(null);
-  const [containerType, setContainerType] = useState('/cluster/cpu');
-  const [metricType, setMetricType] = useState<MetricType>('cpu');
-
-  /**
-   * @callback constructEndpoint
-   * @description Builds the API endpoint URL based on container type and metric type
-   * @returns {string} Constructed endpoint URL
-   */
-  const constructEndpoint = useCallback(() => {
-    const baseEndpoint = '/api/metrics';
-    if (viewMode === 'cluster') {
-      return `${baseEndpoint}/${containerType}/${metricType}/history`;
-    } else {
-      // For container view, we'll need to include the container name in the query
-      return `${baseEndpoint}/container/${metricType}/history?container=${containerName}`;
-    }
-  }, [containerType, viewMode, containerName, metricType]);
-
-  /**
-   * @effect Metric Type extraction
-   * @description Extracts metric type (cpu/memory) from containerType string
-   * Updates metricType state when containerType changes
-   */
-  useEffect(() => {
-    const newMetricType = containerType.includes('memory') ? 'memory' : 'cpu';
-    setMetricType(newMetricType);
-  }, [containerType]);
-
-  /**
-   * @effect Prometheus Data Fetcher
-   * @description Fetches metrics data from Preometheus API endpoints
-   * Re-fetches when containerType, constructEndpoint, containerName, or metricType change
-   */
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const endpoint = constructEndpoint();
-        const response = await fetch(endpoint);
-
-        if (!response.ok)
-          throw new Error(`HTTP Error! Status: ${response.status}`);
-
-        const responseData: PrometheusResponse = await response.json();
-        setRawData(responseData);
-      } catch (error) {
-        return handleError(
-          error,
-          'Failed to retrieve Prometheus data from API endpoint'
-        );
-      }
-    };
-
-    fetchData();
-  }, [containerType, constructEndpoint, containerName, metricType]);
-
-  /**
-   * @memo transformedData
-   * @description Memoized transformation of raw Prometheus data into D3-compatatible format
-   * @returns {DataPoint[]} Array of time-value data points for visualization
-   *
-   * Returns empty array if:
-   * - rawData is null
-   * - rawData has no results
-   * - rawData result array is empty
+   * Transform the raw Prometheus data into an array of DataPoints
+   * that D3 can work with easily (time in ms, numeric value).
    */
   const transformedData: DataPoint[] = useMemo(() => {
-    // Early return if no data is available
-    if (!rawData || !rawData.result.length) return [];
+    if (!data || data.result.length === 0) return [];
 
-    // Transform API data for D3 consumption
-    return rawData.result[0].values.map((entry) => ({
-      time: new Date(entry.time).getTime(), // Convert ISO string to timestamp
-      value: Number(entry.value),
-    }));
-  }, [rawData]); // Only reloads when rawData changes
+    // Collect all values from all results
+    const allPoints: DataPoint[] = data.result.flatMap((result) =>
+      result.values.map((entry) => ({
+        // Parse ISO 8601 string directly
+        time: Date.parse(entry.time),
+        value: entry.value,
+      })),
+    );
+
+    return allPoints;
+  }, [data]);
 
   /**
-   * @effect Window Resize Handler
-   * @description Manages responsive behavior of the graph
-   * Sets up resize listener and performs initial size calculation
-   * @depends containerRef - Reference to the container element for width calculations
+   * formatTime is a small helper function used to display
+   * timestamps in tooltips, using HH:MM:SS (24-hour) format.
+   */
+  function formatTime(timestamp: number) {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    });
+  }
+
+  /**
+   * Whenever the container's size changes, recalculate the width.
+   * This effect runs on initial mount and whenever the user resizes
+   * the browser window.
    */
   useEffect(() => {
     const handleResize = () => {
       if (containerRef.current) {
-        // Get container width and set a minimum
+        // Enforce a minimum width so the chart isn't squashed too small
         const containerWidth = Math.max(
           containerRef.current.getBoundingClientRect().width,
-          300 // Minimum width
+          300, // Minimum width
         );
         setWidth(containerWidth);
       }
@@ -227,142 +114,135 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
     // Initial size calculation
     handleResize();
 
-    // Resize event listener
+    // Listen for window resize events
     window.addEventListener('resize', handleResize);
 
     // Cleanup: Remove event listener on component unmount
     return () => window.removeEventListener('resize', handleResize);
-  }, [containerRef]);
+  }, []);
 
   /**
-   * @effect D3 Graph Rendering
-   * @description Handles D3 graph visualization setup and updates
-   * @depends {
-   * transformedData - Processed data points for visualizaion
-   * metricType - Current metric being displayed (cpu/memory)
-   * containerType - Current container type displayed (cluster/container)
-   * containerName - Current container name displayed
-   * }
+   * Main D3 chart rendering effect. This runs whenever
+   * `transformedData`, `width`, or `units` change.
    */
   useEffect(() => {
-    // Guard clause: Returns early is no data or svgRef
+    // If we have no data or no SVG ref, skip chart drawing
     if (!svgRef.current || transformedData.length === 0) return;
 
-    // Set up graph dimensions
-    const width = 900;
-    const height = 450;
+    // Clear any existing content from previous renders
+    const svg = d3.select(svgRef.current);
+    svg.selectAll('*').remove();
+
+    // Chart layout margins
     const margin = { top: 50, right: 50, bottom: 60, left: 70 };
 
-    // Set up x-axis scale
+    /**
+     * Build X and Y scales based on the data.
+     * - xScale: time scale from earliest to latest timestamp
+     * - yScale: linear scale from 0 to max value (with some headroom)
+     */
     const xScale = d3
       .scaleTime()
-      .domain([
-        d3.min(transformedData, (d) => d.time) || 0, // Get min timestamp
-        d3.max(transformedData, (d) => d.time) || 0,
-      ])
+      .domain(d3.extent(transformedData, (d) => d.time) as [number, number])
       .range([margin.left, width - margin.right]);
 
-    // Set up y-axis scale
+    const yMax = d3.max(transformedData, (d) => d.value) || 0;
     const yScale = d3
       .scaleLinear()
-      .domain([0, (d3.max(transformedData, (d) => d.value) || 0) * 1.1])
+      .domain([0, yMax * 1.1]) // Add ~10% headroom for clarity
       .range([height - margin.bottom, margin.top]);
 
-    const svg = d3.select(svgRef.current);
-    svg.selectAll('*').remove(); // Clear previous render
-
-    // Append x-axis to SVG
+    // ====== X Axis ======
     svg
       .append('g')
-      .attr('transform', `translate(0,${height - margin.bottom})`)
+      .attr('transform', `translate(0, ${height - margin.bottom})`)
       .call(
         d3
           .axisBottom(xScale)
           .ticks(d3.timeMinute.every(10)) // Show tick every 10 minutes
-          .tickFormat((d) => {
-            return d3.timeFormat('%I:%M %p')(d as Date);
-          })
+          .tickFormat((d) => d3.timeFormat('%H:%M')(d as Date)), // 24-hour time format
       )
       .selectAll('text')
       .attr('fill', 'white')
       .attr('font-size', '14px');
 
-    // Append y-axis to SVG
+    // ====== Y Axis ======
     svg
       .append('g')
-      .attr('transform', `translate(${margin.left},0)`)
+      .attr('transform', `translate(${margin.left}, 0)`)
       .call(d3.axisLeft(yScale))
       .selectAll('text')
       .attr('fill', 'white')
       .attr('font-size', '14px');
 
-    // Add background grid
+    // ====== Grid Lines ======
     const grid = svg.append('g').attr('class', 'grid');
 
+    // Vertical grid lines
     grid
       .append('g')
-      .attr('class', 'grid-lines')
       .attr('transform', `translate(0, ${height - margin.bottom})`)
       .call(
         d3
           .axisBottom(xScale)
           .ticks(transformedData.length / 10)
           .tickSize(-height + margin.top + margin.bottom)
-          .tickFormat(() => '')
+          .tickFormat(() => ''),
       )
       .selectAll('line')
       .attr('stroke', '#ffffff30'); // Light transparency for more subtle effect
 
+    // Horizontal grid lines
     grid
       .append('g')
-      .attr('class', 'grid-lines')
       .attr('transform', `translate(${margin.left}, 0)`)
       .call(
         d3
           .axisLeft(yScale)
           .ticks(5)
           .tickSize(-width + margin.left + margin.right)
-          .tickFormat(() => '')
+          .tickFormat(() => ''),
       )
       .selectAll('line')
       .attr('stroke', '#ffffff30'); // Light transparency for more subtle effect
 
-    // Axis label - x-axis
+    // ====== Axis Labels ======
+    // X-axis label
     svg
       .append('text')
       .attr('x', width / 2)
       .attr('y', height - 20)
-      .attr('text-anchor', 'middle')
       .attr('fill', 'white')
       .attr('font-size', '18px')
+      .attr('text-anchor', 'middle')
       .text('Time');
 
-    // Axis label - y-axis
+    // Y-axis label
     svg
       .append('text')
       .attr('x', -(height / 2))
-      .attr('y', margin.left - 50) // Adjust as needed
-      .attr('transform', 'rotate(-90)')
-      .attr('text-anchor', 'middle')
+      .attr('y', margin.left - 50)
       .attr('fill', 'white')
       .attr('font-size', '18px')
-      .text(`Value (${getMetricUnits(metricType)})`);
+      .attr('text-anchor', 'middle')
+      .attr('transform', 'rotate(-90)')
+      .text(units);
 
-    // Generate line path
+    // ====== Line Path Generator ======
     const lineGenerator = d3
       .line<DataPoint>()
       .x((d) => xScale(d.time))
       .y((d) => yScale(d.value))
       .curve(d3.curveLinear);
 
-    // Append path
+    // Append the main data path
     const path = svg
       .append('path')
       .datum(transformedData)
       .attr('d', lineGenerator)
       .attr('fill', 'none')
       .attr('stroke', '#00ccff')
-      .attr('stroke-width', '3');
+      .attr('stroke-width', 3);
 
     // Animate the line drawing
     const totalLength = path.node()?.getTotalLength() || 0;
@@ -374,7 +254,7 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
       .ease(d3.easeLinear)
       .attr('stroke-dashoffset', 0);
 
-    // Append Circles for data points
+    // ====== Data Point Circles ======
     const circles = svg
       .selectAll('circle')
       .data(transformedData)
@@ -384,9 +264,9 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
       .attr('cy', (d) => yScale(d.value))
       .attr('r', 4)
       .attr('fill', '#00ccff')
-      .attr('cursor', 'pointer');
+      .style('cursor', 'pointer');
 
-    // Add tooltip
+    // ====== Tooltip ======
     const tooltip = d3
       .select('body')
       .append('div')
@@ -397,99 +277,79 @@ const TimeGraph: React.FC<TimeGraphProps> = ({
       .style('border-radius', '5px')
       .style('opacity', 0);
 
-    // Calculate linear regression
-    const xSeries = transformedData.map((d, i) => i);
-    const ySeries = transformedData.map((d) => d.value);
-
-    const n = xSeries.length;
-    const xMean = xSeries.reduce((a, b) => a + b, 0) / n;
-    const yMean = ySeries.reduce((a, b) => a + b, 0) / n;
-
-    const slope =
-      xSeries
-        .map((x, i) => (x - xMean) * (ySeries[i] - yMean))
-        .reduce((a, b) => a + b, 0) /
-      xSeries.map((x) => Math.pow(x - xMean, 2)).reduce((a, b) => a + b, 0);
-
-    const intercept = yMean - slope * xMean;
-
-    // Create trend line data
-    const trendData = xSeries.map((x) => ({
-      time: transformedData[x].time,
-      value: slope * x + intercept,
-    }));
-
-    // Add trend line to the graph
-    const trendLine = d3
-      .line<DataPoint>()
-      .x((d) => xScale(d.time))
-      .y((d) => yScale(d.value));
-
-    svg
-      .append('path')
-      .datum(trendData)
-      .attr('class', 'trend-line')
-      .attr('d', trendLine)
-      .attr('fill', 'none')
-      .attr('stroke', '#ffcc00')
-      .attr('stroke-width', 2)
-      .attr('stroke-dasharray', '10,10') // Create dashed line
-      .attr('opacity', 0.6); // Make it slightly transparent
-
+    // Tooltip interaction
     circles
       .on('mouseover', function (event, d) {
         d3.select(this).transition().duration(300).attr('r', 6); // Expand on hover
-
         tooltip.transition().duration(300).style('opacity', 1);
         tooltip
-          // .html(`Time: ${d.time}, Value: ${d.value}`)
-          .html(`Time: ${formatTime(d.time)}, Value: ${d.value.toFixed(2)}`)
+          .html(
+            `Time: ${formatTime(d.time)}<br/>${units}: ${d.value.toFixed(2)}`,
+          )
           .style('left', `${event.pageX + 10}px`)
           .style('top', `${event.pageY - 20}px`);
       })
       .on('mouseout', function () {
         d3.select(this).transition().duration(300).attr('r', 4); // Shrink back on mouse leave
-
         tooltip.transition().duration(300).style('opacity', 0);
       });
-  }, [transformedData, metricType, containerType, containerName]);
 
-  /**
-   * @returns React component structure
-   * Container div with dynamic styling
-   * SVG element for D3 graph rendering
-   * Metric selector options in dropdown menu
-   */
+    // ====== (Optional) Trend Line ======
+    // Calculate a simple linear regression for illustrative purposes
+    const xSeries = transformedData.map((_, i) => i);
+    const ySeries = transformedData.map((d) => d.value);
+    const n = xSeries.length;
+    if (n > 1) {
+      const xMean = d3.mean(xSeries) as number;
+      const yMean = d3.mean(ySeries) as number;
+
+      const slope =
+        xSeries
+          .map((x, i) => (x - xMean) * (ySeries[i] - yMean))
+          .reduce((a, b) => a + b, 0) /
+        xSeries.map((x) => Math.pow(x - xMean, 2)).reduce((a, b) => a + b, 0);
+
+      const intercept = yMean - slope * xMean;
+
+      const trendData = xSeries.map((x) => ({
+        time: transformedData[x].time,
+        value: slope * x + intercept,
+      }));
+
+      const trendLine = d3
+        .line<{ time: number; value: number }>()
+        .x((d) => xScale(d.time))
+        .y((d) => yScale(d.value));
+
+      svg
+        .append('path')
+        .datum(trendData)
+        .attr('class', 'trend-line')
+        .attr('d', trendLine)
+        .attr('fill', 'none')
+        .attr('stroke', '#ffcc00')
+        .attr('stroke-width', 2)
+        .attr('stroke-dasharray', '10,10') // Create dashed line
+        .attr('opacity', 0.6); // Create dashed line
+    }
+
+    // Cleanup function to remove tooltip on unmount
+    return () => {
+      tooltip.remove();
+    };
+  }, [transformedData, width, units]);
+
   return (
-    <div style={{ textAlign: 'center', color: 'white' }}>
-      <div className='flex justify-center items-center mb-6 p-4 border-b-2 border-columbia_blue-900'>
-        <h2 className='text-2xl font-semibold bg-gradient-to-r from-columbia_blue-300 to-columbia_blue-900 bg-clip-text text-transparent'>
-          Resource Use Over Time
+    <div ref={containerRef} style={{ width: '100%', margin: 'auto' }}>
+      {/* A descriptive title for the chart */}
+      <div style={{ textAlign: 'center', color: 'white' }}>
+        <h2 className='bg-gradient-to-r from-columbia_blue-300 to-columbia_blue-900 bg-clip-text text-2xl font-semibold text-transparent'>
+          {metric} Usage Over Time
         </h2>
       </div>
 
-      {/* Container for the graph */}
-      <div
-        ref={containerRef}
-        className='w-full px-4'
-        style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}
-      >
-        <svg ref={svgRef} width={width} height={450} />
-      </div>
-
-      {/* Section with metric selector */}
-      <div className='flex justify-center items-center mb-4 p-4 bg-[#0a192f]'>
-        <select
-          value={containerType}
-          onChange={(e) => setContainerType(e.target.value)}
-          className='justify-self-center bg-[#112240] text-white px-4 py-2 rounded border border-[#172a45] cursor-pointer hover:bg-[#172a45] transition-colors'
-        >
-          <option value='cluster/cpu'>Cluster CPU</option>
-          <option value='cluster/memory'>Cluster Memory</option>
-          <option value='container/cpu'>Container CPU</option>
-          <option value='container/memory'>Container Memory</option>
-        </select>
-      </div>
+      {/* The SVG container where D3 draws the chart */}
+      <svg ref={svgRef} width={width} height={height} />
     </div>
   );
 };
