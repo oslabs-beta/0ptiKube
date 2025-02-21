@@ -13,6 +13,8 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
 
     // Retrieve the session token from the request
     const session = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    // Debugging log for GitHub Avatar implementation
+    console.log('Session in middleware:', JSON.stringify(session, null, 2));
 
     // Define the protected routes
     const protectedRoutes: string[] = ['/visualize', '/optimize'];
