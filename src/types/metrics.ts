@@ -1,5 +1,5 @@
 // Shape for CPU or Memory usage results
-export type PromVectorData = {
+export type PrometheusVectorData = {
   resultType: string;
   result: {
     metric: {
