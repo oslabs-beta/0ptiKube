@@ -48,7 +48,7 @@ export default function SourceTypeSelector({
     motion-delay-[0.250s]
   `;
 
-  const cubeClosed = `
+  const podClosed = `
     motion-safe:animate-out
     motion-scale-out-[0.5]
     motion-translate-y-out-[30%]
@@ -59,7 +59,7 @@ export default function SourceTypeSelector({
     pointer-events-none
   `;
 
-  const cubeOpen = `
+  const podOpen = `
     motion-safe:animate-in
     motion-scale-in-[0.5]
     motion-translate-y-in-[30%]
@@ -113,11 +113,11 @@ export default function SourceTypeSelector({
           </svg>
         </div>
         <span className="text-white text-[18px] whitespace-nowrap">
-          Cluster
+          Cluster View
         </span>
       </button>
 
-      {/* CUBE BUTTON */}
+      {/* POD BUTTON */}
       <button
         onClick={handleSelectContainer}
         className={`
@@ -137,7 +137,7 @@ export default function SourceTypeSelector({
           duration-300
           hover:scale-105
 
-          ${isOpen ? cubeOpen : cubeClosed}
+          ${isOpen ? podOpen : podClosed}
         `}
       >
         <div className="w-[60px] h-[60px] flex justify-center items-center">
@@ -165,7 +165,7 @@ export default function SourceTypeSelector({
           </svg>
         </div>
         <span className="text-white text-[18px] whitespace-nowrap">
-          Cube
+          Pod View
         </span>
       </button>
 
