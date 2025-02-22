@@ -177,14 +177,14 @@ export default function VisualizePage() {
       <div
         className={`min-w-screen ${sourceType === 'container' ? 'container' : 'container-no-pods'} min-h-screen bg-[#0a192f]`}
       >
-        <div className='gauge grid grid-cols-1 place-items-center rounded-lg bg-[#112240] p-4 shadow-lg'>
-          {/* Source Type Selector */}
-          <SourceTypeSelector
-            sourceType={sourceType}
-            setSourceType={setSourceType}
-            setSelectedPod={setSelectedPod}
-          />
+        {/* Source Type Selector */}
+        <SourceTypeSelector
+          sourceType={sourceType}
+          setSourceType={setSourceType}
+          setSelectedPod={setSelectedPod}
+        />
 
+        <div className='gauge grid grid-cols-1 place-items-center rounded-lg bg-[#112240] p-4 shadow-lg'>
           {/* Gauges */}
           <div className='flex space-x-40 rounded-lg'>
             <Gauge value={memoryValue} name='Memory' />
