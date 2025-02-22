@@ -25,16 +25,14 @@ export async function executeRangeQuery(
   query: string,
   start: Date,
   end: Date,
-  step: string
+  step: string,
 ) {
   try {
-
     // Convert timestamps to Date objects
-
     console.log(
       'Executing range query:',
       query,
-      `Start: ${start}, End: ${end}, Step: ${step}`
+      `Start: ${start}, End: ${end}, Step: ${step}`,
     );
     return await prom.rangeQuery(query, start, end, step);
   } catch (error) {

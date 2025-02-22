@@ -1,6 +1,7 @@
 import type { PrometheusMatrixResponse } from '@/types/metrics';
 import * as d3 from 'd3';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { TIME_PRESETS } from '@/constants/timePresets';
 
 /**
  * A simple interface to represent the time-series data
@@ -22,6 +23,7 @@ interface TimeGraphProps {
   data: PrometheusMatrixResponse | null;
   units?: string;
   metric?: string;
+  preset?: string;
 }
 
 /**
@@ -33,6 +35,7 @@ const TimeGraph = ({
   data,
   metric = 'Resource',
   units = 'Value',
+  preset = 'last_hour',
 }: TimeGraphProps) => {
   // Refs for the SVG and container elements
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -61,6 +64,32 @@ const TimeGraph = ({
 
     return allPoints;
   }, [data]);
+
+  /**
+   * getTimeFormat is a helper function to determine the appropriate
+   * time format based on the selected preset.
+   */
+  const getTimeFormat = (presetId: string) => {
+    const preset = TIME_PRESETS[presetId];
+
+    // Default format if not preset option is selected
+    if (!preset) return '%H:%M';
+
+    const { unit, value } = preset.timeframe;
+
+    switch (unit) {
+      case 'm':
+        return '%H:%M'; // Minutes always show hours:minutes
+      case 'h':
+        if (value <= 12) return '%H:%M'; // Up to 12 hours
+        if (value <= 24) return '%m/%d %H:%M'; // Up to a day
+        return '%m/%d';
+      case 'd':
+        return '%m/%d'; // Days always show month/day
+      default:
+        return '%H:%M';
+    }
+  };
 
   /**
    * formatTime is a small helper function used to display
@@ -108,6 +137,55 @@ const TimeGraph = ({
    * `transformedData`, `width`, or `units` change.
    */
   useEffect(() => {
+
+      /**
+   * Function to determine the appropriate number of ticks based on the selected preset.
+   *
+   * @param presetId - Which timeframe parameter is being passed
+   * @returns number of tick marks to include along x-axis of graph
+   */
+  const getTickCount = (presetId: string) => {
+    const preset = TIME_PRESETS[presetId];
+    if (!preset) return 6; // Default fallback
+
+    // Use current width state and transformed data length
+    const availableWidth = width;
+    const MIN_TICK_SPACING = 80;
+
+    // Maximum ticks based on current chart width
+    const maxTicksBySpace = Math.floor(availableWidth / MIN_TICK_SPACING);
+
+    // Use transformedData length for data density calculation
+    const suggestedTicksByData = Math.floor(Math.sqrt(transformedData.length));
+
+    // Get base tick count from timeframe
+    let baseTickCount: number;
+    if (preset.timeframe.unit === 'm') {
+      baseTickCount = 5; // 5 ticks for minute view
+    } else if (preset.timeframe.unit === 'h') {
+      baseTickCount =
+        preset.timeframe.value <= 1
+          ? 6 // 6 ticks for one hour
+          : preset.timeframe.value <= 12
+            ? 8 // 8 ticks for up to 12 hours
+            : 12; // 12 ticks for 24 hours
+    } else {
+      baseTickCount = 7; // 7 ticks for daily view
+    }
+
+    // Balance all three factors
+    // 1. Base tick count from timeframe
+    // 2. Available space
+    // 3. Data density
+    const balancedCount = Math.min(
+      baseTickCount,
+      maxTicksBySpace,
+      Math.max(suggestedTicksByData, 4), // Ensure at least 4 ticks
+    );
+
+    return balancedCount;
+  };
+
     // If we have no data or no SVG ref, skip chart drawing
     if (!svgRef.current || transformedData.length === 0) return;
 
@@ -123,9 +201,15 @@ const TimeGraph = ({
      * - xScale: time scale from earliest to latest timestamp
      * - yScale: linear scale from 0 to max value (with some headroom)
      */
+
+    // Extract the time extent (min and max times) from our transformedData
+    const timeExtent = d3.extent(transformedData, (d) => d.time);
+    const minTime = timeExtent[0] || new Date();
+    const maxTime = timeExtent[1] || new Date();
+
     const xScale = d3
       .scaleTime()
-      .domain(d3.extent(transformedData, (d) => d.time) as [number, number])
+      .domain([minTime, maxTime])
       .range([margin.left, width - margin.right]);
 
     const yMax = d3.max(transformedData, (d) => d.value) || 0;
@@ -141,10 +225,12 @@ const TimeGraph = ({
       .call(
         d3
           .axisBottom(xScale)
-          .ticks(d3.timeMinute.every(10)) // Show tick every 10 minutes
-          .tickFormat((d) => d3.timeFormat('%H:%M')(d as Date)), // 24-hour time format
-      )
-      .selectAll('text')
+          .ticks(getTickCount(preset))
+          .tickFormat((d) => d3.timeFormat(getTimeFormat(preset))(d as Date)),
+      );
+
+    svg
+      .selectAll('.x-axis text')
       .attr('fill', 'white')
       .attr('font-size', '14px');
 
@@ -167,7 +253,7 @@ const TimeGraph = ({
       .call(
         d3
           .axisBottom(xScale)
-          .ticks(transformedData.length / 10)
+          .ticks(getTickCount(preset))
           .tickSize(-height + margin.top + margin.bottom)
           .tickFormat(() => ''),
       )
@@ -319,7 +405,7 @@ const TimeGraph = ({
     return () => {
       tooltip.remove();
     };
-  }, [transformedData, width, units]);
+  }, [transformedData, width, units, preset]);
 
   return (
     <div ref={containerRef} style={{ width: '100%', margin: 'auto' }}>
@@ -328,6 +414,12 @@ const TimeGraph = ({
         <h2 className='bg-gradient-to-r from-columbia_blue-300 to-columbia_blue-900 bg-clip-text text-2xl font-semibold text-transparent'>
           {metric} Usage Over Time
         </h2>
+        {/** Add timeframe indicator */}
+        <div className='mb-2 text-xs text-gray-400'>
+          {preset && TIME_PRESETS[preset]
+            ? TIME_PRESETS[preset].label
+            : 'Last Hour'}
+        </div>
       </div>
 
       {/* The SVG container where D3 draws the chart */}
