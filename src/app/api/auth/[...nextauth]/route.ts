@@ -47,10 +47,7 @@ const authOptions = {
     },
     async signIn({ user, account }: { user: User; account: Account | null }) {
       if (account?.provider === 'github') {
-        try {
-          console.log('GitHub user is:', user);
-          console.log('GitHub account is:', account);
-          
+        try {         
           // Remove the connection test and directly try the operation
           const existingUser = await db.select()
             .from(users)
@@ -63,13 +60,11 @@ const authOptions = {
               name: user.name || 'Unknown',
               last_login: new Date()
             });
-            console.log('Created new user');
           } else {
             // Update existing user
             await db.update(users)
               .set({ last_login: new Date() })
               .where(eq(users.github_id, user.id));
-            console.log('Updated existing user');
           }
           return true;
         } catch (error) {
@@ -80,9 +75,6 @@ const authOptions = {
       return true;
     },
     async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
-      console.log('redirecting to', url)
-      console.log('base url is', baseUrl)
-
       // If the URL is pointing to logout, redirect to the /login endpoint
       if (url === '/login') {
         return baseUrl + '/login';

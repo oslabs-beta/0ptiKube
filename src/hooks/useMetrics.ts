@@ -37,15 +37,21 @@ export function useMemoryUsage(sourceType: 'cluster' | 'container') {
 /**
  * Specialized hook for CPU history:
  */
-export function useCPUHistory(sourceType: 'cluster' | 'container') {
+export function useCPUHistory(
+  sourceType: 'cluster' | 'container',
+  preset?: string,
+) {
   const endpoint = buildEndpoint(sourceType, 'cpu', 'history');
-  return useData<PrometheusMatrixResponse>(endpoint);
+  return useData<PrometheusMatrixResponse>(endpoint, preset);
 }
 
 /**
  * Specialized hook for Memory history:
  */
-export function useMemoryHistory(sourceType: 'cluster' | 'container') {
+export function useMemoryHistory(
+  sourceType: 'cluster' | 'container',
+  preset?: string,
+) {
   const endpoint = buildEndpoint(sourceType, 'memory', 'history');
-  return useData<PrometheusMatrixResponse>(endpoint);
+  return useData<PrometheusMatrixResponse>(endpoint, preset);
 }

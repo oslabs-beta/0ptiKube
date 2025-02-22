@@ -13,13 +13,15 @@ export interface TimePreset {
 }
 
 export const TIME_PRESETS: Record<string, TimePreset> = {
-  last_15m: {
-    id: 'last_15m',
-    label: 'Last 15 Minutes',
-    timeframe: { value: 15, unit: 'm' },
-    interval: { value: 15, unit: 's' },
-    description: 'High resolution, short-term view',
-  },
+  // Temporarily disabled due to incosistent CPU metric collection at 15s intervals.
+  // TODO: Revisit once rate calculation for CPU metrics is further optimized and/or real-time data monitoring is being used.
+  // last_15m: {
+  //   id: 'last_15m',
+  //   label: 'Last 15 Minutes',
+  //   timeframe: { value: 15, unit: 'm' },
+  //   interval: { value: 15, unit: 's' },
+  //   description: 'High resolution, short-term view',
+  // },
   last_hour: {
     id: 'last_hour',
     label: 'Last Hour',
