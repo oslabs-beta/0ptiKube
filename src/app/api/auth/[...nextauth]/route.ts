@@ -4,7 +4,7 @@ import GithubProvider from 'next-auth/providers/github';
 import { db } from '@/db';
 import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import type { Session } from 'next-auth';
+import type { Session, SessionStrategy } from 'next-auth';
 import type { JWT } from 'next-auth/jwt';
 
 // Extend the session type to ensure user is defined
@@ -12,11 +12,12 @@ declare module 'next-auth' {
   interface Session {
     user: DefaultSession['user'] & {
       id: string;
+      picture: string | null;
     };
   }
 }
 
-export const authOptions = {
+const authOptions = {
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID!,
@@ -24,11 +25,20 @@ export const authOptions = {
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
+  // Added session expiration logic - 2025-02-20
+  session: {
+    strategy: 'jwt' as SessionStrategy, // Corrected TS Type
+    maxAge: 30 * 24 * 60 * 60, // 30 days (60 seconds * 60 minutes * 24 hours * 30 days)
+  },
   pages: {
     signIn: '/login',
     error: '/?error=Authentication%20Failed',
   },
   callbacks: {
+    async jwt({ token, user }: { token: JWT; user: User }) {
+      if (user) token.id = user.id;
+      return token;
+    },
     async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
         session.user.id = token.sub!;
@@ -72,12 +82,16 @@ export const authOptions = {
     async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
       console.log('redirecting to', url)
       console.log('base url is', baseUrl)
-      // Always redirect to /visualize after successful login
-      return baseUrl + '/visualize'
+
+      // If the URL is pointing to logout, redirect to the /login endpoint
+      if (url === '/login') {
+        return baseUrl + '/login';
+      }
+      // Otherwise, redirect to the /visualize endpoint
+      return baseUrl + '/visualize';
     }
   },
 };
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
-

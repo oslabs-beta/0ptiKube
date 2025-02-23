@@ -1,12 +1,10 @@
-import React from 'react';
-
 interface AuthErrorProps {
   message: string;
 }
 
-const AuthError: React.FC<AuthErrorProps> = ({ message }) => {
+const AuthError = ({ message }: AuthErrorProps) => {
   return (
-    <div className='bg-red-500 text-white p-2 rounded-md'>
+    <div className='rounded-md bg-red-500 p-2 text-white'>
       {message || 'An error occurred during authentication.'}
     </div>
   );

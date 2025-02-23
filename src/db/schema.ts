@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, numeric } from 'drizzle-orm/pg-core';
 
 
 // Updated users table to match Supabase schema
@@ -11,5 +11,11 @@ export const users = pgTable('users', {
   last_login: timestamp('last_login').defaultNow()
 });
 
-
-
+export const metricsTable = pgTable('metrics', {
+  id: text('id').primaryKey().default('gen_random_uuid()'),
+  pod_name: text('pod_name').notNull(),
+  container_name: text('container_name').notNull(),
+  namespace: text('namespace').notNull(),
+  cpu_usage: numeric('cpu_usage').notNull(),
+  timestamp: timestamp('timestamp').notNull(),
+});

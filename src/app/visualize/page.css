@@ -11,6 +11,19 @@
     'pods time-graph time-graph';
 }
 
+.container-no-pods {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 32px;
+  padding: 32px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    'gauge'
+    'time-graph'
+    'time-graph';
+}
+
 .time-graph {
   grid-area: time-graph;
   margin: 0;

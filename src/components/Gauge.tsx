@@ -1,10 +1,9 @@
 import * as d3 from 'd3';
-import React from 'react';
-import { useRef, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 /**
  * Props interface for the Gauge component
- * Defines customizable properties for size, value range, and dimensions
+ * Defines customizable properties for size, value, range, and dimensions
  */
 interface GaugeProps {
   name: string; // Display name for the gauge
@@ -32,7 +31,7 @@ interface ArcData {
 const ANIMATION_DURATION = 2000; // Duration in milliseconds
 const ANIMATION_EASING = d3.easeCubicOut; // Smooth easing function for natural movement
 
-function Gauge({
+const Gauge = ({
   name,
   value,
   min = 0,
@@ -41,7 +40,7 @@ function Gauge({
   height = 200,
   innerRadius = 50,
   outerRadius = 80,
-}: GaugeProps) {
+}: GaugeProps) => {
   // Reference to the SVG element for D3 manipulation
   const svgRef = useRef<SVGSVGElement | null>(null);
 
@@ -68,9 +67,9 @@ function Gauge({
 
     const fillColor = colorScale(fraction);
 
-    // Define the angles for the gauge (full circle = 2π radians)
+    // Define the angles for the gauge. (full circle = 2π radians)
     const startAngle = 0;
-    const endAngle = 2 * Math.PI;
+    const endAngle = 2 * Math.PI; // full circle in radians represented by Tau (τ)
     const fillAngle = endAngle * fraction; // How much of the circle to fill
 
     // Create the D3 arc generator for the background (empty) part of the gauge
@@ -178,13 +177,13 @@ function Gauge({
   }, [value, min, max, width, height, innerRadius, outerRadius]);
 
   return (
-    <div className='flex flex-col size-64 bg-[#172a45] rounded-2xl m-2 items-center justify-center border-2 border-columbia_blue-900'>
-      <span className='text-2xl font-semibold bg-gradient-to-r from-columbia_blue-300 to-columbia_blue-900 bg-clip-text text-transparent'>
+    <div className='m-2 flex size-64 flex-col items-center justify-center rounded-2xl border-2 border-columbia_blue-900 bg-[#172a45]'>
+      <span className='bg-gradient-to-r from-columbia_blue-300 to-columbia_blue-900 bg-clip-text text-2xl font-semibold text-transparent'>
         {name}
       </span>
       <svg ref={svgRef} />
     </div>
   );
-}
+};
 
 export default Gauge;

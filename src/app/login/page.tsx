@@ -1,5 +1,5 @@
-// Import SessionProvider@/components/LoginButton';/components/AuthStatus';components/AuthError';} from 'next/navigation';'next/font/google'({ subsets: ['latin'], weight: '700' }) = () => {eSearchParams();ull = searchParams.get('error')x flex-col items-center justify-center min-h-screen'>-10 rounded-2xl shadow
 'use client';
+
 import React from 'react';
 import { SessionProvider } from 'next-auth/react';
 import LoginButton from '@/components/LoginButton';
@@ -12,7 +12,7 @@ const orbitron = Orbitron({ subsets: ['latin'], weight: '700' }); // Load Orbitr
 
 const LoginPage: React.FC = () => {
   const searchParams = useSearchParams();
-  const error: string | null = searchParams.get('error');
+  const error = searchParams.get('error') === "unauthorized" ? "You must be logged in to access that page." : null;
 
   return (
     <SessionProvider>

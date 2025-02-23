@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import { Orbitron } from 'next/font/google';
+import Link from 'next/link';
 
 const orbitron = Orbitron({ subsets: ['latin'], weight: '700' });
 

@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextjs-k8-app
+  labels:
+    app: nextjs-k8-app
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: nextjs-k8-app
+  template:
+    metadata:
+      labels:
+        app: nextjs-k8-app
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3000"
+    spec:
+      containers:
+      - name: nextjs
+        image: nextjs-k8-app:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3000
+          name: web
+          protocol: TCP
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 60
+          timeoutSeconds: 3
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 10
+          timeoutSeconds: 3
+          periodSeconds: 10
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+        envFrom:                      
+        - secretRef:
+            name: nextjs-k8-app-secrets
+        - configMapRef:
+            name: nextjs-k8-app-config
+# line 51-55 connects our secrets (including API keys) to the containerized nextjs app.
+# Copies the environment variables during build, then:
+# 1. mounts the secret at /secrets/.env
+# 2. copies the .env file to /app/.env
+# 3. runs the build
+# 4. removes the .env file
+# 5. runs the app
+

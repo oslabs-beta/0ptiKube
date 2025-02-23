@@ -1,0 +1,55 @@
+FROM node:18-alpine AS builder
+WORKDIR /app
+
+# Only set telemetry
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Copy config files in single layer
+COPY package*.json tsconfig*.json next.config.ts postcss.config.mjs tailwind.config.ts ./
+
+# Install dependencies with caching
+# These need BuildKit
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --include=dev
+
+# Copy source code
+COPY . .
+
+# make dynamic for any user...
+COPY /HOME_DIR/.minikube/config/config.json
+COPY ${HOME_DIR}/.minikube/config /config.json
+
+# These need BuildKit
+# Build with Next.js cache
+# Build with Next.js cache and secrets
+# The build process preserved all environment variables:
+RUN --mount=type=cache,target=/app/.next/cache \
+    --mount=type=secret,id=env,target=/secrets/.env \
+    cp /secrets/.env .env && \
+    npm run build && \
+    rm .env
+    
+# Production image
+FROM node:18-alpine
+WORKDIR /app
+
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Copy only necessary files from builder
+# Contains server.js and all dependencies
+# Static assets
+# Public files
+COPY --from=builder /app/.next/standalone ./  
+COPY --from=builder /app/.next/static ./.next/static 
+COPY --from=builder /app/public ./public        
+
+# Fix permissions for non-root user
+RUN chown -R node:node .
+
+EXPOSE 3000
+
+# Run as non-root user
+USER node
+
+# Use the standalone server
+CMD ["node", "server.js"]

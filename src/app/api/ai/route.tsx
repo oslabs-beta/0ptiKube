@@ -43,13 +43,14 @@ export async function POST(request: Request) {
       .replace(/(```yaml)/g, '\n$1'); // Add spacing before code blocks
 
     return NextResponse.json({ response });
-  } catch (error: any) {
+  } catch (error: Error | unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to process request';
     console.error('AI API Error:', error);
 
     return NextResponse.json(
       {
-        error: error.message || 'Failed to process request',
-        details: error.type || 'Internal Server Error',
+        error: errorMessage,
+        details: error instanceof Error ? error.name : 'Internal Server Error',
       },
       { status: 500 }
     );
@@ -84,7 +85,7 @@ export async function POST(request: Request) {
         {
           role: 'assistant',
           content:
-            'To allocate CPU and memory resources to a Kubernetes pod, you can specify resource requests and limits in the pod’s YAML configuration. Here’s an example:\nresources:\nrequests:\nmemory:"64Mi"\n    cpu: "250m"\n  limits:\n    memory: "128Mi"\n    cpu: "500m"\n```\n\n- `requests`: The minimum resources required for the pod to run.\n- `limits`: The maximum resources the pod can use.',
+            'To allocate CPU and memory resources to a Kubernetes pod, you can specify resource requests and limits in the pod's YAML configuration. Here's an example:\nresources:\nrequests:\nmemory:"64Mi"\n    cpu: "250m"\n  limits:\n    memory: "128Mi"\n    cpu: "500m"\n```\n\n- `requests`: The minimum resources required for the pod to run.\n- `limits`: The maximum resources the pod can use.',
         }, // System instruction
         { role: 'user', content: query },
       ], // User query],

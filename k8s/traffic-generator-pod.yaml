@@ -50,24 +50,8 @@ spec:
               exit 1
             fi
 
-            # Your existing traffic generation script with corrected service names
-            echo "Starting traffic generation..."
-            while true; do
-              # Launch day traffic with CPU/Memory load
-              wget -q -O- http://launch-day-target-pod.default.svc.cluster.local
-              stress-ng --cpu 1 --timeout 30s
-              sleep 1
-              # Normal operations traffic
-              wget -q -O- http://normal-ops-target.default.svc.cluster.local
-              sleep 2
-              # Error conditions traffic
-              wget -q -O- http://error-conditions-target.default.svc.cluster.local
-              sleep 1
-              # Database load traffic
-              wget -q -O- http://db-load-target.default.svc.cluster.local
-              stress-ng --cpu 2 --vm 1 --vm-bytes 128M --timeout 15s
-              sleep 3
-            done
+            # Keep container running
+            tail -f /dev/null
         ports:
         - containerPort: 8080
           name: metrics
