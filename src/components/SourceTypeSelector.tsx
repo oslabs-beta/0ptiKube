@@ -7,8 +7,6 @@ interface SourceTypeSelectorProps {
 }
 
 export default function SourceTypeSelector({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  sourceType,
   setSourceType,
   setSelectedPod,
 }: SourceTypeSelectorProps) {

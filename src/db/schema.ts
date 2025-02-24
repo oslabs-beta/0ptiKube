@@ -3,7 +3,6 @@ import {
   text,
   timestamp,
   uuid,
-  numeric,
   jsonb,
   doublePrecision,
 } from 'drizzle-orm/pg-core';
