@@ -10,7 +10,7 @@ import { eq } from 'drizzle-orm';
 
 // Type imports
 //Session and JWT are TypeScript types for session and token handling.
-import type { Session } from 'next-auth';
+import type { Session, SessionStrategy } from 'next-auth';
 import type { JWT } from 'next-auth/jwt';
 
 // Extend the session type to ensure user is defined
@@ -18,15 +18,12 @@ declare module 'next-auth' {
   interface Session {
     user: DefaultSession['user'] & {
       id: string;
+      picture: string | null;
     };
   }
 }
 
-//Defines authentication options for NextAuth.
-//Uses GitHub as an OAuth provider.
-//process.env.GITHUB_ID! and process.env.GITHUB_SECRET! are environment variables storing OAuth credentials.
-//! (non-null assertion) is used to tell TypeScript these values will always be defined.
-export const authOptions = {
+const authOptions = {
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID!,
@@ -39,12 +36,21 @@ export const authOptions = {
   //If authentication fails, it redirects to the homepage (/) with an error message in the URL.
 
   secret: process.env.NEXTAUTH_SECRET,
+  // Added session expiration logic - 2025-02-20
+  session: {
+    strategy: 'jwt' as SessionStrategy, // Corrected TS Type
+    maxAge: 30 * 24 * 60 * 60, // 30 days (60 seconds * 60 minutes * 24 hours * 30 days)
+  },
   pages: {
     signIn: '/login',
     error: '/?error=Authentication%20Failed',
   },
   //Ensures that the user's ID is available in session.user
   callbacks: {
+    async jwt({ token, user }: { token: JWT; user: User }) {
+      if (user) token.id = user.id;
+      return token;
+    },
     async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
         session.user.id = token.sub!;
@@ -58,10 +64,7 @@ export const authOptions = {
     //If the user exists, it updates their last login timestamp
     async signIn({ user, account }: { user: User; account: Account | null }) {
       if (account?.provider === 'github') {
-        try {
-          console.log('GitHub user is:', user);
-          console.log('GitHub account is:', account);
-
+        try {         
           // Remove the connection test and directly try the operation
           const existingUser = await db
             .select()
@@ -75,14 +78,12 @@ export const authOptions = {
               name: user.name || 'Unknown',
               last_login: new Date(),
             });
-            console.log('Created new user');
           } else {
             // Update existing user
             await db
               .update(users)
               .set({ last_login: new Date() })
               .where(eq(users.github_id, user.id));
-            console.log('Updated existing user');
           }
           return true;
         } catch (error) {
@@ -94,11 +95,13 @@ export const authOptions = {
     },
 
     async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
-      console.log('redirecting to', url);
-      console.log('base url is', baseUrl);
-      // Always redirect to /visualize after successful login
+      // If the URL is pointing to logout, redirect to the /login endpoint
+      if (url === '/login') {
+        return baseUrl + '/login';
+      }
+      // Otherwise, redirect to the /visualize endpoint
       return baseUrl + '/visualize';
-    },
+    }
   },
 };
 

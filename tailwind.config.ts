@@ -11,7 +11,7 @@ export default {
       colors: {
         navy_blue: {
           DEFAULT: '#000080',
-          100: '#00001a',
+          100: '#05142f',
           200: '#000033',
           300: '#00004d',
           400: '#000066',
@@ -132,5 +132,5 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [require('tailwindcss-motion')],
 } satisfies Config;

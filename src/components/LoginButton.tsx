@@ -1,21 +1,19 @@
-'use client';
-import React, { useState } from 'react';
-import { FaGithub, FaSpinner } from 'react-icons/fa';
 import { signIn, signOut, useSession } from 'next-auth/react';
+import { useState } from 'react';
+import { FaGithub, FaSpinner } from 'react-icons/fa';
 
-const LoginButton: React.FC = () => {
+const LoginButton = () => {
   const { data: session, status } = useSession();
   const [loading, setLoading] = useState(false);
 
   const handleLogin = (): void => {
     setLoading(true);
-    signIn('github', { 
-    });
+    signIn('github', {});
   };
 
   const handleLogout = (): void => {
     setLoading(true);
-    signOut({ callbackUrl: '/' }); // Redirect to home after logout
+    signOut({ callbackUrl: '/login' }); // Redirect to home after logout
   };
 
   if (status === 'loading') {
@@ -25,10 +23,9 @@ const LoginButton: React.FC = () => {
   return session ? (
     <button
       onClick={handleLogout}
-      className='flex items-center justify-center w-full px-6 py-3 bg-red-600 text-white 
-             hover:bg-red-800 rounded-lg transition duration-500 ease-in-out'
+      className='flex w-full items-center justify-center rounded-lg bg-red-600 px-6 py-3 text-white transition duration-500 ease-in-out hover:bg-red-800'
     >
-      {loading ? <FaSpinner className='animate-spin text-2xl mr-2' /> : null}
+      {loading ? <FaSpinner className='mr-2 animate-spin text-2xl' /> : null}
       <span className='font-medium'>
         {loading ? 'Logging out...' : 'Sign Out'}
       </span>
@@ -36,17 +33,17 @@ const LoginButton: React.FC = () => {
   ) : (
     <button
       onClick={handleLogin}
-      className={`flex items-center justify-center w-full px-6 py-3 rounded-lg ${
+      className={`flex w-full items-center justify-center rounded-lg px-6 py-3 ${
         loading
-          ? 'bg-navy_blue-100 text-white cursor-not-allowed border-2 border-navy_blue-100 shadow-md'
-          : 'bg-white text-navy_blue-100 border-2 border-navy_blue-100 shadow-md transition-all duration-500 ease-in-out hover:bg-navy_blue-100 hover:text-white'
+          ? 'cursor-not-allowed border-2 border-navy_blue-100 bg-navy_blue-100 text-white shadow-md'
+          : 'border-2 border-navy_blue-100 bg-white text-navy_blue-100 shadow-md transition-all duration-500 ease-in-out hover:bg-navy_blue-100 hover:text-white'
       }`}
       disabled={loading}
     >
       {loading ? (
-        <FaSpinner className='animate-spin text-2xl mr-2' />
+        <FaSpinner className='mr-2 animate-spin text-2xl' />
       ) : (
-        <FaGithub className='text-2xl mr-2' />
+        <FaGithub className='mr-2 text-2xl' />
       )}
       <span className='font-medium'>
         {loading ? 'Redirecting...' : 'Sign in with GitHub'}

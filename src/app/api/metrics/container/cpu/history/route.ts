@@ -1,28 +1,31 @@
-import { NextResponse } from "next/server";
-import { executeRangeQuery } from "@/app/api/utils/prometheus";
-import { handleError } from "@/app/api/utils/errorHandler";
+import { NextResponse } from 'next/server';
+import { executeRangeQuery } from '@/app/api/utils/prometheus';
+import { handleError } from '@/app/api/utils/errorHandler';
+import { getTimeRangeFromPreset } from '@/app/api/utils/timePresets';
 
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const queryParams = url.searchParams;
 
-    // Extract query parameters for time range
-    const start = queryParams.get('start')
-      ? new Date(Number(queryParams.get('start')) * 1000)
-      : new Date(Date.now() - 3600 * 1000);
-    const end = queryParams.get('end')
-      ? new Date(Number(queryParams.get('end')) * 1000)
-      : new Date();
-    const step = queryParams.get('step') || '30s'; // Default: 30-second intervals
+    // Get preset ID from query params (if provided)
+    const presetId = queryParams.get('preset');
 
-    // Query : CPU usage for specific container in millicores
-    const query = `sum(rate(container_cpu_usage_seconds_total[30s])) by (pod) * 1000`;
+    // Get time range parameters based on preset
+    const { start, end, step } = getTimeRangeFromPreset(presetId);
 
-    const data = await executeRangeQuery(query, start, end, step);
+    // Extract just the value and unit for the rate calculation window
+    // Uses the same interval as our step for consistency in our PromQL query
+    const rateWindow = step;
 
-    return NextResponse.json(data);
+    // Historical CPU usage over intervals in millicores
+    const query = `sum(rate(container_cpu_usage_seconds_total[${rateWindow}])) by (pod) * 1000`;
+
+    // Execute the query with the preset-derived parameters
+    const rangeResult = await executeRangeQuery(query, start, end, step);
+
+    return NextResponse.json(rangeResult);
   } catch (error) {
-    return handleError(error, 'Failed to fetch historical CPU usage');
+    return handleError(error, 'Failed to query historical CPU usage');
   }
 }
