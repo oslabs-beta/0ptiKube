@@ -109,7 +109,7 @@ export async function fetchAndStoreMetrics() {
 }
 
 // Schedule the job to run every 15 minutes
-cron.schedule('*/15 * * * *', async () => {
+cron.schedule('*/1 * * * *', async () => {
   console.log('Fetching and storing new metrics...');
   await fetchAndStoreMetrics();
 });

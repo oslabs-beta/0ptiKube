@@ -1,5 +1,5 @@
 // test-metrics.ts
-import { fetchAndStoreMetrics } from './src/app/api/utils/cronJob1'; // Adjust the path
+import { fetchAndStoreMetrics } from './src/app/api/utils/cronJob'; // Adjust the path
 
 async function test() {
   console.log('Testing fetchAndStoreMetrics...');
