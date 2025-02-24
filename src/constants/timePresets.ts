@@ -1,3 +1,27 @@
+/**
+ * Time Presets Configuration
+ *
+ * This file defines the timeframe preset options used throughout the application for selecting different time ranges when viewing CPU and memory performance metric historical views. Each preset defines:
+ * 1. A timeframe (total duration to view)
+ * 2. An interval (data granularity/step for fetching metrics)
+ *
+ * These presets power the TimePresetSelector dropdown component and control the time range displayed in the TimeGraph component for monitoring historical views of system resource consumption.
+ *
+ * @module timePresets
+ */
+
+/**
+ * @interface TimePreset
+ * @property {string} id - Unique identifier for the preset
+ * @property {string} label - Human-readable name displayed in the UI
+ * @property {Object} timeframe - The total time window to display
+ * @property {number} timeframe.value - Numeric value of the timeframe
+ * @property {('s' | 'm' | 'h' | 'd')} timeframe.unit - Unit for timeframe (seconds, minutes, hours, days)
+ * @property {Object} interval - The data point collection interval/step
+ * @property {number} interval.value - Numeric value of the interval
+ * @property {('s' | 'm' | 'h')} interval.unit - Unit for interval (seconds, minuntes, hours)
+ * @property {string} description - Text description of what this preset is useful for
+ */
 export interface TimePreset {
   id: string;
   label: string;
@@ -12,6 +36,13 @@ export interface TimePreset {
   description?: string;
 }
 
+/**
+ * Collection of predefined time presets for monitoring views
+ *
+ * Each preset defines a specific time window and data resolution combinaton optimized for different monitoring scenarios.
+ *
+ * Note: The 'last_15m' preset is currently disabled due to inconsistent CPU metric collection at 15s intervals.
+ */
 export const TIME_PRESETS: Record<string, TimePreset> = {
   // Temporarily disabled due to incosistent CPU metric collection at 15s intervals.
   // TODO: Revisit once rate calculation for CPU metrics is further optimized and/or real-time data monitoring is being used.
