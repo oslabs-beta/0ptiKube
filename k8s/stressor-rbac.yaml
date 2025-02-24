@@ -1,0 +1,30 @@
+# Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: stress-job-account
+
+---
+# Role with specific permissions
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-stress-role
+rules:
+- apiGroups: [""]
+  resources: ["pods", "pods/exec"]
+  verbs: ["get", "list", "create"]
+
+---
+# RoleBinding to connect the ServiceAccount to the Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pod-stress-rolebinding
+subjects:
+- kind: ServiceAccount
+  name: stress-job-account
+roleRef:
+  kind: Role
+  name: pod-stress-role
+  apiGroup: rbac.authorization.k8s.io

@@ -1,10 +1,21 @@
 import { PrometheusDriver } from 'prometheus-query';
 import { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { getMiniKubeConfig } from './promConfig';
 
-const prometheusUrl = process.env.PROMETHEUS_BASE_URL;
+// Get Prometheus URL from environment or minikube config
+const getPrometheusUrl = () => {
+  const envUrl = process.env.PROMETHEUS_BASE_URL;
+  if (envUrl) return envUrl;
+
+  // Fallback to minikube config
+  const config = getMiniKubeConfig();
+  return `http://localhost:${config.prometheus_port || '9090'}`;
+};
+
+const prometheusUrl = getPrometheusUrl();
 
 if (!prometheusUrl) {
-  throw new Error('PROMETHEUS_BASE_URL is not defined.');
+  throw new Error('Could not determine Prometheus URL');
 }
 
 export const prom = new PrometheusDriver({

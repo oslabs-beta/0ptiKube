@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pod-stressor
+spec:
+  schedule: "*/5 * * * *"  # Run every 5 minutes
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: stress-job-account  # Use the service account
+          containers:
+          - name: stressor
+            image: bitnami/kubectl
+            command:
+            - /bin/sh
+            - -c
+            - |
+              # Get target pod name
+              POD_NAME=$(kubectl get pod -l app=traffic-generator-pod -o jsonpath='{.items[0].metadata.name}')
+              
+              # Install stress-ng in target pod if needed
+              kubectl exec $POD_NAME -- apk add --no-cache stress-ng
+              
+              # Run stress command
+              kubectl exec $POD_NAME -- stress-ng --cpu 1 --cpu-load 75 \
+                                                --vm 1 --vm-bytes 225M \
+                                                --timeout 270s
+          restartPolicy: OnFailure

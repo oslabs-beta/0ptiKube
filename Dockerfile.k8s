@@ -15,9 +15,12 @@ RUN --mount=type=cache,target=/root/.npm \
 # Copy source code
 COPY . .
 
-# make dynamic for any user...
-COPY /HOME_DIR/.minikube/config/config.json
-COPY ${HOME_DIR}/.minikube/config /config.json
+# Create .minikube config directory
+RUN mkdir -p /app/.minikube/config
+
+# Mount minikube config during build
+RUN --mount=type=bind,source=${HOME}/.minikube/config/config.json,target=/app/.minikube/config/config.json \
+    chmod 644 /app/.minikube/config/config.json
 
 # These need BuildKit
 # Build with Next.js cache
@@ -35,13 +38,11 @@ WORKDIR /app
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Copy only necessary files from builder
-# Contains server.js and all dependencies
-# Static assets
-# Public files
+# Copy necessary files including minikube config
 COPY --from=builder /app/.next/standalone ./  
 COPY --from=builder /app/.next/static ./.next/static 
-COPY --from=builder /app/public ./public        
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.minikube /app/.minikube
 
 # Fix permissions for non-root user
 RUN chown -R node:node .
