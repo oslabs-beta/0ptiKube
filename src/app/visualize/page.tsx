@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { DEFAULT_PRESET_ID } from '@/constants/timePresets';
+import TimePresetSelector from '@/components/TimePresetSelector';
 import Gauge from '@/components/Gauge';
 import TimeGraph from '@/components/TimeGraph';
 import Pods from '@/components/Pods';
@@ -23,6 +25,13 @@ export default function VisualizePage() {
   );
 
   // ------------------------------------------------------------------
+  // Toggle State (Time Preset Selector Component - to change parameter
+  //  applied to /history endpoints
+  // ------------------------------------------------------------------
+  const [selectedPreset, setSelectedPreset] =
+    useState<string>(DEFAULT_PRESET_ID);
+
+  // ------------------------------------------------------------------
   // Fetch Data from the Right Endpoints
   // ------------------------------------------------------------------
   // CPU usage
@@ -37,7 +46,7 @@ export default function VisualizePage() {
     data: cpuHistoryData,
     error: cpuHistoryError,
     loading: cpuHistoryLoading,
-  } = useCPUHistory(sourceType);
+  } = useCPUHistory(sourceType, selectedPreset);
 
   // Memory usage
   const {
@@ -51,7 +60,7 @@ export default function VisualizePage() {
     data: memoryHistoryData,
     error: memoryHistoryError,
     loading: memoryHistoryLoading,
-  } = useMemoryHistory(sourceType);
+  } = useMemoryHistory(sourceType, selectedPreset);
 
   // ------------------------------------------------------------------
   // Pods selection (only relevant if sourceType === 'container')
@@ -177,14 +186,14 @@ export default function VisualizePage() {
       <div
         className={`min-w-screen ${sourceType === 'container' ? 'container' : 'container-no-pods'} min-h-screen bg-[#0a192f]`}
       >
-        <div className='gauge grid grid-cols-1 place-items-center rounded-lg bg-[#112240] p-4 shadow-lg'>
-          {/* Source Type Selector */}
-          <SourceTypeSelector
-            sourceType={sourceType}
-            setSourceType={setSourceType}
-            setSelectedPod={setSelectedPod}
-          />
+        {/* Source Type Selector */}
+        <SourceTypeSelector
+          sourceType={sourceType}
+          setSourceType={setSourceType}
+          setSelectedPod={setSelectedPod}
+        />
 
+        <div className='gauge grid grid-cols-1 place-items-center rounded-lg bg-[#112240] p-4 shadow-lg'>
           {/* Gauges */}
           <div className='flex space-x-40 rounded-lg'>
             <Gauge value={memoryValue} name='Memory' />
@@ -198,11 +207,19 @@ export default function VisualizePage() {
             data={historicalCpuData}
             metric='CPU'
             units='Millicores (m)'
+            preset={selectedPreset}
           />
           <TimeGraph
             data={historicalMemoryData}
             metric='Memory'
             units='Mebibytes (MiB)'
+            preset={selectedPreset}
+          />
+
+          {/* Time Preset Selector */}
+          <TimePresetSelector
+            selectedPreset={selectedPreset}
+            onChange={setSelectedPreset}
           />
         </div>
 

@@ -17,7 +17,10 @@ interface UseFetchDataReturn<T> {
  *                  Example: "container/memory/percent" or "cluster/cpu/history".
  * @returns An object with { data, error, loading }.
  */
-export function useData<T = unknown>(endpoint: string): UseFetchDataReturn<T> {
+export function useData<T = unknown>(
+  endpoint: string,
+  preset?: string,
+): UseFetchDataReturn<T> {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -36,7 +39,12 @@ export function useData<T = unknown>(endpoint: string): UseFetchDataReturn<T> {
           process.env.NEXT_PUBLIC_METRICS_API_BASE_URL ||
           'http://localhost:3000/api/metrics';
 
-        const response = await axios.get<T>(`${baseUrl}/${endpoint}`, {
+        // Add preset parameter if provided
+        const url = preset
+          ? `${baseUrl}/${endpoint}?preset=${preset}`
+          : `${baseUrl}/${endpoint}`;
+
+        const response = await axios.get<T>(url, {
           signal,
         });
 
@@ -61,7 +69,7 @@ export function useData<T = unknown>(endpoint: string): UseFetchDataReturn<T> {
       // Abort the Axios request if the component unmounts or dependency changes
       controller.abort();
     };
-  }, [endpoint]);
+  }, [endpoint, preset]); // Added preset to dependency array
 
   return { data, error, loading };
 }
