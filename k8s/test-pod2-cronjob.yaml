@@ -1,0 +1,53 @@
+# Purpose: Applies graduated stress testing to test-pod2
+# - Runs every 20 minutes
+# - Creates a graduated stress pattern:
+#   1. 30% CPU/memory load for 5 minutes
+#   2. 80% CPU/memory load for 10 minutes
+#   3. Back to 30% CPU/memory load for 5 minutes
+# - Uses RBAC for pod access
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: test-pod2-stressor
+spec:
+  schedule: "*/20 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: stress-job-account
+          containers:
+          - name: stressor
+            image: bitnami/kubectl
+            command:
+            - /bin/sh
+            - -c
+            - |
+              # Get target pod name
+              POD_NAME=$(kubectl get pod -l app=test-pod2 -o jsonpath='{.items[0].metadata.name}')
+              
+              # Verify pod exists
+              if [ -z "$POD_NAME" ]; then
+                echo "Error: No pod found with label app=test-pod2"
+                exit 1
+              fi
+              
+              # Install stress-ng in target pod if needed
+              kubectl exec $POD_NAME -- apk add --no-cache stress-ng
+              
+              echo "Starting low stress phase (30% load)..."
+              kubectl exec $POD_NAME -- stress-ng --cpu 1 --cpu-load 30 \
+                                                --vm 1 --vm-bytes 90M \
+                                                --timeout 300s
+              
+              echo "Starting high stress phase (80% load)..."
+              kubectl exec $POD_NAME -- stress-ng --cpu 1 --cpu-load 80 \
+                                                --vm 1 --vm-bytes 240M \
+                                                --timeout 600s
+              
+              echo "Final low stress phase (30% load)..."
+              kubectl exec $POD_NAME -- stress-ng --cpu 1 --cpu-load 30 \
+                                                --vm 1 --vm-bytes 90M \
+                                                --timeout 300s
+          restartPolicy: OnFailure 

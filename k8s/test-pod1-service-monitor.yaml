@@ -1,15 +1,22 @@
+# Purpose: Configures Prometheus to scrape metrics from the test pod
+# - Tells Prometheus which pods to monitor
+# - Sets scraping interval and timeout - checks metrics every 15 seconds 
+# - Defines metrics endpoint and port
+# - Links to prometheus operator via labels
+
+
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: traffic-generator-monitor
+  name: test-pod1-monitor
   labels:
     release: my-kube-prometheus-stack
-    app: traffic-generator-pod
+    app: test-pod-1
     prometheus: my-kube-prometheus-stack-prometheus
 spec:
   selector:
     matchLabels:
-      app: traffic-generator-pod
+      app: test-pod-1
   namespaceSelector:
     matchNames:
       - default

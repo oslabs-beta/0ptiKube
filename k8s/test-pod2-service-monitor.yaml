@@ -1,0 +1,26 @@
+# Purpose: Configures Prometheus to scrape metrics from test-pod2
+# - Tells Prometheus which pods to monitor
+# - Sets scraping interval and timeout
+# - Defines metrics endpoint and port
+# - Links to prometheus operator via labels
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: test-pod2-monitor
+  labels:
+    release: my-kube-prometheus-stack
+    app: test-pod2
+    prometheus: my-kube-prometheus-stack-prometheus
+spec:
+  selector:
+    matchLabels:
+      app: test-pod2
+  namespaceSelector:
+    matchNames:
+      - default
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s 

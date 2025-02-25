@@ -1,0 +1,85 @@
+# Purpose: Simulates bank's end-of-day processing workload
+# Total Runtime: 40 minutes per cycle
+#
+# Schedule: Runs every hour (like regular banking system updates)
+#
+# Phase 1: Initial Transaction Collection (10 minutes)
+# - Similar to gathering day's transactions
+# - CPU Usage: 40% (moderate load during collection)
+# - Memory: Starts using 100MB
+# - Activities like:
+#   * Collecting pending transactions
+#   * Loading account data
+#   * Preparing for processing
+#
+# Phase 2: Heavy Processing (20 minutes)
+# - Peak processing time, like calculating interest
+# - CPU Usage: 70% (heavy calculation phase)
+# - Memory: Increases to 200MB
+# - Activities like:
+#   * Calculating interest for all accounts
+#   * Processing large transactions
+#   * Generating account statements
+#
+# Phase 3: Report Generation (10 minutes)
+# - Final phase, like generating EOD reports
+# - CPU Usage: 30% (lighter load during wrap-up)
+# - Memory: Peaks at 300MB (reports in memory)
+# - Activities like:
+#   * Generating daily reports
+#   * Creating audit logs
+#   * Preparing next day's data
+#
+# Memory Pattern: Simulates common banking system issues
+# - Memory gradually increases (like transaction data accumulation)
+# - Doesn't fully clean up (common in real banking systems)
+# - Shows impact of unoptimized data handling
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: test-pod3-stressor
+spec:
+  schedule: "0 * * * *"  # Every hour, like regular bank updates
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: stress-job-account
+          containers:
+          - name: stressor
+            image: bitnami/kubectl
+            command:
+            - /bin/sh
+            - -c
+            - |
+              # Get target pod name
+              POD_NAME=$(kubectl get pod -l app=test-pod3 -o jsonpath='{.items[0].metadata.name}')
+              
+              # Verify pod exists
+              if [ -z "$POD_NAME" ]; then
+                echo "Error: No pod found with label app=test-pod3"
+                exit 1
+              fi
+              
+              # Install stress-ng in target pod if needed
+              kubectl exec $POD_NAME -- apk add --no-cache stress-ng
+              
+              echo "Phase 1: Initial Transaction Collection (10 minutes)..."
+              kubectl exec $POD_NAME -- stress-ng --cpu 1 --cpu-load 40 \
+                                                --vm 1 --vm-bytes $(( 100 * 1024 * 1024 )) \
+                                                --vm-hang 0 \
+                                                --timeout 600s
+              
+              echo "Phase 2: Heavy Processing - Interest Calculations (20 minutes)..."
+              kubectl exec $POD_NAME -- stress-ng --cpu 1 --cpu-load 70 \
+                                                --vm 2 --vm-bytes $(( 200 * 1024 * 1024 )) \
+                                                --vm-hang 0 \
+                                                --timeout 1200s
+              
+              echo "Phase 3: Report Generation and Cleanup (10 minutes)..."
+              kubectl exec $POD_NAME -- stress-ng --cpu 1 --cpu-load 30 \
+                                                --vm 1 --vm-bytes $(( 300 * 1024 * 1024 )) \
+                                                --vm-hang 0 \
+                                                --timeout 600s
+          restartPolicy: OnFailure 

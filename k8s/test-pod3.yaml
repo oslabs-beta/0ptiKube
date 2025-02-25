@@ -1,26 +1,33 @@
-# Keeping Deployment and Pod templates in the same file can be more convenient and manageable.
+# Purpose: Simulates a bank's processing system
+# - Acts as the main banking application server
+# - Handles daily transactions, account updates, and report generation
+# - Resource allocation:
+#   * CPU: 300m (0.3 cores) minimum, 400m (0.4 cores) maximum
+#   * Memory: 200MB minimum, 500MB maximum
+# - Similar to a medium-sized bank branch processing system
+# - Monitors system health and resource usage via Node Exporter
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: traffic-generator-pod
+  name: test-pod3
   labels:
-    app: traffic-generator-pod
+    app: test-pod3
 spec:
-  replicas: 1 # Deployment is responsible for managing this number of Pods
+  replicas: 1
   selector:
     matchLabels:
-      app: traffic-generator-pod
+      app: test-pod3
   template:
     metadata:
       labels:
-        app: traffic-generator-pod  # Pod template
+        app: test-pod3
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8080"
     spec:
       containers:
-      - name: traffic-generator
+      - name: test-pod3-container
         image: nginx:alpine
         command: ["/bin/sh"]
         args: 
@@ -57,8 +64,8 @@ spec:
           name: metrics
         resources:
           requests:
-            memory: "100Mi"   
-            cpu: "500m"      
+            memory: "200Mi"
+            cpu: "300m"
           limits:
-            memory: "300Mi"   
-            cpu: "600m"       
+            memory: "500Mi"
+            cpu: "400m" 
