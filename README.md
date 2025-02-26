@@ -17,7 +17,7 @@ The following installs are required to use 0ptikube. Great news, all of the foll
 5. Prometheus (included) - [link](https://prometheus.io/docs/prometheus/latest/installation/)
 
 # Project Setup ⚙️
-1. Fork the our main branch of the repository on Github.com and then clone it in the terminal. 
+1. Fork  our main branch of the 0ptikube repository on Github.com and then clone it in the terminal. 
    ```bash
    git clone ...
    cd 0ptikube
