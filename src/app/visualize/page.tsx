@@ -15,11 +15,14 @@ import {
   useCPUHistory,
 } from '@/hooks/useMetrics';
 import './page.css';
+import PodsSkeleton from '@/components/PodsSkeleton';
 
 export default function VisualizePage() {
   // ------------------------------------------------------------------
   // Toggle State (cluster/container)
   // ------------------------------------------------------------------
+  const TRANSITION_DURATION = 1000; // Match this with CSS animation duration
+
   const [sourceType, setSourceType] = useState<'cluster' | 'container'>(
     'container',
   );
@@ -66,6 +69,58 @@ export default function VisualizePage() {
   // Pods selection (only relevant if sourceType === 'container')
   // ------------------------------------------------------------------
   const [selectedPod, setSelectedPod] = useState<string>('');
+  const [isPodsLoading, setIsPodsLoading] = useState<boolean>(true);
+  const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
+
+  // Wrapper function to handle sourceType change with view transition
+  const handleSourceTypeChange = (newSourceType: 'cluster' | 'container') => {
+    if (newSourceType === sourceType) return;
+
+    // Start transition immediately
+    setIsTransitioning(true);
+
+    // For container view, prepare pod data
+    if (newSourceType === 'container' && podNames.length > 0) {
+      // Pre-select first pod to avoid empty state
+      if (!selectedPod) {
+        setSelectedPod(podNames[0]);
+      }
+    }
+
+    // Use View Transitions API if available
+    if ('startViewTransition' in document) {
+      document
+        .startViewTransition(() => {
+          // Update source type immediately
+          setSourceType(newSourceType);
+
+          // If switching to cluster, clear pod selection
+          if (newSourceType === 'cluster') {
+            setSelectedPod('');
+          }
+
+          // Very brief delay to let React update the DOM
+          return new Promise((resolve) => setTimeout(resolve, 32));
+        })
+        .finished.finally(() => {
+          // Mark transition as complete
+          setIsTransitioning(false);
+          setIsPodsLoading(false);
+        });
+    } else {
+      // Fallback for browsers without View Transitions API
+      setSourceType(newSourceType);
+      if (newSourceType === 'cluster') {
+        setSelectedPod('');
+      }
+
+      // Use a shorter timeout for fallback
+      setTimeout(() => {
+        setIsTransitioning(false);
+        setIsPodsLoading(false);
+      }, TRANSITION_DURATION);
+    }
+  };
 
   // If container data, parse out pod names from CPU and memory results
   const cpuResults = cpuData?.result || [];
@@ -87,12 +142,31 @@ export default function VisualizePage() {
 
   const podNames = Array.from(allPodNames);
 
-  // Auto-select first pod if none is selected
+  // Show loading state when pod data is fetching
   useEffect(() => {
-    if (sourceType === 'container' && !selectedPod && podNames.length > 0) {
+    if (sourceType === 'container') {
+      // Only start loading if we're not mid-transition
+      if (!isTransitioning) {
+        setIsPodsLoading(true);
+        const timer = setTimeout(() => {
+          setIsPodsLoading(false);
+        }, 100);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [sourceType, isTransitioning]);
+
+  // Improved pod selection effect
+  useEffect(() => {
+    if (
+      sourceType === 'container' &&
+      !selectedPod &&
+      podNames.length > 0 &&
+      !isTransitioning
+    ) {
       setSelectedPod(podNames[0]);
     }
-  }, [sourceType, selectedPod, podNames]);
+  }, [sourceType, selectedPod, podNames, isTransitioning]);
 
   // ------------------------------------------------------------------
   // Handle Loading and Errors
@@ -182,58 +256,75 @@ export default function VisualizePage() {
   // Render
   // ------------------------------------------------------------------
   return (
-    <>
+    <div className='dashboard-container' data-view-mode={sourceType}>
+      {/* Source Type Selector */}
+      <SourceTypeSelector
+        sourceType={sourceType}
+        setSourceType={handleSourceTypeChange}
+        setSelectedPod={setSelectedPod}
+      />
+
       <div
-        className={`min-w-screen ${sourceType === 'container' ? 'container' : 'container-no-pods'} min-h-screen bg-[#0a192f]`}
+        className='gauge grid grid-cols-1 place-items-center rounded-lg bg-[#112240] p-4 shadow-lg'
+        style={{ viewTransitionName: 'gauge' }}
       >
-        {/* Source Type Selector */}
-        <SourceTypeSelector
-          sourceType={sourceType}
-          setSourceType={setSourceType}
-          setSelectedPod={setSelectedPod}
+        {/* Gauges */}
+        <div className='flex space-x-40 rounded-lg'>
+          <Gauge value={memoryValue} name='Memory' />
+          <Gauge value={cpuValue} name='CPU' />
+        </div>
+      </div>
+
+      <div
+        className='time-graph rounded-lg bg-[#112240] p-4 shadow-lg'
+        style={{ viewTransitionName: 'time-graph' }}
+      >
+        {/* Time Graphs */}
+        <TimeGraph
+          data={historicalCpuData}
+          metric='CPU'
+          units='Millicores (m)'
+          preset={selectedPreset}
+        />
+        <TimeGraph
+          data={historicalMemoryData}
+          metric='Memory'
+          units='Mebibytes (MiB)'
+          preset={selectedPreset}
         />
 
-        <div className='gauge grid grid-cols-1 place-items-center rounded-lg bg-[#112240] p-4 shadow-lg'>
-          {/* Gauges */}
-          <div className='flex space-x-40 rounded-lg'>
-            <Gauge value={memoryValue} name='Memory' />
-            <Gauge value={cpuValue} name='CPU' />
-          </div>
-        </div>
+        {/* Time Preset Selector */}
+        <TimePresetSelector
+          selectedPreset={selectedPreset}
+          onChange={setSelectedPreset}
+        />
+      </div>
 
-        <div className='time-graph rounded-lg bg-[#112240] p-4 shadow-lg'>
-          {/* Time Graphs */}
-          <TimeGraph
-            data={historicalCpuData}
-            metric='CPU'
-            units='Millicores (m)'
-            preset={selectedPreset}
-          />
-          <TimeGraph
-            data={historicalMemoryData}
-            metric='Memory'
-            units='Mebibytes (MiB)'
-            preset={selectedPreset}
-          />
-
-          {/* Time Preset Selector */}
-          <TimePresetSelector
-            selectedPreset={selectedPreset}
-            onChange={setSelectedPreset}
-          />
-        </div>
-
-        {/* Show pods only if sourceType === 'container' */}
-        {sourceType === 'container' && (
-          <div className='pods rounded-lg bg-[#112240] p-6 shadow-lg'>
+      {/* Render pods container only for container mode, but use a placeholder for the grid area in cluster mode */}
+      {sourceType === 'container' ? (
+        <div
+          className='pods rounded-lg bg-[#112240] p-6 shadow-lg'
+          style={{ viewTransitionName: 'pods' }}
+        >
+          {isTransitioning || isPodsLoading || podNames.length === 0 ? (
+            <div className='pods-skeleton w-full'>
+              <PodsSkeleton />
+            </div>
+          ) : (
             <Pods
               podNames={podNames}
               selectedPod={selectedPod}
               setSelectedPod={setSelectedPod}
             />
-          </div>
-        )}
-      </div>
-    </>
+          )}
+        </div>
+      ) : (
+        <div
+          className='pods-placeholder'
+          aria-hidden='true'
+          style={{ viewTransitionName: 'pods' }}
+        ></div>
+      )}
+    </div>
   );
 }
