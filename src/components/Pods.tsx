@@ -10,7 +10,11 @@ const Pods = ({ setSelectedPod, podNames, selectedPod }: PodProps) => {
       <h1 className='mb-2 bg-gradient-to-r from-columbia_blue-300 to-columbia_blue-900 bg-clip-text text-center text-2xl font-semibold text-transparent'>
         Pods
       </h1>
-      <div className='grid grid-cols-1 place-items-center gap-4'>
+      <div className="grid max-h-full grid-cols-1 place-items-center gap-4 overflow-y-auto
+        [&::-webkit-scrollbar]:w-1
+        [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-[#8892B0]
+        [&::-webkit-scrollbar-thumb]:rounded-full
+        [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-navy_blue-100">
         {podNames.map((pod) => (
           <button
             key={pod}
@@ -26,3 +30,4 @@ const Pods = ({ setSelectedPod, podNames, selectedPod }: PodProps) => {
 };
 
 export default Pods;
+
