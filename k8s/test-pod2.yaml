@@ -1,4 +1,10 @@
-# Purpose: Simulates a video streaming service server
+# Purpose: Defines the second test pod deployment that runs Node Exporter
+# - Creates a pod with Node Exporter for metrics
+# - Configures resource limits and ports
+# - Sets up prometheus scraping annotations
+# - Handles package installation and startup
+
+# Narrative: Simulates a video streaming service server
 # - Acts as a content delivery node handling viewer requests
 # - Manages video streaming, transcoding, and delivery
 # - Resource allocation:

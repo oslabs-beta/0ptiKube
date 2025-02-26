@@ -4,6 +4,15 @@
 # - Defines metrics endpoint and port
 # - Links to prometheus operator via labels
 
+# Narrative: Monitors streaming service performance
+# - Checks metrics every 15 seconds (standard streaming QoS monitoring)
+# - Tracks critical streaming metrics:
+#   * CPU usage (for video transcoding capacity)
+#   * Memory usage (for buffer management)
+#   * System health (ensure smooth streaming)
+# - Similar to a streaming service's quality monitoring system
+#   that ensures buffer-free video delivery
+
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -24,3 +33,5 @@ spec:
       path: /metrics
       interval: 15s
       scrapeTimeout: 10s 
+
+
