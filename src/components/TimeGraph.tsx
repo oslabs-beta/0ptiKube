@@ -137,54 +137,55 @@ const TimeGraph = ({
    * `transformedData`, `width`, or `units` change.
    */
   useEffect(() => {
+    /**
+     * Function to determine the appropriate number of ticks based on the selected preset.
+     *
+     * @param presetId - Which timeframe parameter is being passed
+     * @returns number of tick marks to include along x-axis of graph
+     */
+    const getTickCount = (presetId: string) => {
+      const preset = TIME_PRESETS[presetId];
+      if (!preset) return 6; // Default fallback
 
-      /**
-   * Function to determine the appropriate number of ticks based on the selected preset.
-   *
-   * @param presetId - Which timeframe parameter is being passed
-   * @returns number of tick marks to include along x-axis of graph
-   */
-  const getTickCount = (presetId: string) => {
-    const preset = TIME_PRESETS[presetId];
-    if (!preset) return 6; // Default fallback
+      // Use current width state and transformed data length
+      const availableWidth = width;
+      const MIN_TICK_SPACING = 80;
 
-    // Use current width state and transformed data length
-    const availableWidth = width;
-    const MIN_TICK_SPACING = 80;
+      // Maximum ticks based on current chart width
+      const maxTicksBySpace = Math.floor(availableWidth / MIN_TICK_SPACING);
 
-    // Maximum ticks based on current chart width
-    const maxTicksBySpace = Math.floor(availableWidth / MIN_TICK_SPACING);
+      // Use transformedData length for data density calculation
+      const suggestedTicksByData = Math.floor(
+        Math.sqrt(transformedData.length),
+      );
 
-    // Use transformedData length for data density calculation
-    const suggestedTicksByData = Math.floor(Math.sqrt(transformedData.length));
+      // Get base tick count from timeframe
+      let baseTickCount: number;
+      if (preset.timeframe.unit === 'm') {
+        baseTickCount = 5; // 5 ticks for minute view
+      } else if (preset.timeframe.unit === 'h') {
+        baseTickCount =
+          preset.timeframe.value <= 1
+            ? 6 // 6 ticks for one hour
+            : preset.timeframe.value <= 12
+              ? 8 // 8 ticks for up to 12 hours
+              : 12; // 12 ticks for 24 hours
+      } else {
+        baseTickCount = 7; // 7 ticks for daily view
+      }
 
-    // Get base tick count from timeframe
-    let baseTickCount: number;
-    if (preset.timeframe.unit === 'm') {
-      baseTickCount = 5; // 5 ticks for minute view
-    } else if (preset.timeframe.unit === 'h') {
-      baseTickCount =
-        preset.timeframe.value <= 1
-          ? 6 // 6 ticks for one hour
-          : preset.timeframe.value <= 12
-            ? 8 // 8 ticks for up to 12 hours
-            : 12; // 12 ticks for 24 hours
-    } else {
-      baseTickCount = 7; // 7 ticks for daily view
-    }
+      // Balance all three factors
+      // 1. Base tick count from timeframe
+      // 2. Available space
+      // 3. Data density
+      const balancedCount = Math.min(
+        baseTickCount,
+        maxTicksBySpace,
+        Math.max(suggestedTicksByData, 4), // Ensure at least 4 ticks
+      );
 
-    // Balance all three factors
-    // 1. Base tick count from timeframe
-    // 2. Available space
-    // 3. Data density
-    const balancedCount = Math.min(
-      baseTickCount,
-      maxTicksBySpace,
-      Math.max(suggestedTicksByData, 4), // Ensure at least 4 ticks
-    );
-
-    return balancedCount;
-  };
+      return balancedCount;
+    };
 
     // If we have no data or no SVG ref, skip chart drawing
     if (!svgRef.current || transformedData.length === 0) return;
@@ -411,9 +412,9 @@ const TimeGraph = ({
     <div ref={containerRef} style={{ width: '100%', margin: 'auto' }}>
       {/* A descriptive title for the chart */}
       <div style={{ textAlign: 'center', color: 'white' }}>
-        <h2 className='bg-gradient-to-r from-columbia_blue-300 to-columbia_blue-900 bg-clip-text text-2xl font-semibold text-transparent'>
+        <span className='bg-gradient-to-r from-columbia_blue-300 to-columbia_blue-900 bg-clip-text text-2xl font-semibold text-transparent'>
           {metric} Usage Over Time
-        </h2>
+        </span>
         {/** Add timeframe indicator */}
         <div className='mb-2 text-xs text-gray-400'>
           {preset && TIME_PRESETS[preset]
