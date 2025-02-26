@@ -10,7 +10,7 @@ const Pods = ({ setSelectedPod, podNames, selectedPod }: PodProps) => {
       <h1 className='mb-2 bg-gradient-to-r from-columbia_blue-300 to-columbia_blue-900 bg-clip-text text-center text-2xl font-semibold text-transparent'>
         Pods
       </h1>
-      <div className="grid max-h-full grid-cols-1 place-items-center gap-4 overflow-y-auto
+      <div className="grid max-h-[86rem] grid-cols-1 place-items-center gap-4 overflow-y-auto
         [&::-webkit-scrollbar]:w-1
         [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-[#8892B0]
         [&::-webkit-scrollbar-thumb]:rounded-full
