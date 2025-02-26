@@ -1,9 +1,25 @@
+/**
+ * NavBar component for 0PTIKUBE application
+ *
+ * @component
+ */
 import { Orbitron } from 'next/font/google';
 import Link from 'next/link';
+import { JSX } from 'react';
 
+// Configure the Orbitron font with specific weight and subset
 const orbitron = Orbitron({ subsets: ['latin'], weight: '700' });
 
-export default function Navbar() {
+/**
+ * Renders the NavBar component for the application
+ *
+ * Consists of:
+ * 1. Application logo with imported Google font - Orbitron
+ * 2. Navigation button for primary application pages - optimize, visualize, login
+ *
+ * @returns {JSX.Element}
+ */
+export default function Navbar(): JSX.Element {
   return (
     <nav className='fixed top-0 z-50 w-full border-b-4 border-columbia_blue-900 bg-navy_blue-100 p-4 text-columbia_blue-900 shadow-xl'>
       <div className='mx-auto flex max-w-screen-2xl items-center justify-between'>
