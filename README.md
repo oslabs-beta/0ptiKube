@@ -108,8 +108,6 @@ Here are links on how to attain the following:
 - Githun Oauth [link](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app)
 - Open AI API [link](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key)
 - Supabase datbase connection [link](https://supabase.com/docs/guides/database/connecting-to-postgres)
-Apply your credentials after the '=' sign. 
-
 
 7. Useful commands for Minikube. 
 
