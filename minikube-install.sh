@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+
+# Exit immediately if any command fails
+set -e
+
 # Function to prompt for user confirmation
 confirm() {
   local message=$1
@@ -29,8 +33,19 @@ confirm() {
 # monitoring your Kubernetes cluster.
 # ========================================================================
 
-# Exit immediately if any command fails
-set -e
+# cat <<'EOF'
+#       ___           ___                                 ___           ___                         ___
+#      /  /\         /  /\        ___       ___          /__/|         /__/\         _____         /  /\
+#     /  /::\       /  /::\      /  /\     /  /\        |  |:|         \  \:\       /  /::\       /  /:/_
+#    /  /:/\:\     /  /:/\:\    /  /:/    /  /:/        |  |:|          \  \:\     /  /:/\:\     /  /:/ /\
+#   /  /:/  \:\   /  /:/~/:/   /  /:/    /__/::\      __|  |:|      ___  \  \:\   /  /:/~/::\   /  /:/ /:/_
+#  /__/:/ \__\:\ /__/:/ /:/   /  /::\    \__\/\:\__  /__/\_|:|____ /__/\  \__\:\ /__/:/ /:/\:| /__/:/ /:/ /\
+#  \  \:\ /  /:/ \  \:\/:/   /__/:/\:\      \  \:\/\ \  \:\/:::::/ \  \:\ /  /:/ \  \:\/:/~/:/ \  \:\/:/ /:/
+#   \  \:\  /:/   \  \::/    \__\/  \:\      \__\::/  \  \::/~~~~   \  \:\  /:/   \  \::/ /:/   \  \::/ /:/
+#    \  \:\/:/     \  \:\         \  \:\     /__/:/    \  \:\        \  \:\/:/     \  \:\/:/     \  \:\/:/
+#     \  \::/       \  \:\         \__\/     \__\/      \  \:\        \  \::/       \  \::/       \  \::/
+#      \__\/         \__\/                               \__\/         \__\/         \__\/         \__\/
+# EOF
 
 # Define colors for terminal output
 GREEN='\033[0;32m'
@@ -113,80 +128,8 @@ install_macos() {
   echo -e "\n${GREEN}📦 Installing required packages...${NC}"
   echo -e "  ${YELLOW}⚙️ Installing minikube, kubectl, and helm...${NC}"
   brew install minikube kubectl helm
-  echo -e "  ✅ Core Kubernetes tools installed."
-
-  echo -e "  ${YELLOW}⚙️ Setting up Docker...${NC}"
-  if ! command -v docker &>/dev/null; then
-    # Docker binary not found, proceed with installation
-    if confirm "Docker not found. Would you like to install Docker Desktop?"; then
-      echo -e "  ${YELLOW}⚙️ Installing Docker Desktop...${NC}"
-      brew install --cask docker
-      echo -e "  ✅ Docker installed."
-    else
-      echo -e "  ${YELLOW}⚠️ Docker installation skipped. Minikube might not work correctly.${NC}"
-    fi
-  else
-    # Docker binary found, check if it's Docker Desktop
-    echo -e "  ✅ Docker binary found at $(which docker)"
-
-    # Check if Docker Desktop app exists
-    if [ -d "/Applications/Docker.app" ]; then
-      echo -e "  ✅ Docker Desktop is already installed."
-    else
-      echo -e "  ${YELLOW}⚠️ Docker binary exists but Docker Desktop app may not be installed.${NC}"
-      if confirm "Would you like to attempt to reinstall Docker Desktop?"; then
-        echo -e "  ${YELLOW}⚙️ Attempting to install Docker Desktop...${NC}"
-        # Try to install but suppress the error about binary already existing
-        brew install --cask docker 2>/dev/null || true
-        echo -e "  ${YELLOW}⚙️ Docker Desktop installation attempted.${NC}"
-      else
-        echo -e "  ${YELLOW}⚠️ Docker Desktop installation skipped.${NC}"
-      fi
-    fi
-  fi
-
-  # Start Docker if not running
-  echo -e "\n${GREEN}🐳 Starting Docker...${NC}"
-  if ! (pgrep -f Docker >/dev/null); then
-    echo -e "  ${YELLOW}⚙️ Opening Docker application...${NC}"
-    open -a "Docker"
-    echo -e "  ${YELLOW}⏳ Waiting for Docker to start (this may take a moment)...${NC}"
-    # Simple wait loop until Docker is running
-    attempt=0
-    max_attempts=30
-    while ! (docker info >/dev/null 2>&1) && [ $attempt -lt $max_attempts ]; do
-      sleep 2
-      attempt=$((attempt + 1))
-      echo -ne "  ${YELLOW}⏳ Still waiting for Docker to start ($attempt/$max_attempts)...${NC}\r"
-    done
-
-    if (docker info >/dev/null 2>&1); then
-      echo -e "\n  ✅ Docker started successfully."
-    else
-      echo -e "\n  ${RED}❌ Docker failed to start. Please start Docker Desktop manually.${NC}"
-      echo -e "  ${YELLOW}⚠️ The script will continue, but Minikube may fail to start without Docker.${NC}"
-    fi
-  else
-    echo -e "  ✅ Docker is already running."
-  fi
 
   # Start Minikube with default driver
-  echo -e "\n${GREEN}🔄 Setting up Minikube...${NC}"
-
-  # Check if minikube is already running
-  if minikube status &>/dev/null; then
-    echo -e "  ${YELLOW}⚠️ Minikube is already running.${NC}"
-    if confirm "Do you want to delete the existing Minikube cluster and start fresh?"; then
-      echo -e "  ${YELLOW}🗑️ Deleting existing Minikube cluster...${NC}"
-      minikube delete
-      echo -e "  ✅ Existing Minikube cluster deleted."
-    else
-      echo -e "  ${YELLOW}⚠️ Keeping existing Minikube cluster.${NC}"
-    fi
-  fi
-
-  echo -e "  ${YELLOW}🚀 Starting Minikube...${NC}"
-  echo -e "  ${YELLOW}⏳ This may take a few minutes...${NC}"
   minikube start
   echo -e "  ✅ Minikube started successfully."
 
@@ -347,13 +290,8 @@ install_linux() {
   echo -e "  ✅ Cleanup complete."
 
   # Configure Minikube for the original user
-  echo -e "\n${GREEN}⚙️ Configuring Minikube...${NC}"
-  echo -e "  ${YELLOW}⚙️ Setting Minikube driver to Docker...${NC}"
-  run_as_user "minikube config set driver docker"
-  echo -e "  ${YELLOW}⚙️ Allocating resources (2 CPUs, 2GB RAM)...${NC}"
-  run_as_user "minikube config set cpus 2"      # Core count
-  run_as_user "minikube config set memory 2000" # 2 GB
-  echo -e "  ✅ Minikube configured."
+  echo "Configuring Minikube..."
+  sudo -u "${SUDO_USER}" minikube config set driver docker
 
   # Add original user to docker group
   echo -e "  ${YELLOW}⚙️ Adding ${SUDO_USER} to docker group...${NC}"
@@ -366,32 +304,9 @@ install_linux() {
   # Start Minikube as the user
   echo -e "  ${YELLOW}🚀 Starting Minikube...${NC}"
 
-  # Check if minikube is already running
-  if run_as_user "minikube status &>/dev/null"; then
-    echo -e "  ${YELLOW}⚠️ Minikube is already running.${NC}"
-    if confirm "Do you want to delete the existing Minikube cluster and start fresh?"; then
-      echo -e "  ${YELLOW}🗑️ Deleting existing Minikube cluster...${NC}"
-      run_as_user "minikube delete"
-      echo -e "  ✅ Existing Minikube cluster deleted."
-    else
-      echo -e "  ${YELLOW}⚠️ Keeping existing Minikube cluster.${NC}"
-    fi
-  fi
-
-  echo -e "  ${YELLOW}⏳ Starting Minikube (this may take a few minutes)...${NC}"
-  run_as_user "minikube start"
-  echo -e "  ✅ Minikube started successfully."
-
+  # Uncomment when you have logged back in and run the script again or just run these commands individually
   # Add Prometheus repository
-  echo -e "\n  ${YELLOW}📊 Setting up Prometheus for monitoring...${NC}"
-  echo -e "  ${YELLOW}⚙️ Adding Prometheus Helm repository...${NC}"
-  run_as_user "helm repo add prometheus-community https://prometheus-community.github.io/helm-charts"
-  echo -e "  ✅ Prometheus repository added."
-
-  # Update Helm repositories - THIS IS THE MISSING STEP
-  echo -e "  ${YELLOW}⚙️ Updating Helm repositories...${NC}"
-  run_as_user "helm repo update"
-  echo -e "  ✅ Helm repositories updated."
+  # sudo -u "${SUDO_USER}" helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 
   # Install Prometheus
   echo -e "  ${YELLOW}⚙️ Installing Prometheus stack...${NC}"
