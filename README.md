@@ -1,8 +1,6 @@
-<div align="center">
 
-<img src="public/logo-grayscale-inverted.svg" alt="0ptikube logo" height="150"/>
 
-<h1>0ptikube</h1>
+<img src="public/logo-grayscale-inverted.svg" alt="0ptikube logo" height="450"/>
 <h1>0ptikube</h1>
 
 <p>
@@ -14,23 +12,27 @@
 
 ---
 
-<div align="center">
-
 
 
 ### 👩‍💻 Our Tech Stack 🧑‍💻
 
 #### Frontend 🖼️
+![Next.js](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![D3.js](https://img.shields.io/badge/d3%20js-F9A03C?style=for-the-badge&logo=d3.js&logoColor=white)
 ![HTML](https://img.shields.io/badge/HTML-e85a2e?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS](https://img.shields.io/badge/CSS-2e35e8?style=for-the-badge&logo=css3&logoColor=white)
 
 #### Backend 💻
+![Next.js](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![Axios](https://img.shields.io/badge/Axios-671DDF?style=for-the-badge&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
+
+
+
 
 #### DevOps & Infrastructure ⚙︎
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
@@ -57,7 +59,6 @@
 - [Contribution Guidelines 📝](#contribution-guidelines-)
 - [Contributors 🙏](#contributors-)
 - [License 📄](#license-)
-- [Connect with Us 🤝](#connect-with-us-)
 
 
 # About 0ptikube 🔳
@@ -67,11 +68,9 @@
 Accessing Kubernetes cluster and pod resources through terminal commands can be tedious and cumbersome. 0ptikube streamlines this process by consolidating it into a single, user-friendly interface. With our responsive React and D3.jsbased dashboard, you can easily visualize performance metrics without the hassle of navigating through menus or changing context. ✨
 
 # 0ptikube Features 📱
-# 0ptikube Features 📱
 - Monitoring: near realtime metrics to monitor a pod or cluster's cpu and memory.
 - AI integration: implement AI and rag to get tailored insights into reallocating resoueces for a pod or cluster.
 
-# Prerequisite Apps to Use 0ptikube App 📦
 # Prerequisite Apps to Use 0ptikube App 📦
 The following installs are required to use 0ptikube. Great news, all of the following, except node, are included in the install sctipt. We've listed the download links as resources.
 1. Node.js - install the latest version [here](https://nodejs.org/en/download)
