@@ -162,7 +162,7 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
 
    ```bash
    #Database connection provided
-   DATABASE_URL=postgresql://postgres.ikdbpxklslitodszecux:tANLl7BQHp9rMFN0@aws-0-us-west-1.pooler.supabase.com:6543/postgres
+   DATABASE_URL=postgresql:'your supabase uri'
    #Prometheus url provided
    PROMETHEUS_BASE_URL=http://localhost:9090
 
