@@ -21,6 +21,7 @@ spec:
       containers:
       - name: load-demo-app
         image: load-demo-app:latest
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             cpu: "200m"

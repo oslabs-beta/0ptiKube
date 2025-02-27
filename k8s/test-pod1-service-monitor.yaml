@@ -19,12 +19,12 @@ metadata:
   name: test-pod1-monitor
   labels:
     release: my-kube-prometheus-stack
-    app: test-pod-1
+    app: test-pod1
     prometheus: my-kube-prometheus-stack-prometheus
 spec:
   selector:
     matchLabels:
-      app: test-pod-1
+      app: test-pod1
   namespaceSelector:
     matchNames:
       - default
