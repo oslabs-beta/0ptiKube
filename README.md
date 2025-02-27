@@ -46,7 +46,7 @@
 - [Why 0ptikube? 🤔](#why-0ptikube-)
 - [0ptikube Features 📱](#0ptikube-features-)
 - [Prerequisite Apps to Use 0ptikube App 📦](#prerequisite-apps-to-use-0ptikube-app-)
-- [Project Setup ⚙️](#project-setup-)
+- [Project Setup ⚙️](#project-setup)
 - [Future Features 🛠](#future-features-)
 - [Contribution Guidelines 📝](#contribution-guidelines-)
 - [Contributors 🙏](#contributors-)
