@@ -13,6 +13,8 @@
 </div>
 
 
+### 👩‍💻 Our Tech Stack 🧑‍💻
+
 #### Frontend 🖼️
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
@@ -39,6 +41,17 @@
 ![OpenAI API](https://img.shields.io/badge/OpenAI_API-412991?style=for-the-badge&logo=openai&logoColor=white)
 
 
+# 📚 Table of Contents 📚
+
+- [About 0ptikube 🔳](#-About-0ptikube-pro-)
+- [Why 0ptikube 🤔](#-Why-0ptikube)
+- [0ptikube Features 📱](#0ptikube-features-)
+- [Prerequsites to use 0ptikube app 📦](#-Prerequisites-to-use-0ptikube-app)
+- [⚙️ Project Setup](#-Project-Setup)
+- [Future Features 🛠](#-Future-Features-)
+- [Contribution Guidelines 📝](#-Contribution-Guidelines-)
+- [Contributors 🙏](#-contributors-)
+- [License 📄](#-license-)
 
 
 # About 0ptikube 🔳
@@ -47,11 +60,11 @@
 # Why 0ptikube? 🤔
 Accessing Kubernetes cluster and pod resources through terminal commands can be tedious and cumbersome. 0ptikube streamlines this process by consolidating it into a single, user-friendly interface. With our responsive React and D3.jsbased dashboard, you can easily visualize performance metrics without the hassle of navigating through menus or changing context. ✨
 
-# 0ptikube Features 
+# 0ptikube Features 📱
 - Monitoring: near realtime metrics to monitor a pod or cluster's cpu and memory.
 - AI integration: implement AI and rag to get tailored insights into reallocating resoueces for a pod or cluster.
 
-# Prerequsites apps to use 0ptikube app 📦
+# Prerequsite apps to use 0ptikube app 📦
 The following installs are required to use 0ptikube. Great news, all of the following, except node, are included in the install sctipt. We've listed the download links as resources.
 1. Node.js - install the latest version [here](https://nodejs.org/en/download)
 2. Docker Desktop (included) - [link](https://docs.docker.com/desktop/)
@@ -186,7 +199,7 @@ docker images
 - Multi-Cluster Support: Expand the platform to support monitoring multiple Kubernetes clusters simultaneously.
 - Support for Visualization of Additional Metrics: Create visualizations that measure additional indicators of cluster/pod health including percentage uptime, latency, etc.
 
-## 📝 Contribution Guidelines 📝
+## Contribution Guidelines 📝
 
 We ❤elcome contributions from the community! 😇 Want to get involbed? 🧑‍💻
 
