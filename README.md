@@ -241,7 +241,7 @@ We ❤elcome contributions from the community! 😇 Want to get involbed? 🧑�
 - Richard Rivera: [GitHub](https://github.com/RichardRiveraRoman) | [LinkedIn]()
 - Senay Yakut: [GitHub](https://www.linkedin.com/in/senaykt/) | [LinkedIn](https://github.com/SenayYakut)
 
-We would like to thank you for visiting our page, and those who made 0ptikube possible.
+We would like to thank you for visiting our page, and any future contributors!
 
 ## License 📄 
 
