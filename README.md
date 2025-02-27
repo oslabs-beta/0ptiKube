@@ -1,8 +1,6 @@
-<div align="center">
+
 
 <img src="public/logo-grayscale-inverted.svg" alt="0ptikube logo" height="250"/>
-
-<h1>0ptikube</h1>
 <h1>0ptikube</h1>
 
 <p>
@@ -13,8 +11,6 @@
 </div>
 
 ---
-
-<div align="center">
 
 
 
