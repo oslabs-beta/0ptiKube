@@ -54,7 +54,6 @@
 - [License 📄](#license-)
 - [Connect with Us 🤝](#connect-with-us-)
 
-
 # About 0ptikube 🔳
 0ptikube is a web-based visualization tool that helps users monitor the current CPU and memory usage of their Kubernetes pods and clusters. It offers near real-time historical monitoring and visual metrics views for the last hour, 12 hours, 24 hours, and 7 days.
 
