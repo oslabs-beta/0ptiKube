@@ -43,15 +43,16 @@
 
 # 📚 Table of Contents 📚
 
-- [About 0ptikube 🔳](#-About-0ptikube-pro-)
-- [Why 0ptikube 🤔](#-Why-0ptikube)
+- [About 0ptikube 🔳](#about-0ptikube-)
+- [Why 0ptikube? 🤔](#why-0ptikube-)
 - [0ptikube Features 📱](#0ptikube-features-)
-- [Prerequsites to use 0ptikube app 📦](#-Prerequisites-to-use-0ptikube-app)
-- [⚙️ Project Setup](#-Project-Setup)
-- [Future Features 🛠](#-Future-Features-)
-- [Contribution Guidelines 📝](#-Contribution-Guidelines-)
-- [Contributors 🙏](#-contributors-)
-- [License 📄](#-license-)
+- [Prerequisite Apps to Use 0ptikube App 📦](#prerequisite-apps-to-use-0ptikube-app-)
+- [Project Setup ⚙️](#project-setup-)
+- [Future Features 🛠](#future-features-)
+- [Contribution Guidelines 📝](#contribution-guidelines-)
+- [Contributors 🙏](#contributors-)
+- [License 📄](#license-)
+- [Connect with Us 🤝](#connect-with-us-)
 
 
 # About 0ptikube 🔳
@@ -64,7 +65,7 @@ Accessing Kubernetes cluster and pod resources through terminal commands can be 
 - Monitoring: near realtime metrics to monitor a pod or cluster's cpu and memory.
 - AI integration: implement AI and rag to get tailored insights into reallocating resoueces for a pod or cluster.
 
-# Prerequsite apps to use 0ptikube app 📦
+# Prerequisite Apps to Use 0ptikube App 📦
 The following installs are required to use 0ptikube. Great news, all of the following, except node, are included in the install sctipt. We've listed the download links as resources.
 1. Node.js - install the latest version [here](https://nodejs.org/en/download)
 2. Docker Desktop (included) - [link](https://docs.docker.com/desktop/)
