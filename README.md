@@ -161,19 +161,19 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    Copy and paste the following fields from the code block.
 
    ```bash
-   #Database connection provided
-   DATABASE_URL=postgresql:'your supabase uri'
-   #Prometheus url provided
-   PROMETHEUS_BASE_URL=http://localhost:9090
+   # Database connection provided
+   DATABASE_URL=postgresql:"your supabase uri"
+   #Prometheus URL provided
+   PROMETHEUS_BASE_URL="http://localhost:9090"
 
    # Github Oauth setup
-   GITHUB_ID='your information'
-   GITHUB_SECRET='your information'
-   NEXTAUTH_URL=http://localhost:3000
-   NEXTAUTH_SECRET='your information'
+   GITHUB_ID="your GitHub client ID"
+   GITHUB_SECRET="your GitHub secret"
+   NEXTAUTH_URL="http://localhost:3000"
+   NEXTAUTH_SECRET="your Next Auth secret"
 
-   # openai api setup
-   OPENAI_API_KEY='your open ai key here'
+   # Openai API setup
+   OPENAI_API_KEY='your OpenAI key here'
    FINE_TUNED_MODEL='your fine tune model key here'
    ```
 
