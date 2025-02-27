@@ -1,17 +1,23 @@
 <div align="center">
 
-<img src="/0ptikubeLogo.png" alt="0ptikube logo" height="150"/>
+<img src="public/logo-grayscale-inverted.svg" alt="0ptikube logo" height="150"/>
 
-<h1>Bottlenetes</h1>
+<h1>0ptikube</h1>
 
 <p>
-<strong>A user-friendly platform to monitor, identify bottlenecks, and interact with your Kubernetes clusters.</strong>
-</p>
+<strong>An intuituive, simple web application to monitor metrics in your Kubernetes clusters.</strong>
+</p
 
-*Uncorking Kubernetes Bottlenecks & Insights, One Pod at a Time*
 
 </div>
 
+---
+
+<div align="center">
+
+
+
+### 👩‍💻 Our Tech Stack 🧑‍💻
 
 #### Frontend 🖼️
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
@@ -20,6 +26,7 @@
 ![CSS](https://img.shields.io/badge/CSS-2e35e8?style=for-the-badge&logo=css3&logoColor=white)
 
 #### Backend 💻
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![Axios](https://img.shields.io/badge/Axios-671DDF?style=for-the-badge&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
@@ -38,6 +45,18 @@
 ![OpenAI API](https://img.shields.io/badge/OpenAI_API-412991?style=for-the-badge&logo=openai&logoColor=white)
 
 
+# 📚 Table of Contents 📚
+
+- [About 0ptikube 🔳](#about-0ptikube-)
+- [Why 0ptikube? 🤔](#why-0ptikube-)
+- [0ptikube Features 📱](#0ptikube-features-)
+- [Prerequisite Apps to Use 0ptikube App 📦](#prerequisite-apps-to-use-0ptikube-app-)
+- [Project Setup ⚙️](#project-setup)
+- [Future Features 🛠](#future-features-)
+- [Contribution Guidelines 📝](#contribution-guidelines-)
+- [Contributors 🙏](#contributors-)
+- [License 📄](#license-)
+- [Connect with Us 🤝](#connect-with-us-)
 
 
 # About 0ptikube 🔳
@@ -46,11 +65,11 @@
 # Why 0ptikube? 🤔
 Accessing Kubernetes cluster and pod resources through terminal commands can be tedious and cumbersome. 0ptikube streamlines this process by consolidating it into a single, user-friendly interface. With our responsive React and D3.jsbased dashboard, you can easily visualize performance metrics without the hassle of navigating through menus or changing context. ✨
 
-# 0ptikube Features 
+# 0ptikube Features 📱
 - Monitoring: near realtime metrics to monitor a pod or cluster's cpu and memory.
 - AI integration: implement AI and rag to get tailored insights into reallocating resoueces for a pod or cluster.
 
-# Prerequsites apps to use 0ptikube app 📦
+# Prerequisite Apps to Use 0ptikube App 📦
 The following installs are required to use 0ptikube. Great news, all of the following, except node, are included in the install sctipt. We've listed the download links as resources.
 1. Node.js - install the latest version [here](https://nodejs.org/en/download)
 2. Docker Desktop (included) - [link](https://docs.docker.com/desktop/)
@@ -185,7 +204,7 @@ docker images
 - Multi-Cluster Support: Expand the platform to support monitoring multiple Kubernetes clusters simultaneously.
 - Support for Visualization of Additional Metrics: Create visualizations that measure additional indicators of cluster/pod health including percentage uptime, latency, etc.
 
-## 📝 Contribution Guidelines 📝
+## Contribution Guidelines 📝
 
 We ❤elcome contributions from the community! 😇 Want to get involbed? 🧑‍💻
 
