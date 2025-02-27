@@ -134,5 +134,57 @@ docker ps -a
 # List all images
 docker images
 ```
+# Future Features 🛠
+•	Real-Time Data Streaming: Explore adding real-time cluster/pod health data visualizations via Kubernetes API access to enhance granularity.
+•	Real-Time Monitoring Alerts: Enable alerts that notify users when their clusters/pods have surpassed or dropped below certain thresholds, allowing more dynamic response times to under- or over-provisioned deployments.
+•	AI Improvements: Continue to fine-tune and train the AI model for even more accurate optimization insights based on historical container data and saved AI queries and responses to allow the AI to observe the effects of its recommended resource allocation suggestions over time.
+•	Historical Analysis: Add trend visualization and comparison of AI recommendations against actual resource usage over time.
+•	User Customization: Allow users to further customize refresh intervals and to set individual container health indicator thresholds.
+•	Multi-Cluster Support: Expand the platform to support monitoring multiple Kubernetes clusters simultaneously.
+•	Support for Visualization of Additional Metrics: Create visualizations that measure additional indicators of cluster/pod health including percentage uptime, latency, etc.
 
+## 📝 Contribution Guidelines 📝
+
+We ❤elcome contributions from the community! 😇 Want to get involbed? 🧑‍💻
+
+1. Fork the Repo
+   Click the "Fork" button at the top-right corner of this repository page.
+2. Create a Feature Branch
+
+   ```bash
+   #run this command in the feature 
+   git checkout -b feature/nameOfTheFeature
+
+   ```
+3. Implement Your Feature
+   Add your code, tests, or documentation.
+4. Commit Your Changes
+   ```bash
+   git commit -m "added x feature to file x"
+   ```
+5. Push to Your Branch
+   ```bash
+   git push origin feature/nameOfTheFeature
+   ```
+6. Create a Pull Request (PR)
+   Open a PR to the dev branch of our 0ptikube repo. Our team will review and, once approved, merge it in!
+
+
+
+## Contributors 🙏
+
+- Jason Stuhmer: [GitHub](https://github.com/NotAStuhmer) | [LinkedIn](https://www.linkedin.com/in/jason-stuhmer/)
+- Oliver Fajardo: [GitHub](https://github.com/oliverafajardo) | [LinkedIn](https://www.linkedin.com/in/oliverafajardoucb/)
+- Richard Rivera: [GitHub](https://github.com/RichardRiveraRoman) | [LinkedIn]()
+- Senay Yakut: [GitHub](https://www.linkedin.com/in/senaykt/) | [LinkedIn](https://github.com/SenayYakut)
+
+We would like to thank you for visiting our page, and those who made 0ptikube possible.
+
+## License 📄 
+
+Distributed under the MIT License. Please see `LICENSE` for more information.
+
+Please drop us a ⭐ on GitHub if you enjoy our open source product! Share and help our community grow! 🙌
+
+## 🤝 Connect with Us 🤝
 
