@@ -9,11 +9,11 @@ import ReactMarkdown from 'react-markdown';
 import { useDebounce } from 'use-debounce';
 
 const querySuggestions = [
-  'Optimize CPU usage',
-  'Reduce memory consumption',
-  'Analyze pod efficiency',
-  'Detect unused containers',
-  'Find high-latency services',
+  'How can I optimize CPU usage for my Kubernetes workloads?',
+  'What strategies can help reduce memory consumption in my cluster?',
+  'What are some best practices for improving pod efficiency?',
+  'How can I identify and remove unused containers?',
+  'What steps can I take to troubleshoot high-latency services?',
 ];
 
 const AIQuery = () => {
@@ -107,7 +107,7 @@ const AIQuery = () => {
             type='text'
             value={query}
             onChange={handleInputChange}
-            placeholder='Ask AI to optimize your cluster...'
+            placeholder='Ask our AI to assist in optimizing your cluster...'
             className='w-full rounded-lg border p-3 text-black focus:outline-none'
             style={{ borderColor: '#00ccff' }}
             onFocus={() => setShowSuggestions(true)}
