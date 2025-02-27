@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: load-demo-app-monitor
+  labels:
+    release: my-kube-prometheus-stack
+    app: load-demo-app
+    prometheus: my-kube-prometheus-stack-prometheus
+spec:
+  selector:
+    matchLabels:
+      app: load-demo-app
+  namespaceSelector:
+    matchNames:
+      - default
+  endpoints:
+    - port: metrics
+      path: /api/metrics
+      interval: 15s
+      scrapeTimeout: 10s 

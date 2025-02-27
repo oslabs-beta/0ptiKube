@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: load-demo-app
+  labels:
+    app: load-demo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: load-demo-app
+  template:
+    metadata:
+      labels:
+        app: load-demo-app
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3002"
+        prometheus.io/path: "/api/metrics"  # Path to our metrics endpoint
+    spec:
+      containers:
+      - name: load-demo-app
+        image: load-demo-app:latest
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+          limits:
+            cpu: "1"
+            memory: "512Mi"
+        ports:
+        - containerPort: 3002
+          name: metrics 
