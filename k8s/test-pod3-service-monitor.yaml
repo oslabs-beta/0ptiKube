@@ -1,4 +1,10 @@
-# Purpose: Monitors the bank's processing system health
+# Purpose: Defines the third test pod deployment that runs Node Exporter
+# - Creates a pod with Node Exporter for metrics
+# - Configures resource limits and ports
+# - Sets up prometheus scraping annotations
+# - Handles package installation and startup
+
+# Narrative: Monitors the bank's processing system health
 # - Checks system every 10 seconds (like real-time banking monitoring)
 # - Tracks important metrics:
 #   * Memory usage (detect memory leaks from transaction processing)

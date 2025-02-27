@@ -1,3 +1,4 @@
+
 # Purpose: Applies graduated stress testing to test-pod2
 # - Runs every 20 minutes
 # - Creates a graduated stress pattern:
@@ -5,6 +6,47 @@
 #   2. 80% CPU/memory load for 10 minutes
 #   3. Back to 30% CPU/memory load for 5 minutes
 # - Uses RBAC for pod access
+
+
+# Narrative: 
+# Simulates daily streaming traffic patterns
+# Total Runtime: 20 minutes per cycle
+#
+# Schedule: Runs every 20 minutes (simulating viewing pattern changes)
+#
+# Phase 1: Low Traffic Period (5 minutes)
+# - Similar to early morning/late night viewing
+# - CPU Usage: 30% (light load)
+# - Memory: 90MB (minimal buffering)
+# - Activities like:
+#   * Handling few active streams
+#   * Basic content caching
+#   * Minimal transcoding needs
+#
+# Phase 2: Peak Viewing Hours (10 minutes)
+# - Prime time or popular content release
+# - CPU Usage: 80% (heavy transcoding load)
+# - Memory: 240MB (increased content buffering)
+# - Activities like:
+#   * Multiple concurrent streams
+#   * Real-time video transcoding
+#   * Content delivery optimization
+#
+# Phase 3: Traffic Cool-down (5 minutes)
+# - Post-peak viewing period
+# - CPU Usage: 30% (returning to baseline)
+# - Memory: 90MB (reduced buffering needs)
+# - Activities like:
+#   * Handling remaining active streams
+#   * Cleanup of temporary transcoding files
+#   * System optimization for next peak
+#
+# Load Pattern: Simulates streaming service behavior
+# - Gradual ramp-up for viewer increase
+# - Sustained high load during peak viewing
+# - Gradual cool-down as viewers disconnect
+# - Represents typical day/night viewing cycles
+
 
 apiVersion: batch/v1
 kind: CronJob
@@ -51,3 +93,5 @@ spec:
                                                 --vm 1 --vm-bytes 90M \
                                                 --timeout 300s
           restartPolicy: OnFailure 
+
+

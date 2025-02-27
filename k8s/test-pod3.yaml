@@ -1,3 +1,10 @@
+# Keeping Deployment and Pod templates in the same file can be more convenient and manageable.
+# Purpose: Defines the main test pod deployment that runs Node Exporter
+# - Creates a pod with Node Exporter for metrics
+# - Configures resource limits and ports
+# - Sets up prometheus scraping annotations
+# - Handles package installation and startup
+
 # Purpose: Simulates a bank's processing system
 # - Acts as the main banking application server
 # - Handles daily transactions, account updates, and report generation

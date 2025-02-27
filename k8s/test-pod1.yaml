@@ -5,6 +5,15 @@
 # - Sets up prometheus scraping annotations
 # - Handles package installation and startup
 
+# Narrative: Simulates a web application server
+# - Acts as a frontend web server handling user requests
+# - Manages HTTP traffic, static content delivery, and API requests
+# - Resource allocation:
+#   * CPU: 500m (0.5 cores) minimum, 600m (0.6 cores) maximum
+#   * Memory: 100MB minimum, 300MB maximum
+# - Similar to a medium-traffic e-commerce website server
+# - Monitors server performance and resource usage via Node Exporter
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
