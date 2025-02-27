@@ -83,7 +83,7 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
 
 # Project Setup ⚙️
 
-1. Fork our main branch of the 0PTIKUBE repository on Github.com and then clone it in the terminal.
+1. Clone our main branch of the 0PTIKUBE repository on Github.com and then clone it in the terminal.
    ```bash
    git clone https://github.com/oslabs-beta/0ptiKube.git
    cd 0ptikube
