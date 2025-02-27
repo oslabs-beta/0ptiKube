@@ -1,6 +1,6 @@
 
 
-<img src="public/logo-grayscale-inverted.svg" alt="0ptikube logo" height="450"/>
+<img src="public/0ptikubelogo.svg" alt="0ptikube logo" height="450"/>
 <h1>0ptikube</h1>
 
 <p>
