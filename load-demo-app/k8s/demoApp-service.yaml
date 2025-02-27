@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: load-demo-app
+  labels:
+    app: load-demo-app
+spec:
+  selector:
+    app: load-demo-app
+  ports:
+    - port: 3002
+      targetPort: 3002
+      name: metrics  # Matches your ServiceMonitor endpoint

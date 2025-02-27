@@ -21,16 +21,3 @@ SELECT create_hypertable('metrics', 'time');
 CREATE INDEX ON metrics (time DESC);  -- Create the index on time in descending order
 CREATE INDEX ON metrics (cluster_name);
 CREATE INDEX ON metrics (pod_name);
-
-
-
-------------DUMMY DATA INSERTION---------------
--- INSERT INTO metrics (time, cluster_name, pod_name, cpu_usage, memory_usage, created_at)
--- VALUES
---     ('2023-02-14 09:00:00', 'cluster1', 'pod1', 23.5, 50.0, '2023-02-14 09:00:00'),
---     ('2023-02-14 09:05:00', 'cluster1', 'pod2', 21.2, 60.0, '2023-02-14 09:05:00'),
---     ('2023-02-14 09:10:00', 'cluster2', 'pod1', 24.5, 70.0, '2023-02-14 09:10:00'),
---     ('2023-02-14 09:15:00', 'cluster1', 'pod1', 22.3, 80.0, '2023-02-14 09:15:00'),
---     ('2023-02-14 09:20:00', 'cluster1', 'pod5', 25.1, 90.0, '2023-02-14 09:20:00');
--- Created indexes for performance optimization
-
