@@ -3,6 +3,7 @@
 <img src="public/logo-grayscale-inverted.svg" alt="0ptikube logo" height="150"/>
 
 <h1>0ptikube</h1>
+<h1>0ptikube</h1>
 
 <p>
 <strong>An intuituive, simple web application to monitor metrics in your Kubernetes clusters.</strong>
@@ -66,9 +67,11 @@
 Accessing Kubernetes cluster and pod resources through terminal commands can be tedious and cumbersome. 0ptikube streamlines this process by consolidating it into a single, user-friendly interface. With our responsive React and D3.jsbased dashboard, you can easily visualize performance metrics without the hassle of navigating through menus or changing context. ✨
 
 # 0ptikube Features 📱
+# 0ptikube Features 📱
 - Monitoring: near realtime metrics to monitor a pod or cluster's cpu and memory.
 - AI integration: implement AI and rag to get tailored insights into reallocating resoueces for a pod or cluster.
 
+# Prerequisite Apps to Use 0ptikube App 📦
 # Prerequisite Apps to Use 0ptikube App 📦
 The following installs are required to use 0ptikube. Great news, all of the following, except node, are included in the install sctipt. We've listed the download links as resources.
 1. Node.js - install the latest version [here](https://nodejs.org/en/download)
