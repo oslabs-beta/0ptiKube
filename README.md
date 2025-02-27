@@ -8,8 +8,6 @@
 <strong>An intuituive, simple web application to monitor netetrics in your Kubernetes clusters.</strong>
 </p>
 
-*Uncorking Kubernetes Bottlenecks & Insights, One Pod at a Time*
-
 </div>
 
 
