@@ -2,10 +2,10 @@
 
 <img src="/0ptikubeLogo.png" alt="0ptikube logo" height="150"/>
 
-<h1>Bottlenetes</h1>
+<h1>0ptikube</h1>
 
 <p>
-<strong>A user-friendly platform to monitor, identify bottlenecks, and interact with your Kubernetes clusters.</strong>
+<strong>An intuituive, simple web application to monitor netetrics in your Kubernetes clusters.</strong>
 </p>
 
 *Uncorking Kubernetes Bottlenecks & Insights, One Pod at a Time*
