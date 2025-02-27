@@ -43,6 +43,7 @@
 
 # 📚 Table of Contents 📚
 
+
 - [About 0ptikube 🔳](#about-0ptikube-)
 - [Why 0ptikube? 🤔](#why-0ptikube-)
 - [0ptikube Features 📱](#0ptikube-features-)
