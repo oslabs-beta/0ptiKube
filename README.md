@@ -1,3 +1,45 @@
+<div align="center">
+
+<img src="/0ptikubeLogo.png" alt="0ptikube logo" height="150"/>
+
+<h1>Bottlenetes</h1>
+
+<p>
+<strong>A user-friendly platform to monitor, identify bottlenecks, and interact with your Kubernetes clusters.</strong>
+</p>
+
+*Uncorking Kubernetes Bottlenecks & Insights, One Pod at a Time*
+
+</div>
+
+
+#### Frontend 🖼️
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![HTML](https://img.shields.io/badge/HTML-e85a2e?style=for-the-badge&logo=html5&logoColor=white)
+![CSS](https://img.shields.io/badge/CSS-2e35e8?style=for-the-badge&logo=css3&logoColor=white)
+
+#### Backend 💻
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![Axios](https://img.shields.io/badge/Axios-671DDF?style=for-the-badge&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
+
+#### DevOps & Infrastructure ⚙︎
+![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Minikube](https://img.shields.io/badge/Minikube-F7931E?style=for-the-badge&logo=kubernetes&logoColor=white)
+![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
+![PromQL](https://img.shields.io/badge/PromQL-F57600?style=for-the-badge&logo=prometheus&logoColor=white)
+
+#### Auth & Security 🔐
+![GitHub OAuth](https://img.shields.io/badge/GitHub_OAuth-181717?style=for-the-badge&logo=github&logoColor=white)
+
+#### AI 🤖
+![OpenAI API](https://img.shields.io/badge/OpenAI_API-412991?style=for-the-badge&logo=openai&logoColor=white)
+
+
+
+
 # About 0ptikube 🔳
 0ptikube is a web-based visualization tool that helps users monitor the current CPU and memory usage of their Kubernetes pods and clusters. It offers near real-time historical monitoring and visual metrics views for the last hour, 12 hours, 24 hours, and 7 days.
 
@@ -135,13 +177,13 @@ docker ps -a
 docker images
 ```
 # Future Features 🛠
-•	Real-Time Data Streaming: Explore adding real-time cluster/pod health data visualizations via Kubernetes API access to enhance granularity.
-•	Real-Time Monitoring Alerts: Enable alerts that notify users when their clusters/pods have surpassed or dropped below certain thresholds, allowing more dynamic response times to under- or over-provisioned deployments.
-•	AI Improvements: Continue to fine-tune and train the AI model for even more accurate optimization insights based on historical container data and saved AI queries and responses to allow the AI to observe the effects of its recommended resource allocation suggestions over time.
-•	Historical Analysis: Add trend visualization and comparison of AI recommendations against actual resource usage over time.
-•	User Customization: Allow users to further customize refresh intervals and to set individual container health indicator thresholds.
-•	Multi-Cluster Support: Expand the platform to support monitoring multiple Kubernetes clusters simultaneously.
-•	Support for Visualization of Additional Metrics: Create visualizations that measure additional indicators of cluster/pod health including percentage uptime, latency, etc.
+- Real-Time Data Streaming: Explore adding real-time cluster/pod health data visualizations via Kubernetes API access to enhance granularity.
+- Real-Time Monitoring Alerts: Enable alerts that notify users when their clusters/pods have surpassed or dropped below certain thresholds, allowing more dynamic response times to under- or over-provisioned deployments.
+- AI Improvements: Continue to fine-tune and train the AI model for even more accurate optimization insights based on historical container data and saved AI queries and responses to allow the AI to observe the effects of its recommended resource allocation suggestions over time.
+- Historical Analysis: Add trend visualization and comparison of AI recommendations against actual resource usage over time.
+- User Customization: Allow users to further customize refresh intervals and to set individual container health indicator thresholds.
+- Multi-Cluster Support: Expand the platform to support monitoring multiple Kubernetes clusters simultaneously.
+- Support for Visualization of Additional Metrics: Create visualizations that measure additional indicators of cluster/pod health including percentage uptime, latency, etc.
 
 ## 📝 Contribution Guidelines 📝
 
