@@ -135,13 +135,13 @@ docker ps -a
 docker images
 ```
 # Future Features 🛠
-•	Real-Time Data Streaming: Explore adding real-time cluster/pod health data visualizations via Kubernetes API access to enhance granularity.
-•	Real-Time Monitoring Alerts: Enable alerts that notify users when their clusters/pods have surpassed or dropped below certain thresholds, allowing more dynamic response times to under- or over-provisioned deployments.
-•	AI Improvements: Continue to fine-tune and train the AI model for even more accurate optimization insights based on historical container data and saved AI queries and responses to allow the AI to observe the effects of its recommended resource allocation suggestions over time.
-•	Historical Analysis: Add trend visualization and comparison of AI recommendations against actual resource usage over time.
-•	User Customization: Allow users to further customize refresh intervals and to set individual container health indicator thresholds.
-•	Multi-Cluster Support: Expand the platform to support monitoring multiple Kubernetes clusters simultaneously.
-•	Support for Visualization of Additional Metrics: Create visualizations that measure additional indicators of cluster/pod health including percentage uptime, latency, etc.
+- Real-Time Data Streaming: Explore adding real-time cluster/pod health data visualizations via Kubernetes API access to enhance granularity.
+- Real-Time Monitoring Alerts: Enable alerts that notify users when their clusters/pods have surpassed or dropped below certain thresholds, allowing more dynamic response times to under- or over-provisioned deployments.
+- AI Improvements: Continue to fine-tune and train the AI model for even more accurate optimization insights based on historical container data and saved AI queries and responses to allow the AI to observe the effects of its recommended resource allocation suggestions over time.
+- Historical Analysis: Add trend visualization and comparison of AI recommendations against actual resource usage over time.
+- User Customization: Allow users to further customize refresh intervals and to set individual container health indicator thresholds.
+- Multi-Cluster Support: Expand the platform to support monitoring multiple Kubernetes clusters simultaneously.
+- Support for Visualization of Additional Metrics: Create visualizations that measure additional indicators of cluster/pod health including percentage uptime, latency, etc.
 
 ## 📝 Contribution Guidelines 📝
 
