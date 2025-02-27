@@ -86,7 +86,7 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
 1. Fork our main branch of the 0PTIKUBE repository on Github.com and then clone it in the terminal.
    ```bash
    git clone ...
-   cd 0PTIKUBE
+   cd 0ptikube
    ```
 2. Install dependendencies for the 0PTIKUBE app
 
@@ -101,7 +101,7 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    # this commands makes the `minikube-install.sh` file an executable:
    chmod u+x minikube-install.sh
    # execute the script with the following command:
-   minikube-install.sh
+   ./minikube-install.sh
    ```
 4. After the installation sctipt is complete. Run the following commands in your terminal to get Minikube environment started.
 
