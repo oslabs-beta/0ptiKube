@@ -163,7 +163,7 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    ```bash
    # Database connection provided
    DATABASE_URL=postgresql:"your supabase uri"
-   #Prometheus URL provided
+   # Prometheus URL provided
    PROMETHEUS_BASE_URL="http://localhost:9090"
 
    # Github Oauth setup
