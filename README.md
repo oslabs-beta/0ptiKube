@@ -85,7 +85,7 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
 
 1. Fork our main branch of the 0PTIKUBE repository on Github.com and then clone it in the terminal.
    ```bash
-   git clone ...
+   git clone https://github.com/oslabs-beta/0ptiKube.git
    cd 0ptikube
    ```
 2. Install dependendencies for the 0PTIKUBE app
@@ -173,8 +173,8 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    NEXTAUTH_SECRET="your Next Auth secret"
 
    # Openai API setup
-   OPENAI_API_KEY='your OpenAI key here'
-   FINE_TUNED_MODEL='your fine tune model key here'
+   OPENAI_API_KEY="your OpenAI key here"
+   FINE_TUNED_MODEL="your fine tune model key here"
    ```
 
    Your information from should be entered after the '=' sign.
