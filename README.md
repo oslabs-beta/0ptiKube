@@ -1,14 +1,79 @@
+
+
+<img src="public/logo-grayscale-inverted.svg" alt="0ptikube logo" height="250"/>
+<h1>0ptikube</h1>
+
+<p>
+<strong>An intuituive, simple web application to monitor metrics in your Kubernetes clusters.</strong>
+</p
+
+
+</div>
+
+---
+
+
+
+### 👩‍💻 Our Tech Stack 🧑‍💻
+
+#### Frontend 🖼️
+![Next.js](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![D3.js](https://img.shields.io/badge/d3%20js-F9A03C?style=for-the-badge&logo=d3.js&logoColor=white)
+![HTML](https://img.shields.io/badge/HTML-e85a2e?style=for-the-badge&logo=html5&logoColor=white)
+![CSS](https://img.shields.io/badge/CSS-2e35e8?style=for-the-badge&logo=css3&logoColor=white)
+
+#### Backend 💻
+![Next.js](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![Axios](https://img.shields.io/badge/Axios-671DDF?style=for-the-badge&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
+
+
+
+
+#### DevOps & Infrastructure ⚙︎
+![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Minikube](https://img.shields.io/badge/Minikube-F7931E?style=for-the-badge&logo=kubernetes&logoColor=white)
+![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
+![PromQL](https://img.shields.io/badge/PromQL-F57600?style=for-the-badge&logo=prometheus&logoColor=white)
+
+#### Auth & Security 🔐
+![GitHub OAuth](https://img.shields.io/badge/GitHub_OAuth-181717?style=for-the-badge&logo=github&logoColor=white)
+
+#### AI 🤖
+![OpenAI API](https://img.shields.io/badge/OpenAI_API-412991?style=for-the-badge&logo=openai&logoColor=white)
+
+
+# 📚 Table of Contents 📚
+
+- [About 0ptikube 🔳](#about-0ptikube-)
+- [Why 0ptikube? 🤔](#why-0ptikube-)
+- [0ptikube Features 📱](#0ptikube-features-)
+- [Prerequisite Apps to Use 0ptikube App 📦](#prerequisite-apps-to-use-0ptikube-app-)
+- [Project Setup ⚙️](#project-setup)
+- [Future Features 🛠](#future-features-)
+- [Contribution Guidelines 📝](#contribution-guidelines-)
+- [Contributors 🙏](#contributors-)
+- [License 📄](#license-)
+
+
 # About 0ptikube 🔳
 0ptikube is a web-based visualization tool that helps users monitor the current CPU and memory usage of their Kubernetes pods and clusters. It offers near real-time historical monitoring and visual metrics views for the last hour, 12 hours, 24 hours, and 7 days.
 
 # Why 0ptikube? 🤔
 Accessing Kubernetes cluster and pod resources through terminal commands can be tedious and cumbersome. 0ptikube streamlines this process by consolidating it into a single, user-friendly interface. With our responsive React and D3.jsbased dashboard, you can easily visualize performance metrics without the hassle of navigating through menus or changing context. ✨
 
-# 0ptikube Features 
+# 0ptikube Features 📱
+# 0ptikube Features 📱
 - Monitoring: near realtime metrics to monitor a pod or cluster's cpu and memory.
 - AI integration: implement AI and rag to get tailored insights into reallocating resoueces for a pod or cluster.
 
-# Prerequsites apps to use 0ptikube app 📦
+# Prerequisite Apps to Use 0ptikube App 📦
+# Prerequisite Apps to Use 0ptikube App 📦
 The following installs are required to use 0ptikube. Great news, all of the following, except node, are included in the install sctipt. We've listed the download links as resources.
 1. Node.js - install the latest version [here](https://nodejs.org/en/download)
 2. Docker Desktop (included) - [link](https://docs.docker.com/desktop/)
@@ -143,7 +208,7 @@ docker images
 - Multi-Cluster Support: Expand the platform to support monitoring multiple Kubernetes clusters simultaneously.
 - Support for Visualization of Additional Metrics: Create visualizations that measure additional indicators of cluster/pod health including percentage uptime, latency, etc.
 
-## 📝 Contribution Guidelines 📝
+## Contribution Guidelines 📝
 
 We ❤elcome contributions from the community! 😇 Want to get involbed? 🧑‍💻
 
