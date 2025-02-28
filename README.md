@@ -86,22 +86,22 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
 1. Clone our main branch of the 0PTIKUBE repository on Github.com and then clone it in the terminal.
    ```bash
    git clone https://github.com/oslabs-beta/0ptiKube.git
-   cd 0ptikube
+      cd 0ptikube
    ```
 2. Install dependendencies for the 0PTIKUBE app
 
    ```bash
    #  execute the following command in the root folder of the 0PTIKUBE directory.
-   npm install
+      npm install
    ```
 
 3. Run the `minikube-install.sh` file script in the root directory of the 0PTIKUBE folder.
    This script installs the following programs utilized in our 0PTIKUBE app: Minikube, Docker Desktop, Kubectl, Helm, and Prometheus.
    ```bash
    # this commands makes the `minikube-install.sh` file an executable:
-   chmod u+x minikube-install.sh
+      chmod u+x minikube-install.sh
    # execute the script with the following command:
-   ./minikube-install.sh
+      ./minikube-install.sh
    ```
 4. After the installation sctipt is complete. Run the following commands in your terminal to get Minikube environment started.
 
@@ -109,37 +109,37 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
 
    ```bash
    # Start Minikube with sufficient resources
-   minikube start
+      minikube start
    # Verify Minikube is running and view configuration
-   minikube status
+      minikube status
    minikube config view #cpu should be 3, and memory 3000 by default.
    # Enable required addons
-   minikube addons enable metrics-server  # Aggregates resource usage data for monitoring and autoscaling.
-   minikube addons enable dashboard        # Provides a default storage class for dynamic volume provisioning.
-   minikube addons enable ingress          # Manages external access to services via HTTP/HTTPS routing.
-   minikube addons enable storage-provisioner # Enables dynamic provisioning of storage for persistent volumes.
+      minikube addons enable metrics-server  # Aggregates resource usage data for monitoring and autoscaling.
+      minikube addons enable dashboard        # Provides a default storage class for dynamic volume provisioning.
+      minikube addons enable ingress          # Manages external access to services via HTTP/HTTPS routing.
+      minikube addons enable storage-provisioner # Enables dynamic provisioning of storage for persistent volumes.
    ```
 
    b. Next, copy and paste this code block into the same terminal and execute commands. This applies the RBAC, test pod configurations, services and cron jobs.
 
    ```bash
    # Apply RBAC configuration
-   kubectl apply -f k8s-configs/k8s-testpods/stressor-rbac.yaml
+      kubectl apply -f k8s-configs/k8s-testpods/stressor-rbac.yaml
    
    # Apply Test Pod 1 configurations
-   kubectl apply -f k8s-configs/k8s-testpods/test-pod1.yaml
-   kubectl apply -f k8s-configs/k8s-testpods/test-pod1-service-monitor.yaml
-   kubectl apply -f k8s-configs/k8s-testpods/test-pod1-cronjob.yaml
+      kubectl apply -f k8s-configs/k8s-testpods/test-pod1.yaml
+      kubectl apply -f k8s-configs/k8s-testpods/test-pod1-service-monitor.yaml
+      kubectl apply -f k8s-configs/k8s-testpods/test-pod1-cronjob.yaml
    
    # Apply Test Pod 2 configurations
-   kubectl apply -f k8s-configs/k8s-testpods/test-pod2.yaml
-   kubectl apply -f k8s-configs/k8s-testpods/test-pod2-service-monitor.yaml
-   kubectl apply -f k8s-configs/k8s-testpods/test-pod2-cronjob.yaml
+      kubectl apply -f k8s-configs/k8s-testpods/test-pod2.yaml
+      kubectl apply -f k8s-configs/k8s-testpods/test-pod2-service-monitor.yaml
+      kubectl apply -f k8s-configs/k8s-testpods/test-pod2-cronjob.yaml
    
    # Apply Test Pod 3 configurations
-   kubectl apply -f k8s-configs/k8s-testpods/test-pod3.yaml
-   kubectl apply -f k8s-configs/k8s-testpods/test-pod3-service-monitor.yaml
-   kubectl apply -f k8s-configs/k8s-testpods/test-pod3-cronjob.yaml
+      kubectl apply -f k8s-configs/k8s-testpods/test-pod3.yaml
+      kubectl apply -f k8s-configs/k8s-testpods/test-pod3-service-monitor.yaml
+      kubectl apply -f k8s-configs/k8s-testpods/test-pod3-cronjob.yaml
    ```
    c. Next, we are going to containerize our small next.js demo app, that's inside the  `load-demo-app`folder. It's associated docker file is 
     `Dockerfile.demoapp`.
@@ -148,23 +148,23 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
 
    ```bash
    # Navigate to the load-demo-app directory
-   cd load-demo-app
+      cd load-demo-app
    
    # Switch to Minikube's Docker daemon
-   eval $(minikube docker-env)
+      eval $(minikube docker-env)
 
    # Build the image (it will now be available in Minikube)
-   docker build -t load-demo-app:latest -f Dockerfile.demoApp .
+      docker build -t load-demo-app:latest -f Dockerfile.demoApp .
 
    # Apply Demo App configurations
-   kubectl apply -f k8s-configs/k8s-demo-app-pod/demoApp-pod.yaml
-   kubectl apply -f k8s-configs/k8s-demo-app-pod/demoApp-service.yaml
-   kubectl apply -f k8s-configs/k8s-demo-app-pod/demoApp-service-monitor.yaml
+      kubectl apply -f k8s-configs/k8s-demo-app-pod/demoApp-pod.yaml
+      kubectl apply -f k8s-configs/k8s-demo-app-pod/demoApp-service.yaml
+      kubectl apply -f k8s-configs/k8s-demo-app-pod/demoApp-service-monitor.yaml
 
    # 5. Verify the deployment
-   kubectl get pods    # Check if pod is running
-   kubectl get svc     # Check if service is created
-   kubectl get servicemonitors    # Check if service monitor is created
+      kubectl get pods    # Check if pod is running
+      kubectl get svc     # Check if service is created
+      kubectl get servicemonitors    # Check if service monitor is created
 
    ```
 
@@ -175,24 +175,24 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    # --------------Required terminals for 0ptikube web app-------------------------
    # Terminal 1 - Run the 0PTIKUBE web application
    # (recommend renaming terminal session '0PTIKUBE web server 3000')
-   npm start
+      npm start
 
    # Terminal 2 - Prometheus port forwarding (required for metrics ti display in the webapp)
    # (recommend renaming 'prom port forward 9090')
-   kubectl port-forward svc/my-kube-prometheus-stack-prometheus 9090:9090
+      kubectl port-forward svc/my-kube-prometheus-stack-prometheus 9090:9090
 
    #--------------Optional terminals 3-5 -------------------------
    # Terminal 3 - Just for your reference. Monitor the test pods including load-demo-app in terminal. This can be seen easily in our web app.
    # (recommend renaming terminal 'pod monitor')
-   watch "kubectl top pods | grep -E 'test-pod1|test-pod2|test-pod3|load-demo-app'"
+      watch "kubectl top pods | grep -E 'test-pod1|test-pod2|test-pod3|load-demo-app'"
 
    # Terminal 4 - View pod and service status for our minikube cluster
    # (recommend renaming 'k8s status')
-   kubectl get pods,svc,servicemonitors
+      kubectl get pods,svc,servicemonitors
 
    # Terminal 5 - Port forward to access the demo app UI (optional)
    # (recommend renaming terminal session 'demo app forward 3002')
-   kubectl port-forward service/demoApp-service 3002:3000
+      kubectl port-forward service/demoApp-service 3002:3000
    #this will allow you to view our demo app's UI through the browser http://localhost:3002
 
   
