@@ -123,19 +123,28 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    b. Next, copy and paste this code block into the same terminal and execute commands. This applies the RBAC, test pod configurations, services and cron jobs.
 
    ```bash
-   kubectl apply -f k8s/stressor-rbac.yaml
-   kubectl apply -f k8s/test-pod1.yaml
-   kubectl apply -f k8s/test-pod1-service-monitor.yaml
-   kubectl apply -f k8s/test-pod1-cronjob.yaml
-   kubectl apply -f k8s/test-pod2.yaml
-   kubectl apply -f k8s/test-pod2-service-monitor.yaml
-   kubectl apply -f k8s/test-pod2-cronjob.yaml
-   kubectl apply -f k8s/test-pod3.yaml
-   kubectl apply -f k8s/test-pod3-service-monitor.yaml
-   kubectl apply -f k8s/test-pod3-cronjob.yaml
+   # Apply RBAC configuration
+   kubectl apply -f k8s-configs/k8s-testpods/stressor-rbac.yaml
+   
+   # Apply Test Pod 1 configurations
+   kubectl apply -f k8s-configs/k8s-testpods/test-pod1.yaml
+   kubectl apply -f k8s-configs/k8s-testpods/test-pod1-service-monitor.yaml
+   kubectl apply -f k8s-configs/k8s-testpods/test-pod1-cronjob.yaml
+   
+   # Apply Test Pod 2 configurations
+   kubectl apply -f k8s-configs/k8s-testpods/test-pod2.yaml
+   kubectl apply -f k8s-configs/k8s-testpods/test-pod2-service-monitor.yaml
+   kubectl apply -f k8s-configs/k8s-testpods/test-pod2-cronjob.yaml
+   
+   # Apply Test Pod 3 configurations
+   kubectl apply -f k8s-configs/k8s-testpods/test-pod3.yaml
+   kubectl apply -f k8s-configs/k8s-testpods/test-pod3-service-monitor.yaml
+   kubectl apply -f k8s-configs/k8s-testpods/test-pod3-cronjob.yaml
    ```
-   c. Next, we are going to containerize our small next.js demo app, that's inside the  `load-demo-app`folder. It's associated docker file is `Dockerfile.demoapp`.
-   This will allow us to place the demo app into our kubernetes cluster as a pod. This will allow us to monitor it. Similar to our testpods we created in the previous step.
+   c. Next, we are going to containerize our small next.js demo app, that's inside the  `load-demo-app`folder. It's associated docker file is 
+    `Dockerfile.demoapp`.
+   This will allow us to place the demo app into our kubernetes cluster as a pod. This will allow us to monitor it. Similar to our testpods we 
+    created in the previous step.
 
    ```bash
    # Navigate to the load-demo-app directory
@@ -147,10 +156,10 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    # Build the image (it will now be available in Minikube)
    docker build -t load-demo-app:latest -f Dockerfile.demoApp .
 
-   # Apply the Kubernetes configurations
-   kubectl apply -f k8s-configs/demoApp-pod.yaml
-   kubectl apply -f k8s-configs/demoApp-service.yaml
-   kubectl apply -f k8s-configs/demoApp-service-monitor.yaml
+   # Apply Demo App configurations
+   kubectl apply -f k8s-configs/k8s-demo-app-pod/demoApp-pod.yaml
+   kubectl apply -f k8s-configs/k8s-demo-app-pod/demoApp-service.yaml
+   kubectl apply -f k8s-configs/k8s-demo-app-pod/demoApp-service-monitor.yaml
 
    # 5. Verify the deployment
    kubectl get pods    # Check if pod is running
@@ -160,7 +169,7 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    ```
 
 5. You are now ready to use our 0PTIKUBE application with all the configurations added 🥳
-- access your app by running the following commands in a new terminal. We recommend renaming each terminal tab to stay organized:
+- Access your app by running the following commands in a new terminal. We recommend renaming each terminal tab to stay organized:
 
   ```bash
    #Required terminals for 0ptikube web app-------------------------
