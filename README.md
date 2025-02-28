@@ -142,7 +142,7 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
       kubectl apply -f k8s-configs/k8s-testpods/test-pod3-cronjob.yaml
    ```
    c. Next, we are going to containerize our small next.js demo app, that's inside the  `load-demo-app`folder. It's associated docker file is 
-    `Dockerfile.demoapp`.
+    `Dockerfile.load-demo-app`.
    This will allow us to place the demo app into our kubernetes cluster as a pod. This will allow us to monitor it. Similar to our testpods we 
     created in the previous step.
 
@@ -154,7 +154,7 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
       eval $(minikube docker-env)
 
    # Build the image (it will now be available in Minikube)
-      docker build -t load-demo-app:latest -f Dockerfile.demoApp .
+      docker build -t load-demo-app:latest -f Dockerfile.load-demo-app .
 
    # Apply Demo App configurations
       kubectl apply -f k8s-configs/k8s-demo-app-pod/demoApp-pod.yaml
