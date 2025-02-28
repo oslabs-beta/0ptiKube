@@ -163,7 +163,7 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
 - access your app by running the following commands in a new terminal. We recommend renaming each terminal tab to stay organized:
 
   ```bash
-   #Required terminals for 0ptikube web app
+   #Required terminals for 0ptikube web app-------------------------
    # Terminal 1 - Run the 0PTIKUBE web application
    # (recommend renaming terminal session '0PTIKUBE web server 3000')
    npm start
@@ -172,8 +172,8 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    # (recommend renaming 'prom port forward 9090')
    kubectl port-forward svc/my-kube-prometheus-stack-prometheus 9090:9090
 
-   # Optional terminals 3-5
-  # Terminal 3 - Just for your reference. Monitor the test pods including load-demo-app in terminal. This can be seen easily in our web app.
+   # Optional terminals 3-5 ----------------------------------------
+   # Terminal 3 - Just for your reference. Monitor the test pods including load-demo-app in terminal. This can be seen easily in our web app.
    # (recommend renaming terminal 'pod monitor')
    watch "kubectl top pods | grep -E 'test-pod1|test-pod2|test-pod3|load-demo-app'"
 
@@ -181,7 +181,7 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    # (recommend renaming 'k8s status')
    kubectl get pods,svc,servicemonitors
 
-  # Terminal 5 - Port forward to access the demo app UI (optional)
+   # Terminal 5 - Port forward to access the demo app UI (optional)
    # (recommend renaming terminal session 'demo app forward 3002')
    kubectl port-forward service/demoApp-service 3002:3000
    #this will allow you to view our demo app's UI through the browser http://localhost:3002
