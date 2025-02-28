@@ -17,10 +17,10 @@ export class LoadGenerator {
   async start(): Promise<void> {
     if (isMainThread) {
       console.log('Starting load generation...');
-      
+
       // Use available CPU cores (max 4 for demo)
       const numWorkers = Math.min(4, cpus().length);
-      
+
       this.running = true;
 
       if (this.config.memoryIntensive) {
@@ -36,11 +36,11 @@ export class LoadGenerator {
         // Create worker for each CPU
         for (let i = 0; i < numWorkers; i++) {
           const worker = new Worker(__filename, {
-            workerData: { 
+            workerData: {
               ...this.config,
               workerId: i,
-              running: true 
-            }
+              running: true,
+            },
           });
 
           worker.on('error', (error) => {
@@ -68,23 +68,28 @@ export class LoadGenerator {
 
   private generateCPULoad() {
     const { durationMinutes, workerId } = workerData;
-    const endTime = Date.now() + (durationMinutes * 60 * 1000);
-    
-    console.log(`Worker ${workerId} starting CPU load for ${durationMinutes} minutes`);
-    
+    const endTime = Date.now() + durationMinutes * 60 * 1000;
+
+    console.log(
+      `Worker ${workerId} starting CPU load for ${durationMinutes} minutes`,
+    );
+
     while (Date.now() < endTime) {
+      // Check if running is false to stop early
+      if (!this.running) break;
+
       // CPU-intensive calculation
       let x = 0;
       for (let i = 0; i < 1000000; i++) {
         x += Math.sqrt(i) * Math.sin(i);
       }
-      
+
       // Small delay to prevent complete CPU lockup
       if (Date.now() % 1000 === 0) {
         if (parentPort) parentPort.postMessage(`Still running, load: ${x}`);
       }
     }
-    
+
     if (parentPort) {
       parentPort.postMessage('Completed CPU load cycle');
     }
@@ -106,4 +111,4 @@ export class LoadGenerator {
 if (!isMainThread) {
   const loadGen = new LoadGenerator(workerData);
   loadGen.start();
-} 
+}
