@@ -1,8 +1,4 @@
 import type { Config } from 'drizzle-kit';
-import dotenv from 'dotenv';
-
-// Load environment variables from the .env file
-dotenv.config();
 
 const config: Config = {
   // Include multiple schemas by passing an array of paths
