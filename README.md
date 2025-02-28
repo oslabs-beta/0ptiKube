@@ -134,27 +134,60 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    kubectl apply -f k8s/test-pod3-service-monitor.yaml
    kubectl apply -f k8s/test-pod3-cronjob.yaml
    ```
+   c. Next, we are going to containerize our small next.js demo app, that's inside the  `load-demo-app`folder. It's associated docker file is `Dockerfile.demoapp`.
+   This will allow us to place the demo app into our kubernetes cluster as a pod. This will allow us to monitor it. Similar to our testpods we created in the previous step.
+
+   ```bash
+   # Navigate to the load-demo-app directory
+   cd load-demo-app
+   
+   # Switch to Minikube's Docker daemon
+   eval $(minikube docker-env)
+
+   # Build the image (it will now be available in Minikube)
+   docker build -t load-demo-app:latest -f Dockerfile.demoApp .
+
+   # Apply the Kubernetes configurations
+   kubectl apply -f k8s-configs/demoApp-pod.yaml
+   kubectl apply -f k8s-configs/demoApp-service.yaml
+   kubectl apply -f k8s-configs/demoApp-service-monitor.yaml
+
+   # 5. Verify the deployment
+   kubectl get pods    # Check if pod is running
+   kubectl get svc     # Check if service is created
+   kubectl get servicemonitors    # Check if service monitor is created
+
+   ```
 
 5. You are now ready to use our 0PTIKUBE application with all the configurations added 🥳
-
 - access your app by running the following commands in a new terminal. We recommend renaming each terminal tab to stay organized:
 
   ```bash
-  # new terminal - run the next.js web server. Keep this tab by itself uninterrupted after running the command.
-  # (recommend renaming terminal session 'web server 3000')
-  npm start
+   #Required terminals for 0ptikube web app
+   # Terminal 1 - Run the 0PTIKUBE web application
+   # (recommend renaming terminal session '0PTIKUBE web server 3000')
+   npm start
 
-  # new terminal - execute  prometheus port forwarding
-  # (recommend renaming prom port forward 9090).
-  kubectl port-forward svc/my-kube-prometheus-stack-prometheus 9090:9090
+   # Terminal 2 - Prometheus port forwarding (required for metrics ti display in the webapp)
+   # (recommend renaming 'prom port forward 9090')
+   kubectl port-forward svc/my-kube-prometheus-stack-prometheus 9090:9090
 
-  # new terminal - Verify all resources are created:
-  kubectl get deployments,pods,cronjobs,servicemonitors
+   # Optional terminals 3-5
+  # Terminal 3 - Just for your reference. Monitor the test pods including load-demo-app in terminal. This can be seen easily in our web app.
+   # (recommend renaming terminal 'pod monitor')
+   watch "kubectl top pods | grep -E 'test-pod1|test-pod2|test-pod3|load-demo-app'"
 
-  # new terminal - shows each test pod's cpu and memory changes along with the cronjob associated with pod, titled stressor.
-  watch "kubectl top pods | grep -E 'test-pod1|test-pod2|test-pod3'"
+   # Terminal 4 - View pod and service status for our minikube cluster
+   # (recommend renaming 'k8s status')
+   kubectl get pods,svc,servicemonitors
 
-  ```
+  # Terminal 5 - Port forward to access the demo app UI (optional)
+   # (recommend renaming terminal session 'demo app forward 3002')
+   kubectl port-forward service/demoApp-service 3002:3000
+   #this will allow you to view our demo app's UI through the browser http://localhost:3002
+
+  
+   ```
 
 6. Create `.env` file in the root directory of 0PTIKUBE folder.
    You'll need to input environment variables nside of the .env file to acces features inside our web app.
