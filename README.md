@@ -217,34 +217,30 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    - Open AI API [link](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key)
    - Supabase datbase connection [link](https://supabase.com/docs/guides/database/connecting-to-postgres)
 
-   7. Useful commands for Minikube.
-
-   ### Minikube Commands
-
-   below are general purpose commands
+ 7. Useful commands for Minikube.
    
-   ```bash
-   # Start cluster - started with use of our `minikube.install.sh script`
-   minikube start
-   # Check status of control plane (kubernetes cluster)
-   minikube status
-   # Stop cluster - safe to do. Similar to pausing an action.
-   minikube stop
-   # Delete cluster (after trying our app)
-   # this command is only recommended  if you intend to make your own cluster or environment from scratch in the future)
-   minikube delete
-   ```
+      ```bash
+      # Start cluster - started with use of our `minikube.install.sh script`
+      minikube start
+      # Check status of control plane (kubernetes cluster)
+      minikube status
+      # Stop cluster - safe to do. Similar to pausing an action.
+      minikube stop
+      # Delete cluster (after trying our app)
+      # this command is only recommended  if you intend to make your own cluster or environment from scratch in the future)
+      minikube delete
+      ```
    
-   8. Useful commands for docker.
+ 8. Useful commands for docker.
    
-   ```bash
-   # List running containers
-   docker ps
-   # List all containers (including stopped)
-   docker ps -a
-   # List all images
-   docker images
-   ```
+      ```bash
+      # List running containers
+      docker ps
+      # List all containers (including stopped)
+      docker ps -a
+      # List all images
+      docker images
+      ```
 
 # Future Features 🛠
 
