@@ -9,10 +9,10 @@ import { sleep, check } from 'k6';
 
 //   // The following section contains configuration options for execution of this
 //   // test script in Grafana Cloud.
-  
+
 //   // See https://grafana.com/docs/grafana-cloud/k6/get-started/run-cloud-tests-from-the-cli/
 //   // to learn about authoring and running k6 test scripts in Grafana k6 Cloud.
-  
+
 //   // cloud: {
 //   //   // The ID of the project to which the test is assigned in the k6 Cloud UI.
 //   //   // By default tests are executed in default project.
@@ -58,25 +58,25 @@ import { sleep, check } from 'k6';
 //   sleep(1);
 // }
 
-
 export const options = {
   stages: [
-    { duration: '1m', target: 20 },    // Ramp up to 20 users
-    { duration: '3m', target: 50 },    // Ramp up to 50 users
-    { duration: '2m', target: 100 },   // Ramp up to 100 users
-    { duration: '3m', target: 100 },   // Stay at 100 users
-    { duration: '1m', target: 0 },     // Ramp down to 0 users
+    { duration: '1m', target: 20 }, // Ramp up to 20 users
+    { duration: '3m', target: 50 }, // Ramp up to 50 users
+    { duration: '2m', target: 100 }, // Ramp up to 100 users
+    { duration: '3m', target: 100 }, // Stay at 100 users
+    { duration: '1m', target: 0 }, // Ramp down to 0 users
   ],
   thresholds: {
-    'http_req_duration': ['p(95)<2000'], // Fixed syntax: p(95) instead of p95
-    'http_req_failed': ['rate<0.01'],    // This syntax is correct
+    http_req_duration: ['p(95)<2000'], // Fixed syntax: p(95) instead of p95
+    http_req_failed: ['rate<0.01'], // This syntax is correct
   },
 };
 
 // Rest of the code remains the same
-export default function() {
+(() => {
   // Simulate intensive data fetching
-  for (let i = 0; i < 10; i++) {  // Make multiple requests per iteration
+  for (let i = 0; i < 10; i++) {
+    // Make multiple requests per iteration
     // Test cluster-level metrics
     const clusterResponses = http.batch([
       ['GET', 'http://localhost:3000/api/metrics/cluster/cpu/history'],
@@ -94,14 +94,14 @@ export default function() {
     ]);
 
     // Add checks for all responses
-    clusterResponses.forEach((response, index) => {
+    clusterResponses.forEach((response) => {
       check(response, {
         'cluster metrics status is 200': (r) => r.status === 200,
         'cluster metrics has data': (r) => r.body.length > 0,
       });
     });
 
-    containerResponses.forEach((response, index) => {
+    containerResponses.forEach((response) => {
       check(response, {
         'container metrics status is 200': (r) => r.status === 200,
         'container metrics has data': (r) => r.body.length > 0,
@@ -117,4 +117,4 @@ export default function() {
   }
 
   sleep(1); // Sleep between VU iterations
-}
+})();

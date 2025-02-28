@@ -225,7 +225,7 @@ docker images
 
 ## Contribution Guidelines 📝
 
-We ❤elcome contributions from the community! 😇 Want to get involbed? 🧑‍💻
+We welcome contributions from the community! 😇 Want to get involved? 🧑‍💻
 
 1. Fork the Repo
    Click the "Fork" button at the top-right corner of this repository page.

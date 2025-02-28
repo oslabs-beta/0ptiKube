@@ -15,12 +15,12 @@ const config: Config = {
     user: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || 'tANLl7BQHp9rMFN0',
     database: process.env.DB_NAME || 'postgres',
-    connectionString: process.env.DATABASE_URL, // Pulling connection string from environment variables
+    url: process.env.DATABASE_URL, // Pulling connection string from environment variables
     ssl:
       process.env.NODE_ENV === 'production'
         ? { rejectUnauthorized: true }
         : false, // Conditional SSL setup
-    port: 5432,
+    port: 6543,
   },
 };
 
