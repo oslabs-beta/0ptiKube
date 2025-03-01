@@ -219,6 +219,12 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    # Openai API setup
    OPENAI_API_KEY="your OpenAI key here"
    FINE_TUNED_MODEL="your fine tune model key here"
+
+   # SSL Certificate for Database Connection: 
+   # To connect to Supabase, download the required CA certificate. Create a folder in root directory with command `mkdir -p certs/`
+   # Add the downloaded SSL certificate code to a file in the newly created called `calledsupabase-ca.pem`
+   # Copy the certificate text you downloaded and paste it into the new file. You can add this file to your .gitignore.
+   # Append "?sslmode=verify-full&sslrootcert=certs/supabase-ca.pem" to the end of your DATABASE_URL in your .env file.
    ```
 
    Your information from should be entered after the '=' sign.
@@ -227,12 +233,6 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    - Githun Oauth [link](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app)
    - Open AI API [link](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key)
    - Supabase datbase connection [link](https://supabase.com/docs/guides/database/connecting-to-postgres)
-
- 6b. SSL Certificate for Database Connection: 
-     - To connect to Supabase, download the required CA certificate. Create a folder in root directory with command `mkdir -p certs/`
-     - Add the downloaded SSL certificate code to a file in the newly created called `calledsupabase-ca.pem`
-     - Copy the certificate text you downloaded and paste it into the new file. You can add this file to your .gitignore.
-     - Append "?sslmode=verify-full&sslrootcert=certs/supabase-ca.pem" to the end of your DATABASE_URL in your .env file.
 
 7. Useful commands for Minikube.
 
