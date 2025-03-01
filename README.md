@@ -246,6 +246,14 @@ Here are links on how to attain the following:
    # Delete cluster (after trying our app)
    # this command is only recommended  if you intend to make your own cluster or environment from scratch in the future)
    minikube delete
+
+    #if you run out of prometheus resources after days of using our app, you can allocate more resources by using the following terminal commands.
+   helm upgrade my-kube-prometheus-stack prometheus-community/kube-prometheus-stack \
+     --set prometheus.prometheusSpec.resources.requests.memory=2Gi \
+     --set prometheus.prometheusSpec.resources.limits.memory=4Gi \
+     --set prometheus.prometheusSpec.resources.requests.cpu=500m \
+     --set prometheus.prometheusSpec.resources.limits.cpu=1000m \
+     --set prometheus.prometheusSpec.retention=5d
    ```
 
 8. Useful commands for docker.
