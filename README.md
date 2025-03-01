@@ -200,8 +200,8 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
 
   ```
 
-6. Create `.env` file in the root directory of 0PTIKUBE folder.
-   You'll need to input environment variables nside of the .env file to acces features inside our web app.
+6a. Create `.env` file in the root directory of 0PTIKUBE folder.
+   You'll need to input environment variables nside of the .env file to access features inside our web app.
    Copy and paste the following fields from the code block.
 
    ```bash
@@ -209,16 +209,6 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    DATABASE_URL=postgresql:"your supabase uri"
    # Prometheus URL provided
    PROMETHEUS_BASE_URL="http://localhost:9090"
-
-   ## 🔒 SSL Certificate for Database Connection
-   ## To connect to Supabase, download the required CA certificate.
-      mkdir -p certs/
-   ## Add the downloaded SSL certificate code to a file in the newly created /certs directory called
-      supabase-ca.pem
-   ## Copy the certificate text you downloaded and paste it into the new file. You can add this file
-   to your .gitignore.
-   Append "?sslmode=verify-full&sslrootcert=certs/supabase-ca.pem" to the end of your DATABASE_URL in
-   your .env file.
 
    # Github Oauth setup
    GITHUB_ID="your GitHub client ID"
@@ -237,6 +227,12 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    - Githun Oauth [link](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app)
    - Open AI API [link](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key)
    - Supabase datbase connection [link](https://supabase.com/docs/guides/database/connecting-to-postgres)
+
+ 6b. SSL Certificate for Database Connection 
+     To connect to Supabase, download the required CA certificate. Create a folder in root directory with command `mkdir -p certs/`
+     Add the downloaded SSL certificate code to a file in the newly created /certs directory calledsupabase-ca.pem
+     Copy the certificate text you downloaded and paste it into the new file. You can add this file to your .gitignore.
+     Append "?sslmode=verify-full&sslrootcert=certs/supabase-ca.pem" to the end of your DATABASE_URL in your .env file.
 
 7. Useful commands for Minikube.
 
