@@ -211,11 +211,11 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    PROMETHEUS_BASE_URL="http://localhost:9090"
 
    ## 🔒 SSL Certificate for Database Connection
-   To connect to Supabase, download the required CA certificate.
-   mkdir -p certs/
-   Add the downloaded SSL certificate code to a file in the newly created /certs directory called
-   supabase-ca.pem
-   Copy the certificate text you downloaded and paste it into the new file. You can add this file
+   ## To connect to Supabase, download the required CA certificate.
+      mkdir -p certs/
+   ## Add the downloaded SSL certificate code to a file in the newly created /certs directory called
+      supabase-ca.pem
+   ## Copy the certificate text you downloaded and paste it into the new file. You can add this file
    to your .gitignore.
    Append "?sslmode=verify-full&sslrootcert=certs/supabase-ca.pem" to the end of your DATABASE_URL in
    your .env file.
