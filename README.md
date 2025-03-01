@@ -125,31 +125,32 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    ```bash
    # Apply RBAC configuration
       kubectl apply -f k8s-configs/k8s-testpods/stressor-rbac.yaml
-   
+
    # Apply Test Pod 1 configurations
       kubectl apply -f k8s-configs/k8s-testpods/test-pod1.yaml
       kubectl apply -f k8s-configs/k8s-testpods/test-pod1-service-monitor.yaml
       kubectl apply -f k8s-configs/k8s-testpods/test-pod1-cronjob.yaml
-   
+
    # Apply Test Pod 2 configurations
       kubectl apply -f k8s-configs/k8s-testpods/test-pod2.yaml
       kubectl apply -f k8s-configs/k8s-testpods/test-pod2-service-monitor.yaml
       kubectl apply -f k8s-configs/k8s-testpods/test-pod2-cronjob.yaml
-   
+
    # Apply Test Pod 3 configurations
       kubectl apply -f k8s-configs/k8s-testpods/test-pod3.yaml
       kubectl apply -f k8s-configs/k8s-testpods/test-pod3-service-monitor.yaml
       kubectl apply -f k8s-configs/k8s-testpods/test-pod3-cronjob.yaml
    ```
-   c. Next, we are going to containerize our small next.js demo app, that's inside the  `load-demo-app`folder. It's associated docker file is 
-    `Dockerfile.load-demo-app`.
-   This will allow us to place the demo app into our kubernetes cluster as a pod. This will allow us to monitor it. Similar to our testpods we 
-    created in the previous step.
+
+   c. Next, we are going to containerize our small next.js demo app, that's inside the `load-demo-app`folder. It's associated docker file is
+   `Dockerfile.load-demo-app`.
+   This will allow us to place the demo app into our kubernetes cluster as a pod. This will allow us to monitor it. Similar to our testpods we
+   created in the previous step.
 
    ```bash
    # Navigate to the load-demo-app directory
       cd load-demo-app
-   
+
    # Switch to Minikube's Docker daemon
       eval $(minikube docker-env)
 
@@ -169,6 +170,7 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    ```
 
 5. You are now ready to use our 0PTIKUBE application with all the configurations added 🥳
+
 - Access your app by running the following commands in a new terminal. We recommend renaming each terminal tab to stay organized:
 
   ```bash
@@ -195,8 +197,8 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
       kubectl port-forward service/demoApp-service 3002:3000
    #this will allow you to view our demo app's UI through the browser http://localhost:3002
 
-  
-   ```
+
+  ```
 
 6. Create `.env` file in the root directory of 0PTIKUBE folder.
    You'll need to input environment variables nside of the .env file to acces features inside our web app.
@@ -207,6 +209,16 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    DATABASE_URL=postgresql:"your supabase uri"
    # Prometheus URL provided
    PROMETHEUS_BASE_URL="http://localhost:9090"
+
+   ## 🔒 SSL Certificate for Database Connection
+   To connect to Supabase, download the required CA certificate.
+   mkdir -p certs/
+   Add the downloaded SSL certificate code to a file in the newly created /certs directory called
+   supabase-ca.pem
+   Copy the certificate text you downloaded and paste it into the new file. You can add this file
+   to your .gitignore.
+   Append "?sslmode=verify-full&sslrootcert=certs/supabase-ca.pem" to the end of your DATABASE_URL in
+   your .env file.
 
    # Github Oauth setup
    GITHUB_ID="your GitHub client ID"
@@ -226,30 +238,30 @@ The following installs are required to use 0PTIKUBE. Great news, all of the foll
    - Open AI API [link](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key)
    - Supabase datbase connection [link](https://supabase.com/docs/guides/database/connecting-to-postgres)
 
- 7. Useful commands for Minikube.
-   
-      ```bash
-      # Start cluster - started with use of our `minikube.install.sh script`
-      minikube start
-      # Check status of control plane (kubernetes cluster)
-      minikube status
-      # Stop cluster - safe to do. Similar to pausing an action.
-      minikube stop
-      # Delete cluster (after trying our app)
-      # this command is only recommended  if you intend to make your own cluster or environment from scratch in the future)
-      minikube delete
-      ```
-   
- 8. Useful commands for docker.
-   
-      ```bash
-      # List running containers
-      docker ps
-      # List all containers (including stopped)
-      docker ps -a
-      # List all images
-      docker images
-      ```
+7. Useful commands for Minikube.
+
+   ```bash
+   # Start cluster - started with use of our `minikube.install.sh script`
+   minikube start
+   # Check status of control plane (kubernetes cluster)
+   minikube status
+   # Stop cluster - safe to do. Similar to pausing an action.
+   minikube stop
+   # Delete cluster (after trying our app)
+   # this command is only recommended  if you intend to make your own cluster or environment from scratch in the future)
+   minikube delete
+   ```
+
+8. Useful commands for docker.
+
+   ```bash
+   # List running containers
+   docker ps
+   # List all containers (including stopped)
+   docker ps -a
+   # List all images
+   docker images
+   ```
 
 # Future Features 🛠
 
