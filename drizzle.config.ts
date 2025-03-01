@@ -1,22 +1,25 @@
 import type { Config } from 'drizzle-kit';
+import * as fs from 'fs';
+
+const connectionUrl = process.env.DATABASE_URl!;
+
+const sslCertPath = process.env.SSL_CERT_PATH;
 
 const config: Config = {
-  // Include multiple schemas by passing an array of paths
   schema: './src/db/schema.ts',
-  // Add all schema paths here
-  out: './drizzle', // Output path for migration files
-  dialect: 'postgresql', // Database type
+  out: './drizzle',
+  dialect: 'postgresql',
   dbCredentials: {
-    host: process.env.DB_HOST || 'db.ikdbpxklslitodszecux.supabase.co',
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || 'tANLl7BQHp9rMFN0',
-    database: process.env.DB_NAME || 'postgres',
-    url: process.env.DATABASE_URL, // Pulling connection string from environment variables
+    url: connectionUrl,
     ssl:
-      process.env.NODE_ENV === 'production'
-        ? { rejectUnauthorized: true }
-        : false, // Conditional SSL setup
-    port: 6543,
+      process.env.NODE_ENV === 'production' && sslCertPath
+        ? {
+            rejectUnauthorized: true,
+            ca: fs.existsSync(sslCertPath)
+              ? fs.readFileSync(sslCertPath).toString()
+              : undefined,
+          }
+        : false,
   },
 };
 
