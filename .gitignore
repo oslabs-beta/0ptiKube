@@ -36,6 +36,10 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env
 
+# certs (SSL Certificate for Supabase DB)
+/certs/*
+!/certs/.gitkeep
+
 # vercel
 .vercel
 
