@@ -1,0 +1,35 @@
+# Purpose: Defines the third test pod deployment that runs Node Exporter
+# - Creates a pod with Node Exporter for metrics
+# - Configures resource limits and ports
+# - Sets up prometheus scraping annotations
+# - Handles package installation and startup
+
+# Narrative: Monitors the bank's processing system health
+# - Checks system every 10 seconds (like real-time banking monitoring)
+# - Tracks important metrics:
+#   * Memory usage (detect memory leaks from transaction processing)
+#   * CPU usage (ensure processing power is available)
+#   * System health (prevent banking service disruptions)
+# - Similar to a bank's monitoring dashboard that alerts operators
+#   when system resources are running low
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: test-pod3-monitor
+  labels:
+    release: my-kube-prometheus-stack
+    app: test-pod3
+    prometheus: my-kube-prometheus-stack-prometheus
+spec:
+  selector:
+    matchLabels:
+      app: test-pod3
+  namespaceSelector:
+    matchNames:
+      - default
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 10s  # More frequent monitoring
+      scrapeTimeout: 8s 

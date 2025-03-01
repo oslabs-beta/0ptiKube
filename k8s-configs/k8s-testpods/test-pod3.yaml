@@ -1,0 +1,78 @@
+# Keeping Deployment and Pod templates in the same file can be more convenient and manageable.
+# Purpose: Defines the main test pod deployment that runs Node Exporter
+# - Creates a pod with Node Exporter for metrics
+# - Configures resource limits and ports
+# - Sets up prometheus scraping annotations
+# - Handles package installation and startup
+
+# Purpose: Simulates a bank's processing system
+# - Acts as the main banking application server
+# - Handles daily transactions, account updates, and report generation
+# - Resource allocation:
+#   * CPU: 300m (0.3 cores) minimum, 400m (0.4 cores) maximum
+#   * Memory: 200MB minimum, 500MB maximum
+# - Similar to a medium-sized bank branch processing system
+# - Monitors system health and resource usage via Node Exporter
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-pod3
+  labels:
+    app: test-pod3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-pod3
+  template:
+    metadata:
+      labels:
+        app: test-pod3
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+    spec:
+      containers:
+      - name: test-pod3-container
+        image: nginx:alpine
+        command: ["/bin/sh"]
+        args: 
+          - "-c"
+          - |
+            # Install required packages
+            echo "Installing packages..."
+            apk update && apk add --no-cache stress-ng curl wget
+
+            # Install Node Exporter
+            echo "Installing Node Exporter..."
+            wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
+            tar xvfz node_exporter-1.6.1.linux-amd64.tar.gz
+            cd node_exporter-1.6.1.linux-amd64
+            
+            # Start Node Exporter with logging
+            echo "Starting Node Exporter..."
+            ./node_exporter --web.listen-address=:8080 > /proc/1/fd/1 2>&1 &
+            
+            # Verify Node Exporter is running
+            echo "Waiting for Node Exporter to start..."
+            sleep 5
+            if curl -s http://localhost:8080/metrics > /dev/null; then
+              echo "Node Exporter is running!"
+            else
+              echo "Node Exporter failed to start"
+              exit 1
+            fi
+
+            # Keep container running
+            tail -f /dev/null
+        ports:
+        - containerPort: 8080
+          name: metrics
+        resources:
+          requests:
+            memory: "200Mi"
+            cpu: "300m"
+          limits:
+            memory: "500Mi"
+            cpu: "400m" 

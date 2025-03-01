@@ -1,0 +1,97 @@
+
+# Purpose: Applies graduated stress testing to test-pod2
+# - Runs every 20 minutes
+# - Creates a graduated stress pattern:
+#   1. 30% CPU/memory load for 5 minutes
+#   2. 80% CPU/memory load for 10 minutes
+#   3. Back to 30% CPU/memory load for 5 minutes
+# - Uses RBAC for pod access
+
+
+# Narrative: 
+# Simulates daily streaming traffic patterns
+# Total Runtime: 20 minutes per cycle
+#
+# Schedule: Runs every 20 minutes (simulating viewing pattern changes)
+#
+# Phase 1: Low Traffic Period (5 minutes)
+# - Similar to early morning/late night viewing
+# - CPU Usage: 30% (light load)
+# - Memory: 90MB (minimal buffering)
+# - Activities like:
+#   * Handling few active streams
+#   * Basic content caching
+#   * Minimal transcoding needs
+#
+# Phase 2: Peak Viewing Hours (10 minutes)
+# - Prime time or popular content release
+# - CPU Usage: 80% (heavy transcoding load)
+# - Memory: 240MB (increased content buffering)
+# - Activities like:
+#   * Multiple concurrent streams
+#   * Real-time video transcoding
+#   * Content delivery optimization
+#
+# Phase 3: Traffic Cool-down (5 minutes)
+# - Post-peak viewing period
+# - CPU Usage: 30% (returning to baseline)
+# - Memory: 90MB (reduced buffering needs)
+# - Activities like:
+#   * Handling remaining active streams
+#   * Cleanup of temporary transcoding files
+#   * System optimization for next peak
+#
+# Load Pattern: Simulates streaming service behavior
+# - Gradual ramp-up for viewer increase
+# - Sustained high load during peak viewing
+# - Gradual cool-down as viewers disconnect
+# - Represents typical day/night viewing cycles
+
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: test-pod2-stressor
+spec:
+  schedule: "*/20 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: stress-job-account
+          containers:
+          - name: stressor
+            image: bitnami/kubectl
+            command:
+            - /bin/sh
+            - -c
+            - |
+              # Get target pod name
+              POD_NAME=$(kubectl get pod -l app=test-pod2 -o jsonpath='{.items[0].metadata.name}')
+              
+              # Verify pod exists
+              if [ -z "$POD_NAME" ]; then
+                echo "Error: No pod found with label app=test-pod2"
+                exit 1
+              fi
+              
+              # Install stress-ng in target pod if needed
+              kubectl exec $POD_NAME -- apk add --no-cache stress-ng
+              
+              echo "Starting low stress phase (30% load)..."
+              kubectl exec $POD_NAME -- stress-ng --cpu 1 --cpu-load 30 \
+                                                --vm 1 --vm-bytes 90M \
+                                                --timeout 300s
+              
+              echo "Starting high stress phase (80% load)..."
+              kubectl exec $POD_NAME -- stress-ng --cpu 1 --cpu-load 80 \
+                                                --vm 1 --vm-bytes 240M \
+                                                --timeout 600s
+              
+              echo "Final low stress phase (30% load)..."
+              kubectl exec $POD_NAME -- stress-ng --cpu 1 --cpu-load 30 \
+                                                --vm 1 --vm-bytes 90M \
+                                                --timeout 300s
+          restartPolicy: OnFailure 
+
+

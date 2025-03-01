@@ -1,0 +1,35 @@
+# Purpose: Configures Prometheus to scrape metrics from the test pod
+# - Tells Prometheus which pods to monitor
+# - Sets scraping interval and timeout - checks metrics every 15 seconds 
+# - Defines metrics endpoint and port
+# - Links to prometheus operator via labels
+
+# Narrative: Monitors e-commerce web server performance
+# - Checks system every 15 seconds (standard web server monitoring interval)
+# - Tracks critical web server metrics:
+#   * CPU usage (for request handling capacity)
+#   * Memory usage (for session management)
+#   * System health (ensure responsive customer experience)
+# - Similar to a production web monitoring system that ensures
+#   customers have a smooth shopping experience
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: test-pod1-monitor
+  labels:
+    release: my-kube-prometheus-stack
+    app: test-pod1
+    prometheus: my-kube-prometheus-stack-prometheus
+spec:
+  selector:
+    matchLabels:
+      app: test-pod1
+  namespaceSelector:
+    matchNames:
+      - default
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s

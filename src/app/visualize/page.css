@@ -1,0 +1,243 @@
+@media (max-width: 768px) {
+  .dashboard-container[data-view-mode='container'] {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      'gauge'
+      'pods'
+      'time-graph';
+  }
+
+  .flex.space-x-40 {
+    flex-direction: column;
+    gap: 2rem;
+  }
+}
+
+/* Base animations for transitions */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-from-right {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}
+
+@keyframes slide-to-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* Horizontal animations for gauge and time-graph */
+@keyframes horizontal-expand {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-33%);
+  }
+}
+
+@keyframes horizontal-contract {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(33%);
+  }
+}
+
+/* Pods animations */
+@keyframes pods-appear {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes pods-disappear {
+  from {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  to {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+}
+
+/* Root view transition animations */
+::view-transition-old(root) {
+  animation: 1000ms cubic-bezier(0.66, 0, 0.34, 1);
+}
+
+::view-transition-new(root) {
+  animation: 1000ms cubic-bezier(0.66, 0, 0.34, 1);
+}
+
+/* Pods transition animations */
+::view-transition-old(pods) {
+  animation:
+    1000ms cubic-bezier(0.66, 0, 0.34, 1) both fade-out,
+    1000ms cubic-bezier(0.66, 0, 0.34, 1) both pods-disappear;
+}
+
+::view-transition-new(pods) {
+  animation:
+    1000ms cubic-bezier(0.66, 0, 0.34, 1) both fade-in,
+    1000ms cubic-bezier(0.66, 0, 0.34, 1) both pods-appear;
+}
+
+/* Gauge transition animations */
+::view-transition-old(gauge) {
+  animation:
+    1000ms cubic-bezier(0.66, 0, 0.34, 1) both fade-out,
+    1000ms cubic-bezier(0.66, 0, 0.34, 1) both horizontal-contract;
+  transform-origin: left center;
+}
+
+::view-transition-new(gauge) {
+  animation:
+    1000ms cubic-bezier(0.66, 0, 0.34, 1) both fade-in,
+    1000ms cubic-bezier(0.66, 0, 0.34, 1) both horizontal-expand;
+  transform-origin: left center;
+}
+
+/* Time-graph transition animations */
+::view-transition-old(time-graph) {
+  animation:
+    1000ms cubic-bezier(0.66, 0, 0.34, 1) both fade-out,
+    1000ms cubic-bezier(0.66, 0, 0.34, 1) both horizontal-contract;
+  transform-origin: left center;
+}
+
+::view-transition-new(time-graph) {
+  animation:
+    1000ms cubic-bezier(0.66, 0, 0.34, 1) both fade-in,
+    1000ms cubic-bezier(0.66, 0, 0.34, 1) both horizontal-expand;
+  transform-origin: left center;
+}
+
+/* Base grid container */
+.dashboard-container {
+  display: grid;
+  gap: 32px;
+  padding: 32px;
+  grid-auto-flow: row;
+  transition: all 1000ms cubic-bezier(0.66, 0, 0.34, 1);
+}
+
+/* Container layout with Pods */
+.dashboard-container[data-view-mode='container'] {
+  grid-template-columns: 0.5fr 1fr;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    'pods gauge'
+    'pods time-graph';
+}
+
+/* Container layout without Pods */
+.dashboard-container[data-view-mode='cluster'] {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    'gauge'
+    'time-graph';
+}
+
+/* Grid areas */
+.time-graph {
+  grid-area: time-graph;
+  margin: 0;
+}
+
+.gauge {
+  grid-area: gauge;
+  margin: 0;
+}
+
+.pods {
+  grid-area: pods;
+  margin: 0;
+}
+
+/* Placeholder for pods in cluster mode */
+.pods-placeholder {
+  grid-area: pods;
+}
+
+/* Skeleton loading animations */
+.pods-skeleton {
+  width: 100%;
+  height: 100%;
+}
+
+/* Slower pulse animation for headers */
+@keyframes pulse-slow {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s infinite ease-in-out;
+}
+
+/* Pulse animation for skeleton items */
+@keyframes pulse {
+  0% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* For container view transition smoothing */
+[data-view-mode='container'] .pods {
+  animation: pods-appear 1000ms cubic-bezier(0.66, 0, 0.34, 1);
+}
+
+[data-view-mode='cluster'] .pods-placeholder {
+  animation: pods-disappear 1000ms cubic-bezier(0.66, 0, 0.34, 1);
+}

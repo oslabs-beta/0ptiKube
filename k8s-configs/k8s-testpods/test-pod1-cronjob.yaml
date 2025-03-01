@@ -1,0 +1,41 @@
+# Purpose: Periodically applies stress testing to the test pod
+# - Runs every 5 minutes
+# - Installs stress-ng if needed
+# - Applies CPU and memory stress
+# - Uses RBAC for pod access
+# - Configures stress parameters: 75% CPU, 225MB memory, 270s duration
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: test-pod1-stressor
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: stress-job-account
+          containers:
+          - name: stressor
+            image: bitnami/kubectl
+            command:
+            - /bin/sh
+            - -c
+            - |
+              # Get target pod name
+              POD_NAME=$(kubectl get pod -l app=test-pod1 -o jsonpath='{.items[0].metadata.name}')
+              
+              # Verify pod exists
+              if [ -z "$POD_NAME" ]; then
+                echo "Error: No pod found with label app=test-pod1"
+                exit 1
+              fi
+              
+              # Install stress-ng in target pod if needed
+              kubectl exec $POD_NAME -- apk add --no-cache stress-ng
+              
+              # Run stress command
+              kubectl exec $POD_NAME -- stress-ng --cpu 1 --cpu-load 75 \
+                                                --vm 1 --vm-bytes 225M \
+                                                --timeout 270s
+          restartPolicy: OnFailure
